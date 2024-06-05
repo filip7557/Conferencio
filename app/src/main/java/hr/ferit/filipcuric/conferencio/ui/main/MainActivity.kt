@@ -1,4 +1,4 @@
-package hr.ferit.filipcuric.conferencio
+package hr.ferit.filipcuric.conferencio.ui.main
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
