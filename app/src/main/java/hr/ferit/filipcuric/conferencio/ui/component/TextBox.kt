@@ -1,5 +1,6 @@
 package hr.ferit.filipcuric.conferencio.ui.component
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -8,8 +9,11 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import hr.ferit.filipcuric.conferencio.ui.theme.Blue
+import hr.ferit.filipcuric.conferencio.ui.theme.DarkOnTertiaryColor
+import hr.ferit.filipcuric.conferencio.ui.theme.DarkTertiaryColor
 
 @Composable
 fun TextBox(
@@ -17,20 +21,47 @@ fun TextBox(
     value: String,
     onValueChange: (String) -> Unit,
 ) {
-    TextField(
-        value = value,
-        onValueChange = onValueChange,
-        label = {
-            Text(text = label)
-        },
-        singleLine = true,
-        shape = RoundedCornerShape(8.dp),
-        colors = TextFieldDefaults.colors(
-            focusedIndicatorColor = Blue,
-            focusedLabelColor = Blue
-        ),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 15.dp)
-    )
+    if(isSystemInDarkTheme()) {
+        TextField(
+            value = value,
+            onValueChange = onValueChange,
+            label = {
+                Text(text = label)
+            },
+            singleLine = true,
+            shape = RoundedCornerShape(8.dp),
+            colors = TextFieldDefaults.colors(
+                focusedIndicatorColor = Blue,
+                focusedLabelColor = Blue,
+                unfocusedContainerColor = DarkTertiaryColor,
+                focusedContainerColor = DarkTertiaryColor,
+                focusedTextColor = DarkOnTertiaryColor,
+                unfocusedTextColor = DarkOnTertiaryColor,
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 15.dp)
+        )
+    } else {
+        TextField(
+            value = value,
+            onValueChange = onValueChange,
+            label = {
+                Text(text = label)
+            },
+            singleLine = true,
+            shape = RoundedCornerShape(8.dp),
+            colors = TextFieldDefaults.colors(
+                focusedIndicatorColor = Blue,
+                focusedLabelColor = Blue,
+                unfocusedContainerColor = Color(0xC9C9C9C9),
+                focusedContainerColor = Color(0xC9C9C9C9),
+                focusedTextColor = Color(28, 28, 28),
+                unfocusedTextColor = Color(28, 28, 28),
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 15.dp)
+        )
+    }
 }
