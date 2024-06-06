@@ -43,7 +43,7 @@ fun Title() {
         Text(
             text = "Welcome to",
             fontSize = 48.sp,
-            fontWeight = FontWeight.Normal,
+            fontWeight = FontWeight.Medium,
             color = Blue,
         )
         Text(
@@ -60,6 +60,7 @@ fun Subtitle() {
     Text(
         text = "Please login to continue.",
         fontSize = 20.sp,
+        fontWeight = FontWeight.Light,
         modifier = Modifier
             .padding(bottom = 20.dp)
     )

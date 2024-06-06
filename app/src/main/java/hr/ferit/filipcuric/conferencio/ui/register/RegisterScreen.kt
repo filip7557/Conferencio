@@ -9,6 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
@@ -94,7 +95,8 @@ fun Title() {
         text = "Register",
         fontSize = 48.sp,
         color = Blue,
-        )
+        fontWeight = FontWeight.Medium
+    )
 }
 
 @Composable
@@ -102,6 +104,7 @@ fun Subtitle() {
     Text(
         text = "Create your new account",
         fontSize = 20.sp,
+        fontWeight = FontWeight.Thin,
         modifier = Modifier
             .padding(bottom = 50.dp)
     )
