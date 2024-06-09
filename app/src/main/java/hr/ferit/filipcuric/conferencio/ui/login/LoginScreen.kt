@@ -1,24 +1,34 @@
 package hr.ferit.filipcuric.conferencio.ui.login
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import hr.ferit.filipcuric.conferencio.data.repository.UserRepositoryImpl
 import hr.ferit.filipcuric.conferencio.ui.component.BlueButton
 import hr.ferit.filipcuric.conferencio.ui.component.TextBox
 import hr.ferit.filipcuric.conferencio.ui.theme.Blue
 
-@Preview
 @Composable
-fun LoginScreen() {
+fun LoginScreen(
+    viewModel: LoginViewModel,
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -28,9 +38,25 @@ fun LoginScreen() {
     ) {
         Title()
         Subtitle()
-        TextBox(label = "Email", value = "", onValueChange = {})
-        TextBox(label = "Password", value = "", onValueChange = {})
-        BlueButton(text = "Login", onClick = {})
+        TextBox(
+            label = "Email",
+            value = viewModel.email,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Email
+            ),
+            onValueChange = { viewModel.onEmailChange(it) }
+        )
+        TextBox(
+            label = "Password",
+            value = viewModel.password,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password
+            ),
+            visualTransformation = PasswordVisualTransformation(),
+            onValueChange = { viewModel.onPasswordChange(it) }
+        )
+        BlueButton(text = "Login", onClick = { viewModel.login() })
+        RegisterText()
     }
 }
 
@@ -38,7 +64,8 @@ fun LoginScreen() {
 fun Title() {
     Column(
         modifier = Modifier
-            .padding(bottom = 20.dp)
+            .padding(bottom = 20.dp),
+        horizontalAlignment = Alignment.Start
     ) {
         Text(
             text = "Welcome to",
@@ -64,4 +91,43 @@ fun Subtitle() {
         modifier = Modifier
             .padding(bottom = 20.dp)
     )
+}
+
+@Composable
+fun RegisterText() {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(top = 20.dp),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = "Don't have an account?",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Light
+            )
+            Text(
+                text = "Sign up now!",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Light,
+                color = Blue,
+                textDecoration = TextDecoration.Underline,
+                modifier = Modifier
+                    .padding(start = 5.dp)
+                    .clickable { /*TODO*/ }
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+fun LoginScreenPreview() {
+    val viewModel = LoginViewModel(UserRepositoryImpl())
+    LoginScreen(viewModel = viewModel)
 }

@@ -17,4 +17,14 @@ class UserRepositoryImpl() : UserRepository {
         user.id = auth.currentUser?.uid
         db.collection("users").add(user).addOnSuccessListener { Log.d("REGISTER", "Saved acc data") }
     }
+
+    override suspend fun login(email: String, password: String) {
+        auth.signInWithEmailAndPassword(email, password).await()
+        val user = auth.currentUser
+        if(user != null)
+            Log.d("LOGIN", "USER WITH EMAIL ${user.email} HAS LOGGED IN.")
+        else {
+            Log.d("LOGIN", "FAILED TO LOGIN")
+        }
+    }
 }
