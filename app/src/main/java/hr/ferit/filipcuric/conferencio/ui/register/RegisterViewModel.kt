@@ -1,5 +1,6 @@
 package hr.ferit.filipcuric.conferencio.ui.register
 
+import android.net.Uri
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -46,6 +47,13 @@ class RegisterViewModel(
 
     fun onPasswordChange(value: String) {
         password = value
+    }
+
+    var imageUri: Uri? by mutableStateOf(Uri.EMPTY)
+        private set
+
+    fun onImageSelected(uri: Uri) {
+        imageUri = uri
     }
 
     fun onRegisterClick() {
