@@ -1,6 +1,6 @@
 package hr.ferit.filipcuric.conferencio.ui.profile
 
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,20 +11,20 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import hr.ferit.filipcuric.conferencio.R
 import hr.ferit.filipcuric.conferencio.model.User
 import hr.ferit.filipcuric.conferencio.ui.theme.Blue
 
@@ -105,8 +105,6 @@ fun CompanyAndPosition(
         text = "$position @ $company",
         fontSize = 18.sp,
         fontWeight = FontWeight.ExtraLight,
-        modifier = Modifier
-            .padding(bottom = 30.dp)
     )
 }
 
@@ -117,8 +115,10 @@ fun ConferencesInfo(
 ) {
     Row(
         modifier = Modifier
-            .fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceEvenly
+            .fillMaxWidth()
+            .padding(top = 30.dp),
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(
             verticalArrangement = Arrangement.Center,
@@ -135,11 +135,17 @@ fun ConferencesInfo(
                 fontWeight = FontWeight.Thin
             )
         }
-        Image(
+        /*Image(
             painter = painterResource(id = R.drawable.divider),
             contentDescription = "separator",
             modifier = Modifier
                 .size(width = 50.dp, height = 100.dp) //TODO: Fix size of separator
+        )*/
+        Box(
+            modifier = Modifier
+                .clip(RoundedCornerShape(50))
+                .size(height = 65.dp, width = 1.dp)
+                .background(Color(94, 93, 93))
         )
         Column(
             verticalArrangement = Arrangement.Center,
