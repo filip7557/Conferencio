@@ -56,7 +56,7 @@ class RegisterViewModel(
         imageUri = uri
     }
 
-    fun onRegisterClick() {
+    fun onRegisterClick(onRegisterClick: () -> Unit) {
         //TODO: Add error checks
         auth = Firebase.auth
         val user = User(
@@ -66,7 +66,8 @@ class RegisterViewModel(
             position = position,
         )
         viewModelScope.launch {
-            userRepository.createUser(user, password)
+            userRepository.createUser(user, password, imageUri!!)
         }
+        onRegisterClick()
     }
 }

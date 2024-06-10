@@ -32,6 +32,8 @@ import hr.ferit.filipcuric.conferencio.ui.theme.Blue
 @Composable
 fun RegisterScreen(
     viewModel: RegisterViewModel,
+    onBackClick: () -> Unit,
+    onRegisterClick: () -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier
@@ -42,7 +44,9 @@ fun RegisterScreen(
     ) {
         item {
             BackButton(
-                onClick = {}
+                onClick = {
+                    onBackClick()
+                }
             )
         }
         item {
@@ -109,7 +113,7 @@ fun RegisterScreen(
                     onValueChange = {
                         viewModel.onPasswordChange(it)
                     })
-                BlueButton(text = "Register", onClick = { viewModel.onRegisterClick() })
+                BlueButton(text = "Register", onClick = { viewModel.onRegisterClick(onRegisterClick) })
             }
         }
     }
@@ -134,10 +138,4 @@ fun Subtitle() {
         modifier = Modifier
             .padding(bottom = 20.dp)
     )
-}
-
-@Preview
-@Composable
-fun RegisterScreenPreview() {
-    RegisterScreen(viewModel = RegisterViewModel(UserRepositoryImpl()))
 }

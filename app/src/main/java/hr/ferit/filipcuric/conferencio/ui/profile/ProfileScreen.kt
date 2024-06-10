@@ -21,16 +21,16 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import hr.ferit.filipcuric.conferencio.model.User
+import hr.ferit.filipcuric.conferencio.ui.component.BlueButton
 import hr.ferit.filipcuric.conferencio.ui.theme.Blue
 
 @Composable
 fun ProfileScreen(
     viewModel: ProfileViewModel,
+    onSignOutClick: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -44,6 +44,9 @@ fun ProfileScreen(
         Fullname(fullname = viewModel.user.fullname)
         CompanyAndPosition(company = viewModel.user.company, position = viewModel.user.position)
         ConferencesInfo(organized = viewModel.organized, attended = viewModel.attended)
+        BlueButton(text = "LOGOUT (TESTING ONLY)") {
+            viewModel.logout(onSignOutClick)
+        }
     }
 }
 
@@ -163,21 +166,4 @@ fun ConferencesInfo(
             )
         }
     }
-}
-
-@Preview
-@Composable
-fun ProfileScreenPreview() {
-    val user = User(
-        fullname = "Filip Ćurić",
-        company = "FERIT",
-        position = "Student",
-        email = "filip.curic6@yahoo.com",
-        imageUrl = "https://images.ctfassets.net/h6goo9gw1hh6/2sNZtFAWOdP1lmQ33VwRN3/24e953b920a9cd0ff2e1d587742a2472/1-intro-photo-final.jpg?w=1200&h=992&fl=progressive&q=70&fm=jpg"
-    )
-
-    val viewModel = ProfileViewModel()
-    viewModel.user = user
-    
-    ProfileScreen(viewModel = viewModel)
 }

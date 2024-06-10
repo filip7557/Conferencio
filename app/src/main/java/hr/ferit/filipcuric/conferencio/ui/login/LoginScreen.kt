@@ -17,10 +17,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import hr.ferit.filipcuric.conferencio.data.repository.UserRepositoryImpl
 import hr.ferit.filipcuric.conferencio.ui.component.BlueButton
 import hr.ferit.filipcuric.conferencio.ui.component.TextBox
 import hr.ferit.filipcuric.conferencio.ui.theme.Blue
@@ -28,6 +26,8 @@ import hr.ferit.filipcuric.conferencio.ui.theme.Blue
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel,
+    onLoginClick: () -> Unit,
+    onRegisterClick: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -55,8 +55,8 @@ fun LoginScreen(
             visualTransformation = PasswordVisualTransformation(),
             onValueChange = { viewModel.onPasswordChange(it) }
         )
-        BlueButton(text = "Login", onClick = { viewModel.login() })
-        RegisterText()
+        BlueButton(text = "Login", onClick = { viewModel.login(onLoginClick) })
+        RegisterText(onRegisterClick)
     }
 }
 
@@ -94,7 +94,7 @@ fun Subtitle() {
 }
 
 @Composable
-fun RegisterText() {
+fun RegisterText(onRegisterClick: () -> Unit) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
@@ -119,15 +119,8 @@ fun RegisterText() {
                 textDecoration = TextDecoration.Underline,
                 modifier = Modifier
                     .padding(start = 5.dp)
-                    .clickable { /*TODO*/ }
+                    .clickable { onRegisterClick() }
             )
         }
     }
-}
-
-@Preview
-@Composable
-fun LoginScreenPreview() {
-    val viewModel = LoginViewModel(UserRepositoryImpl())
-    LoginScreen(viewModel = viewModel)
 }

@@ -25,10 +25,11 @@ class LoginViewModel(
         password = value
     }
 
-    fun login() {
+    fun login(onLoginClick: () -> Unit) {
         //TODO: Add error checks.
-        viewModelScope.launch {
+        val job = viewModelScope.launch {
             userRepository.login(email, password)
         }
+        job.invokeOnCompletion { onLoginClick() }
     }
 }
