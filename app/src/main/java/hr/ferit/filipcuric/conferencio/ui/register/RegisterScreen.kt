@@ -5,9 +5,11 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
@@ -52,6 +54,20 @@ fun RegisterScreen(
             ) {
                 Title()
                 Subtitle()
+                val launcher = rememberLauncherForActivityResult(
+                    contract = ActivityResultContracts.GetContent(),
+                    onResult = { uri: Uri? -> uri?.let { viewModel.onImageSelected(it) } }
+                )
+                UploadProfilePictureCard(
+                    onClick = {
+                        launcher.launch("image/*")
+                    },
+                    imageUri = viewModel.imageUri,
+                    modifier = Modifier
+                        .height(250.dp)
+                        .width(250.dp)
+                )
+                Spacer(modifier = Modifier.padding(vertical = 10.dp))
                 TextBox(
                     label = "Full name",
                     value = viewModel.fullname,
@@ -93,19 +109,6 @@ fun RegisterScreen(
                     onValueChange = {
                         viewModel.onPasswordChange(it)
                     })
-                val launcher = rememberLauncherForActivityResult(
-                    contract = ActivityResultContracts.GetContent(),
-                    onResult = { uri: Uri? -> uri?.let { viewModel.onImageSelected(it) } }
-                )
-                UploadProfilePictureCard(
-                    onClick = {
-                        launcher.launch("image/*")
-                    },
-                    imageUri = viewModel.imageUri,
-                    modifier = Modifier
-                        .height(300.dp)
-                        .padding(bottom = 10.dp)
-                )
                 BlueButton(text = "Register", onClick = { viewModel.onRegisterClick() })
             }
         }
@@ -129,7 +132,7 @@ fun Subtitle() {
         fontSize = 20.sp,
         fontWeight = FontWeight.Thin,
         modifier = Modifier
-            .padding(bottom = 50.dp)
+            .padding(bottom = 20.dp)
     )
 }
 
