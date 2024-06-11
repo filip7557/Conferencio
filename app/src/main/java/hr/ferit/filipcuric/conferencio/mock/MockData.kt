@@ -2,6 +2,7 @@ package hr.ferit.filipcuric.conferencio.mock
 
 import com.google.type.DateTime
 import hr.ferit.filipcuric.conferencio.model.Conference
+import hr.ferit.filipcuric.conferencio.model.User
 
 fun getConferences() = listOf(
     Conference(
@@ -18,4 +19,10 @@ fun getConferences() = listOf(
         endDateTime = 1719345600000,
         ownerId = "qgTZb0vTpddc7eI88l4PZNPqwn22"
     )
+)
+
+fun getUser() = User(
+    fullname = "Filip Ćurić",
+    company = "FERIT",
+    position = "Student",
 )
