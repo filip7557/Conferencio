@@ -44,8 +44,9 @@ fun ConferenceCard(
             contentColor = if (isSystemInDarkTheme()) Color.White else Color.Black
         ),
         modifier = Modifier
-            .size(height = 210.dp, width = 310.dp)
+            .fillMaxWidth()
             .clickable(onClick = onClick)
+            .padding(vertical = 5.dp)
     ) {
         AsyncImage(
             model = conference.imageUrl,
