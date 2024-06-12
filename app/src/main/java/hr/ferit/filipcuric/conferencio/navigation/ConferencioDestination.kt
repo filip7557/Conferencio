@@ -2,6 +2,7 @@ package hr.ferit.filipcuric.conferencio.navigation
 
 const val LOGIN_ROUTE = "Login"
 const val REGISTER_ROUTE = "Register"
+const val HOME_ROUTE = "Home"
 const val PROFILE_ROUTE = "Profile"
 
 sealed class ConferencioDestination(
@@ -22,5 +23,9 @@ sealed class NavigationItem(
 
     data object ProfileDestination : NavigationItem(
         route = PROFILE_ROUTE
+    )
+
+    data object HomeDestination : NavigationItem(
+        route = HOME_ROUTE
     )
 }

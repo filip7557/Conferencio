@@ -13,8 +13,11 @@ import androidx.navigation.compose.rememberNavController
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
+import hr.ferit.filipcuric.conferencio.data.repository.ConferenceRepositoryImpl
 import hr.ferit.filipcuric.conferencio.data.repository.UserRepositoryImpl
 import hr.ferit.filipcuric.conferencio.navigation.NavigationItem
+import hr.ferit.filipcuric.conferencio.ui.home.HomeScreen
+import hr.ferit.filipcuric.conferencio.ui.home.HomeViewModel
 import hr.ferit.filipcuric.conferencio.ui.login.LoginScreen
 import hr.ferit.filipcuric.conferencio.ui.login.LoginViewModel
 import hr.ferit.filipcuric.conferencio.ui.profile.ProfileScreen
@@ -32,13 +35,14 @@ fun MainScreen() {
     val navBackStackEntry by navController.currentBackStackEntryAsState() //current screen
 
     val userRepository = UserRepositoryImpl()
+    val conferenceRepository = ConferenceRepositoryImpl()
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
         NavHost(
             navController = navController,
-            startDestination = if (auth.currentUser != null) NavigationItem.ProfileDestination.route /*TODO: Change to home later*/ else NavigationItem.LoginDestination.route,
+            startDestination = if (auth.currentUser != null) NavigationItem.HomeDestination.route  else NavigationItem.LoginDestination.route,
             modifier = Modifier.padding(padding)
         ) {
             composable(NavigationItem.LoginDestination.route) {
@@ -70,6 +74,17 @@ fun MainScreen() {
                     ),
                     onSignOutClick = {
                         navController.navigate(NavigationItem.LoginDestination.route)
+                    }
+                )
+            }
+            composable(NavigationItem.HomeDestination.route) {
+                HomeScreen(
+                    viewModel = HomeViewModel(
+                        conferenceRepository = conferenceRepository,
+                        userRepository = userRepository
+                    ),
+                    onConferenceClick = {
+                        //TODO: Navigate to conference screen
                     }
                 )
             }
