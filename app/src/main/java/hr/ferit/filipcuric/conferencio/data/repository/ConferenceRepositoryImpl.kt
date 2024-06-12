@@ -22,6 +22,10 @@ class ConferenceRepositoryImpl : ConferenceRepository {
         return conferences.filter { conference -> conference.title.lowercase().contains(searchValue) }
     }
 
+    override suspend fun getActiveConferences(): List<Conference> {
+        return getConferences().filter { conference -> conference.endDateTime > Instant.now().toEpochMilli() }.sortedBy { conference -> conference.startDateTime }
+    }
+
     override suspend fun getAttendingConferencesByUserId(userId: String): List<Conference> {
         return getConferences().filter { conference -> conference.endDateTime > Instant.now().toEpochMilli() } //TODO: Fetch actual data
     }
