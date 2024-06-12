@@ -17,6 +17,11 @@ class ConferenceRepositoryImpl : ConferenceRepository {
         return getConferences().filter { conference -> conference.endDateTime < Instant.now().toEpochMilli() }
     }
 
+    override suspend fun getConferencesFromSearch(searchValue: String): List<Conference> {
+        val conferences = getConferences()
+        return conferences.filter { conference -> conference.title.lowercase().contains(searchValue) }
+    }
+
     override suspend fun getAttendingConferencesByUserId(userId: String): List<Conference> {
         return getConferences().filter { conference -> conference.endDateTime > Instant.now().toEpochMilli() } //TODO: Fetch actual data
     }
