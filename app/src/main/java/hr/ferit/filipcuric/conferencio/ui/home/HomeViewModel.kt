@@ -37,8 +37,17 @@ class HomeViewModel(
     init {
         viewModelScope.launch {
             currentUser = userRepository.getCurrentUser()
-            organizedConferences = conferenceRepository.getOrganizedConferencesByUserId(currentUser.id!!)
-            attendingConferences = conferenceRepository.getAttendingConferencesByUserId(currentUser.id!!)
+            if (isActiveSelected) {
+                organizedConferences =
+                    conferenceRepository.getOrganizedConferencesByUserId(currentUser.id!!)
+                attendingConferences =
+                    conferenceRepository.getAttendingConferencesByUserId(currentUser.id!!)
+            } else {
+                organizedConferences =
+                    conferenceRepository.getPastOrganizedConferencesByUserId(currentUser.id!!)
+                attendingConferences =
+                    conferenceRepository.getPastAttendingConferencesByUserUd(currentUser.id!!)
+            }
         }
     }
 
@@ -51,10 +60,22 @@ class HomeViewModel(
     }
 
     fun onActiveClick() {
+        viewModelScope.launch {
+            organizedConferences =
+                conferenceRepository.getOrganizedConferencesByUserId(currentUser.id!!)
+            attendingConferences =
+                conferenceRepository.getAttendingConferencesByUserId(currentUser.id!!)
+        }
         isActiveSelected = true
     }
 
     fun onPastClick() {
+        viewModelScope.launch {
+            organizedConferences =
+                conferenceRepository.getPastOrganizedConferencesByUserId(currentUser.id!!)
+            attendingConferences =
+                conferenceRepository.getPastAttendingConferencesByUserUd(currentUser.id!!)
+        }
         isActiveSelected = false
     }
 }
