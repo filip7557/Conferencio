@@ -4,6 +4,8 @@ const val LOGIN_ROUTE = "Login"
 const val REGISTER_ROUTE = "Register"
 const val HOME_ROUTE = "Home"
 const val PROFILE_ROUTE = "Profile"
+const val SEARCH_ROUTE = "Search"
+const val BROWSE_ROUTE = "Browse"
 
 sealed class ConferencioDestination(
     open val route: String
@@ -11,6 +13,8 @@ sealed class ConferencioDestination(
 
 sealed class NavigationItem(
     override val route: String,
+    val iconId: Int,
+    val labelId: Int,
 ) : ConferencioDestination(route) {
 
     data object LoginDestination : NavigationItem(
@@ -27,5 +31,13 @@ sealed class NavigationItem(
 
     data object HomeDestination : NavigationItem(
         route = HOME_ROUTE
+    )
+
+    data object SearchDestination : NavigationItem(
+        route = SEARCH_ROUTE
+    )
+
+    data object BrowseDestination : NavigationItem(
+        route = BROWSE_ROUTE
     )
 }
