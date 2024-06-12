@@ -45,6 +45,13 @@ class UserRepositoryImpl : UserRepository {
             .toObject(User::class.java)
     }
 
+    override suspend fun getUserById(userId: String) : User {
+        Log.d("GET USE", "Getting user with id $userId")
+        val user = db.collection("users").whereEqualTo("id", userId).get().await().first().toObject(User::class.java)
+        Log.d("GOT USER", "Got user with id ${user.id}")
+        return user
+    }
+
     override suspend fun uploadProfilePicture(imageUri: Uri?) : String {
         val currentUser = auth.currentUser!!
         val imageRef = storageRef.child("profile_pictures/${currentUser.uid}_profile")
