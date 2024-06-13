@@ -1,9 +1,10 @@
 package hr.ferit.filipcuric.conferencio.mock
 
 import hr.ferit.filipcuric.conferencio.model.Conference
-import hr.ferit.filipcuric.conferencio.model.User
+import kotlinx.coroutines.flow.flowOf
 
-fun getConferences() = listOf(
+fun getConferences() = flowOf(
+    listOf(
     Conference(
         id = "1",
         imageUrl = "https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F784276859%2F1352392056833%2F1%2Foriginal.20240606-111051?w=940&auto=format%2Ccompress&q=75&sharp=10&s=1aa5f4e7837ee73bd158c319936fd26d",
@@ -28,10 +29,6 @@ fun getConferences() = listOf(
         endDateTime = 1717048800000,
         ownerId = "SNbVzHkToCRgnDmZWfmddQZeAsy2"
     ),
+    )
 )
 
-fun getUser() = User(
-    fullname = "Filip Ćurić",
-    company = "FERIT",
-    position = "Student",
-)
