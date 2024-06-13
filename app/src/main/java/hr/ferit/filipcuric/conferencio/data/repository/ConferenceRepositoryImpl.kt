@@ -2,31 +2,31 @@ package hr.ferit.filipcuric.conferencio.data.repository
 
 import hr.ferit.filipcuric.conferencio.mock.getConferences
 import hr.ferit.filipcuric.conferencio.model.Conference
-import java.time.Instant
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.shareIn
 
 class ConferenceRepositoryImpl : ConferenceRepository {
-    override suspend fun getOrganizedConferencesByUserId(userId: String): List<Conference> {
-        return getConferences().filter { conference -> conference.endDateTime > Instant.now().toEpochMilli() } //TODO: Fetch actual data
+
+    private val conferences = getConferences().shareIn(
+        scope = CoroutineScope(Dispatchers.IO),
+        started = SharingStarted.WhileSubscribed(1000L),
+        replay = 1,
+    )
+
+    override fun getConferencesFromSearch(searchValue: String): Flow<List<Conference>> {
+        return conferences.map {
+            it.filter { conference ->
+                conference.title.lowercase().contains(searchValue)
+            }
+        }
     }
 
-    override suspend fun getPastOrganizedConferencesByUserId(userId: String): List<Conference> {
-        return getConferences().filter { conference -> conference.endDateTime < Instant.now().toEpochMilli() }
+    override fun getActiveConferences(): Flow<List<Conference>> {
+        return conferences
     }
 
-    override suspend fun getPastAttendingConferencesByUserUd(userId: String): List<Conference> {
-        return getConferences().filter { conference -> conference.endDateTime < Instant.now().toEpochMilli() }
-    }
-
-    override suspend fun getConferencesFromSearch(searchValue: String): List<Conference> {
-        val conferences = getConferences()
-        return conferences.filter { conference -> conference.title.lowercase().contains(searchValue) }
-    }
-
-    override suspend fun getActiveConferences(): List<Conference> {
-        return getConferences().filter { conference -> conference.endDateTime > Instant.now().toEpochMilli() }.sortedBy { conference -> conference.startDateTime }
-    }
-
-    override suspend fun getAttendingConferencesByUserId(userId: String): List<Conference> {
-        return getConferences().filter { conference -> conference.endDateTime > Instant.now().toEpochMilli() } //TODO: Fetch actual data
-    }
 }

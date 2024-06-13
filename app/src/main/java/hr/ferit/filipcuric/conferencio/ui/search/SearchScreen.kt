@@ -26,6 +26,7 @@ fun SearchScreen(
     onConferenceClick: (String) -> Unit,
 ) {
     val foundConferences by viewModel.foundConferences.collectAsState()
+    val conferences by foundConferences.collectAsState(initial = listOf())
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
@@ -42,7 +43,7 @@ fun SearchScreen(
             )
         }
         items(
-            items = foundConferences,
+            items = conferences,
             key = { conference -> conference.id!!}
         ) {
             ConferenceCard(

@@ -7,7 +7,7 @@ interface UserRepository {
     suspend fun login(email: String, password: String)
     suspend fun uploadProfilePicture(imageUri: Uri?): String
     suspend fun createUser(user: User, password: String, imageUri: Uri)
-    suspend fun getCurrentUser(): User
+    suspend fun getCurrentUser(): User?
     fun logout()
     suspend fun getUserById(userId: String): User
 }

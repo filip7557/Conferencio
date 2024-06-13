@@ -13,26 +13,30 @@ import kotlinx.coroutines.launch
 class ProfileViewModel(
     private val userRepository: UserRepository,
 ) : ViewModel() {
-    fun logout(onSignOutClick: () -> Unit) {
-        onSignOutClick()
-        userRepository.logout()
-    }
 
     var user by mutableStateOf(User())
-        private set
     var organized by mutableIntStateOf(0)
         private set
     var attended by mutableIntStateOf(0)
         private set
 
     init {
-        viewModelScope.launch {
-            user = userRepository.getCurrentUser()
-        }
-    }
-
-    init {
         organized = 10
         attended = 25
+    }
+
+    fun logout(onSignOutClick: () -> Unit) {
+        onSignOutClick()
+        userRepository.logout()
+    }
+
+    fun getCurrentUser() {
+        viewModelScope.launch {
+            user = if(userRepository.getCurrentUser() != null) {
+                userRepository.getCurrentUser()!!
+            } else {
+                User()
+            }
+        }
     }
 }

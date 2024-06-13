@@ -11,10 +11,11 @@ import hr.ferit.filipcuric.conferencio.data.repository.ConferenceRepository
 import hr.ferit.filipcuric.conferencio.data.repository.UserRepository
 import hr.ferit.filipcuric.conferencio.model.Conference
 import hr.ferit.filipcuric.conferencio.model.User
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.runBlocking
 
@@ -25,15 +26,18 @@ class SearchViewModel(
     var searchValue by mutableStateOf("")
         private set
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val foundConferences: StateFlow<List<Conference>> =
+    val foundConferences: StateFlow<Flow<List<Conference>>> =
         snapshotFlow { searchValue }
-            .mapLatest { if (searchValue.length < 3) listOf() else conferenceRepository.getConferencesFromSearch(searchValue) }
+            .map { conferenceRepository.getConferencesFromSearch(searchValue)
+                .map {
+                    if (searchValue.length < 3) listOf() else it
+                }
+            }
             .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5_000),
-                initialValue = listOf()
-            )
+                    scope = viewModelScope,
+                    started = SharingStarted.WhileSubscribed(5_000),
+                    initialValue = flowOf(listOf())
+                )
 
     fun onSearchValueChange(value: String) {
         searchValue = value

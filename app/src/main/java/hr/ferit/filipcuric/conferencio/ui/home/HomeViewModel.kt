@@ -4,17 +4,25 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import hr.ferit.filipcuric.conferencio.data.repository.ConferenceRepository
 import hr.ferit.filipcuric.conferencio.data.repository.UserRepository
 import hr.ferit.filipcuric.conferencio.model.Conference
 import hr.ferit.filipcuric.conferencio.model.User
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import java.time.Instant
 
 class HomeViewModel(
-    private val conferenceRepository: ConferenceRepository,
+    conferenceRepository: ConferenceRepository,
     private val userRepository: UserRepository,
 ) : ViewModel() {
 
@@ -27,30 +35,43 @@ class HomeViewModel(
     var isAttendingToggled by mutableStateOf(true)
         private set
 
-    var organizedConferences by mutableStateOf(listOf<Conference>())
-        private set
+    val organizedConferences: StateFlow<Flow<List<Conference>>> =
+        snapshotFlow { isActiveSelected }
+            .map { conferenceRepository.getActiveConferences() }
+            .map { flow ->
+                flow.map {
+                    it.filter { conference ->
+                        if (isActiveSelected) conference.endDateTime > Instant.now()
+                            .toEpochMilli() else conference.endDateTime < Instant.now()
+                            .toEpochMilli()
+                    }
+                }
+            }
+            .stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(5_000),
+                flowOf(listOf())
+            )
 
-    var attendingConferences by mutableStateOf(listOf<Conference>())
-        private set
+    val attendingConferences: StateFlow<Flow<List<Conference>>> =
+        snapshotFlow { isActiveSelected }
+            .map { conferenceRepository.getActiveConferences() }
+            .map {flow ->
+                flow.map {
+                    it.filter { conference ->
+                        if (isActiveSelected) conference.endDateTime > Instant.now()
+                            .toEpochMilli() else conference.endDateTime < Instant.now()
+                            .toEpochMilli()
+                    }
+                }
+            }
+            .stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(5_000),
+                flowOf(listOf())
+            )
 
     lateinit var currentUser: User
-
-    init {
-        viewModelScope.launch {
-            currentUser = userRepository.getCurrentUser()
-            if (isActiveSelected) {
-                organizedConferences =
-                    conferenceRepository.getOrganizedConferencesByUserId(currentUser.id!!)
-                attendingConferences =
-                    conferenceRepository.getAttendingConferencesByUserId(currentUser.id!!)
-            } else {
-                organizedConferences =
-                    conferenceRepository.getPastOrganizedConferencesByUserId(currentUser.id!!)
-                attendingConferences =
-                    conferenceRepository.getPastAttendingConferencesByUserUd(currentUser.id!!)
-            }
-        }
-    }
 
     fun toggleOrganized() {
         isOrganizedToggled = !isOrganizedToggled
@@ -60,23 +81,17 @@ class HomeViewModel(
         isAttendingToggled = !isAttendingToggled
     }
 
-    fun onActiveClick() {
+    init {
         viewModelScope.launch {
-            organizedConferences =
-                conferenceRepository.getOrganizedConferencesByUserId(currentUser.id!!)
-            attendingConferences =
-                conferenceRepository.getAttendingConferencesByUserId(currentUser.id!!)
+            currentUser = userRepository.getCurrentUser()!!
         }
+    }
+
+    fun onActiveClick() {
         isActiveSelected = true
     }
 
     fun onPastClick() {
-        viewModelScope.launch {
-            organizedConferences =
-                conferenceRepository.getPastOrganizedConferencesByUserId(currentUser.id!!)
-            attendingConferences =
-                conferenceRepository.getPastAttendingConferencesByUserUd(currentUser.id!!)
-        }
         isActiveSelected = false
     }
 

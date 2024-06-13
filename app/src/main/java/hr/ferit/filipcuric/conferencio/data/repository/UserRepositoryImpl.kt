@@ -33,16 +33,17 @@ class UserRepositoryImpl : UserRepository {
         else {
             Log.d("LOGIN", "FAILED TO LOGIN")
         }
+        //TODO: Dont crash on wrong password
     }
 
-    override suspend fun getCurrentUser() : User {
-        val currentUser = auth.currentUser!!
+    override suspend fun getCurrentUser() : User? {
+        val currentUser = auth.currentUser
         return db.collection("users")
-            .whereEqualTo("id", currentUser.uid)
+            .whereEqualTo("id", currentUser?.uid)
             .get()
             .await()
-            .first()
-            .toObject(User::class.java)
+            .firstOrNull()
+            ?.toObject(User::class.java)
     }
 
     override suspend fun getUserById(userId: String) : User {
