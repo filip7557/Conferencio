@@ -33,8 +33,6 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import hr.ferit.filipcuric.conferencio.R
-import hr.ferit.filipcuric.conferencio.data.repository.ConferenceRepositoryImpl
-import hr.ferit.filipcuric.conferencio.data.repository.UserRepositoryImpl
 import hr.ferit.filipcuric.conferencio.navigation.NavigationItem
 import hr.ferit.filipcuric.conferencio.ui.browse.BrowseScreen
 import hr.ferit.filipcuric.conferencio.ui.browse.BrowseViewModel
