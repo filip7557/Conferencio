@@ -33,7 +33,7 @@ class UserRepositoryImpl : UserRepository {
         else {
             Log.d("LOGIN", "FAILED TO LOGIN")
         }
-        //TODO: Dont crash on wrong password
+        //TODO: Don't crash on wrong password
     }
 
     override suspend fun getCurrentUser() : User? {
