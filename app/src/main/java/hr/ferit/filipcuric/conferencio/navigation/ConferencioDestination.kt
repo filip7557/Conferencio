@@ -32,7 +32,7 @@ sealed class NavigationItem(
     data object ProfileDestination : NavigationItem(
         route = PROFILE_ROUTE,
         labelId = R.string.profile,
-        iconId = R.drawable.ic_profile
+        iconId = R.drawable.ic_profile_nav
     )
 
     data object HomeDestination : NavigationItem(

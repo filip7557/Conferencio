@@ -23,6 +23,7 @@ class ProfileViewModel(
     init {
         organized = 10
         attended = 25
+        getCurrentUser()
     }
 
     fun logout(onSignOutClick: () -> Unit) {
@@ -30,7 +31,7 @@ class ProfileViewModel(
         userRepository.logout()
     }
 
-    fun getCurrentUser() {
+    private fun getCurrentUser() {
         viewModelScope.launch {
             user = if(userRepository.getCurrentUser() != null) {
                 userRepository.getCurrentUser()!!

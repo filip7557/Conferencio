@@ -1,0 +1,30 @@
+package hr.ferit.filipcuric.conferencio
+
+import android.app.Application
+import hr.ferit.filipcuric.conferencio.data.di.dataModule
+import hr.ferit.filipcuric.conferencio.ui.browse.di.browseModule
+import hr.ferit.filipcuric.conferencio.ui.home.di.homeModule
+import hr.ferit.filipcuric.conferencio.ui.login.di.loginModule
+import hr.ferit.filipcuric.conferencio.ui.profile.di.profileModule
+import hr.ferit.filipcuric.conferencio.ui.register.di.registerModule
+import hr.ferit.filipcuric.conferencio.ui.search.di.searchModule
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.startKoin
+
+class ConferencioApp : Application() {
+    override fun onCreate() {
+        super.onCreate()
+        startKoin {
+            androidContext(this@ConferencioApp)
+            modules(
+                dataModule,
+                loginModule,
+                registerModule,
+                homeModule,
+                browseModule,
+                searchModule,
+                profileModule,
+            )
+        }
+    }
+}

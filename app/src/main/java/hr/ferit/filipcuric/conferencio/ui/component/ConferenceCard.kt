@@ -42,7 +42,7 @@ fun ConferenceCard(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(vertical = 5.dp)
+            .padding(top = 15.dp)
     ) {
         AsyncImage(
             model = conference.imageUrl,

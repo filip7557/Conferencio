@@ -2,12 +2,15 @@ package hr.ferit.filipcuric.conferencio.ui.main
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -19,6 +22,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavDestination
 import androidx.navigation.compose.NavHost
@@ -28,6 +32,7 @@ import androidx.navigation.compose.rememberNavController
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
+import hr.ferit.filipcuric.conferencio.R
 import hr.ferit.filipcuric.conferencio.data.repository.ConferenceRepositoryImpl
 import hr.ferit.filipcuric.conferencio.data.repository.UserRepositoryImpl
 import hr.ferit.filipcuric.conferencio.navigation.NavigationItem
@@ -46,6 +51,7 @@ import hr.ferit.filipcuric.conferencio.ui.search.SearchViewModel
 import hr.ferit.filipcuric.conferencio.ui.theme.Blue
 import hr.ferit.filipcuric.conferencio.ui.theme.DarkTertiaryColor
 import hr.ferit.filipcuric.conferencio.ui.theme.TertiaryColor
+import org.koin.androidx.compose.koinViewModel
 
 private lateinit var auth: FirebaseAuth
 
@@ -65,8 +71,19 @@ fun MainScreen() {
         }
     }
 
-    val userRepository = UserRepositoryImpl()
-    val conferenceRepository = ConferenceRepositoryImpl()
+    val showFloatingActionButton by remember {
+        derivedStateOf {
+            navBackStackEntry?.destination?.route == NavigationItem.HomeDestination.route ||
+                    navBackStackEntry?.destination?.route == NavigationItem.ProfileDestination.route
+        }
+    }
+
+    val loginViewModel = koinViewModel<LoginViewModel>()
+    val registerViewModel = koinViewModel<RegisterViewModel>()
+    val homeViewModel = koinViewModel<HomeViewModel>()
+    val browseViewModel = koinViewModel<BrowseViewModel>()
+    val searchViewModel = koinViewModel<SearchViewModel>()
+    val profileViewModel = koinViewModel<ProfileViewModel>()
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -89,6 +106,10 @@ fun MainScreen() {
                     },
                     currentDestination = navBackStackEntry?.destination
                 )
+        },
+        floatingActionButton = {
+            if (showFloatingActionButton)
+                FloatingActionButton(onClick = { /*TODO*/ }, currentDestination = navBackStackEntry?.destination)
         }
     ) { padding ->
         NavHost(
@@ -98,7 +119,7 @@ fun MainScreen() {
         ) {
             composable(NavigationItem.LoginDestination.route) {
                 LoginScreen(
-                    viewModel = LoginViewModel(userRepository),
+                    viewModel = loginViewModel,
                     onLoginClick = {
                         navController.navigate(NavigationItem.HomeDestination.route)
                     },
@@ -109,7 +130,7 @@ fun MainScreen() {
             }
             composable(NavigationItem.RegisterDestination.route) {
                 RegisterScreen(
-                    viewModel = RegisterViewModel(userRepository),
+                    viewModel = registerViewModel,
                     onBackClick = {
                         navController.popBackStack()
                     },
@@ -119,24 +140,16 @@ fun MainScreen() {
                 )
             }
             composable(NavigationItem.ProfileDestination.route) {
-                val viewModel = ProfileViewModel(
-                    userRepository = userRepository,
-                )
-                viewModel.getCurrentUser()
                 ProfileScreen(
-                    viewModel = viewModel,
+                    viewModel = profileViewModel,
                     onSignOutClick = {
                         navController.navigate(NavigationItem.LoginDestination.route)
                     }
                 )
             }
             composable(NavigationItem.HomeDestination.route) {
-                val viewModel = HomeViewModel(
-                    conferenceRepository = conferenceRepository,
-                    userRepository = userRepository
-                )
                 HomeScreen(
-                    viewModel = viewModel,
+                    viewModel = homeViewModel,
                     onConferenceClick = {
                         //TODO: Navigate to conference screen
                     }
@@ -144,10 +157,7 @@ fun MainScreen() {
             }
             composable(NavigationItem.SearchDestination.route) {
                 SearchScreen(
-                    viewModel = SearchViewModel(
-                        conferenceRepository = conferenceRepository,
-                        userRepository = userRepository,
-                    ),
+                    viewModel = searchViewModel,
                     onConferenceClick = {
                         //TODO: Navigate to conference screen
                     }
@@ -155,10 +165,7 @@ fun MainScreen() {
             }
             composable(NavigationItem.BrowseDestination.route) {
                 BrowseScreen(
-                    viewModel = BrowseViewModel(
-                        conferenceRepository = conferenceRepository,
-                        userRepository = userRepository,
-                    ),
+                    viewModel = browseViewModel,
                     onConferenceClick ={
                         //TODO: Navigate to conference screen
                     }
@@ -205,6 +212,39 @@ private fun BottomNavigationBar(
                     indicatorColor = if (isSystemInDarkTheme()) DarkTertiaryColor else TertiaryColor
                 )
             )
+        }
+    }
+}
+
+@Composable
+fun FloatingActionButton(
+    onClick: () -> Unit,
+    currentDestination: NavDestination?
+) {
+    SmallFloatingActionButton(
+        onClick = onClick,
+        shape = CircleShape,
+        containerColor = Blue,
+        contentColor = Color.White,
+        elevation = FloatingActionButtonDefaults.elevation(
+            defaultElevation = 8.dp,
+            pressedElevation = 5.dp,
+            hoveredElevation = 2.dp,
+        )
+    ) {
+        if (currentDestination?.route == NavigationItem.HomeDestination.route) {
+            Icon(
+                painter = painterResource(
+                    id = R.drawable.baseline_add_24
+                ),
+                contentDescription = "add icon"
+            )
+        } else if (currentDestination?.route == NavigationItem.ProfileDestination.route) {
+            Icon(
+                painter = painterResource(
+                    id = R.drawable.ic_edit
+                ),
+                contentDescription = "edit icon")
         }
     }
 }

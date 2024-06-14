@@ -76,15 +76,26 @@ fun HomeScreen(
             )
         }
         if (viewModel.isOrganizedToggled) {
-            items(
-                items = conferences,
-                key = { conference -> conference.id!! }
-            ) {
-                ConferenceCard(
-                    conference = it,
-                    user = viewModel.currentUser,
-                    onClick = { onConferenceClick(it.id!!) /*TODO: Destination.createNavigation*/}
-                )
+            if (conferences.isEmpty()) {
+                item {
+                    Text(
+                        text = "You haven't organized any conferences yet.",
+                        fontWeight = FontWeight.Light,
+                        modifier = Modifier
+                            .padding(top = 10.dp)
+                    )
+                }
+            } else {
+                items(
+                    items = conferences,
+                    key = { conference -> conference.id!! }
+                ) {
+                    ConferenceCard(
+                        conference = it,
+                        user = viewModel.currentUser,
+                        onClick = { onConferenceClick(it.id!!) /*TODO: Destination.createNavigation*/ }
+                    )
+                }
             }
         }
         item {
@@ -94,15 +105,26 @@ fun HomeScreen(
             )
         }
         if (viewModel.isAttendingToggled) {
-            items(
-                items = attendingConferences,
-                key = { conference -> conference.id!! }
-            ) {
-                ConferenceCard(
-                    conference = it,
-                    user = viewModel.getConferenceOwnerByUserId(it.ownerId),
-                    onClick = { onConferenceClick(it.id!!) /*TODO: Destination.createNavigation*/}
-                )
+            if (attendingConferences.isEmpty()) {
+                item {
+                    Text(
+                        text = "You aren't attending any conferences yet.",
+                        fontWeight = FontWeight.Light,
+                        modifier = Modifier
+                            .padding(top = 10.dp)
+                    )
+                }
+            } else {
+                items(
+                    items = attendingConferences,
+                    key = { conference -> conference.id!! }
+                ) {
+                    ConferenceCard(
+                        conference = it,
+                        user = viewModel.getConferenceOwnerByUserId(it.ownerId),
+                        onClick = { onConferenceClick(it.id!!) /*TODO: Destination.createNavigation*/ }
+                    )
+                }
             }
         }
     }
