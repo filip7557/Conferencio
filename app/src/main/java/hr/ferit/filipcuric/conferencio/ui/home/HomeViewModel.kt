@@ -17,7 +17,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.time.Instant
 
@@ -34,6 +33,14 @@ class HomeViewModel(
 
     var isAttendingToggled by mutableStateOf(true)
         private set
+
+    var currentUser: User
+
+    init {
+        runBlocking {
+            currentUser = userRepository.getCurrentUser()!!
+        }
+    }
 
     val organizedConferences: StateFlow<Flow<List<Conference>>> =
         snapshotFlow { isActiveSelected }
@@ -71,20 +78,12 @@ class HomeViewModel(
                 flowOf(listOf())
             )
 
-    lateinit var currentUser: User
-
     fun toggleOrganized() {
         isOrganizedToggled = !isOrganizedToggled
     }
 
     fun toggleAttending() {
         isAttendingToggled = !isAttendingToggled
-    }
-
-    init {
-        viewModelScope.launch {
-            currentUser = userRepository.getCurrentUser()!!
-        }
     }
 
     fun onActiveClick() {
