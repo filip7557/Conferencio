@@ -33,7 +33,6 @@ fun SearchScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         item {
-            //Title()
             Subtitle()
             TextBox(
                 label = "Search by title",

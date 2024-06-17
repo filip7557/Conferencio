@@ -38,7 +38,6 @@ fun ProfileScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top,
     ) {
-        //Title()
         Picture(imageUrl = viewModel.user.imageUrl)
         Fullname(fullname = viewModel.user.fullname)
         CompanyAndPosition(company = viewModel.user.company, position = viewModel.user.position)
