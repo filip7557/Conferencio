@@ -17,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
@@ -39,7 +38,7 @@ fun ProfileScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top,
     ) {
-        Title()
+        //Title()
         Picture(imageUrl = viewModel.user.imageUrl)
         Fullname(fullname = viewModel.user.fullname)
         CompanyAndPosition(company = viewModel.user.company, position = viewModel.user.position)
@@ -51,29 +50,18 @@ fun ProfileScreen(
 }
 
 @Composable
-fun Title() {
-    Text(
-        text = "Profile",
-        fontSize = 48.sp,
-        fontWeight = FontWeight.Medium,
-        color = Blue,
-        modifier = Modifier
-            .padding(bottom = 30.dp)
-    )
-}
-
-@Composable
 fun Picture(
     imageUrl: String,
 ) {
     Box(
         modifier = Modifier
+            .padding(top = 20.dp)
             .size(300.dp)
             .clip(CircleShape)
             .border(
                 width = 2.dp,
                 shape = CircleShape,
-                brush = Brush.horizontalGradient(colors = listOf(Blue, Blue))
+                color = Blue,
             )
     ) {
         AsyncImage(

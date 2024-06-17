@@ -17,7 +17,6 @@ import androidx.compose.ui.unit.sp
 import hr.ferit.filipcuric.conferencio.data.repository.ConferenceRepositoryImpl
 import hr.ferit.filipcuric.conferencio.data.repository.UserRepositoryImpl
 import hr.ferit.filipcuric.conferencio.ui.component.ConferenceCard
-import hr.ferit.filipcuric.conferencio.ui.theme.Blue
 
 @Composable
 fun BrowseScreen(
@@ -32,7 +31,7 @@ fun BrowseScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         item {
-            Title()
+            //Title()
             Subtitle()
         }
         items(
@@ -49,23 +48,13 @@ fun BrowseScreen(
 }
 
 @Composable
-fun Title() {
-    Text(
-        text = "Browse",
-        fontSize = 48.sp,
-        color = Blue,
-        fontWeight = FontWeight.Medium
-    )
-}
-
-@Composable
 fun Subtitle() {
     Text(
-        text = "Browse upcoming conferences",
+        text = "Browse upcoming conferences.",
         fontSize = 20.sp,
         fontWeight = FontWeight.Thin,
         modifier = Modifier
-            .padding(bottom = 20.dp)
+            .padding(bottom = 20.dp, top = 20.dp)
     )
 }
 

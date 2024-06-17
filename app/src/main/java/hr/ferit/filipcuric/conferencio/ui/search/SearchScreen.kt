@@ -18,7 +18,6 @@ import hr.ferit.filipcuric.conferencio.data.repository.ConferenceRepositoryImpl
 import hr.ferit.filipcuric.conferencio.data.repository.UserRepositoryImpl
 import hr.ferit.filipcuric.conferencio.ui.component.ConferenceCard
 import hr.ferit.filipcuric.conferencio.ui.component.TextBox
-import hr.ferit.filipcuric.conferencio.ui.theme.Blue
 
 @Composable
 fun SearchScreen(
@@ -34,7 +33,7 @@ fun SearchScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         item {
-            Title()
+            //Title()
             Subtitle()
             TextBox(
                 label = "Search by title",
@@ -56,23 +55,13 @@ fun SearchScreen(
 }
 
 @Composable
-fun Title() {
-    Text(
-        text = "Search",
-        fontSize = 48.sp,
-        color = Blue,
-        fontWeight = FontWeight.Medium
-    )
-}
-
-@Composable
 fun Subtitle() {
     Text(
-        text = "Search for conferences",
+        text = "Search for conferences.",
         fontSize = 20.sp,
         fontWeight = FontWeight.Thin,
         modifier = Modifier
-            .padding(bottom = 20.dp)
+            .padding(bottom = 20.dp, top = 20.dp)
     )
 }
 

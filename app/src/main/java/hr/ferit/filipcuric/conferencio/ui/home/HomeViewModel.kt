@@ -34,13 +34,7 @@ class HomeViewModel(
     var isAttendingToggled by mutableStateOf(true)
         private set
 
-    var currentUser: User
-
-    init {
-        runBlocking {
-            currentUser = userRepository.getCurrentUser()!!
-        }
-    }
+    lateinit var currentUser: User
 
     val organizedConferences: StateFlow<Flow<List<Conference>>> =
         snapshotFlow { isActiveSelected }
@@ -102,5 +96,11 @@ class HomeViewModel(
         }
         Log.d("GET USER", user.toString())
         return user
+    }
+
+    fun getCurrentUser() {
+        runBlocking {
+            currentUser = userRepository.getCurrentUser()!!
+        }
     }
 }

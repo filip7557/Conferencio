@@ -3,6 +3,7 @@ package hr.ferit.filipcuric.conferencio.ui.main
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -12,6 +13,8 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -75,6 +78,14 @@ fun MainScreen() {
                     navBackStackEntry?.destination?.route == NavigationItem.ProfileDestination.route
         }
     }
+    
+    val showTopBar by remember {
+        derivedStateOf { 
+            navBackStackEntry?.destination?.route != NavigationItem.LoginDestination.route &&
+            navBackStackEntry?.destination?.route != NavigationItem.RegisterDestination.route
+            //TODO: Add a check for conf info screen
+        }
+    }
 
     val loginViewModel = koinViewModel<LoginViewModel>()
     val registerViewModel = koinViewModel<RegisterViewModel>()
@@ -108,6 +119,10 @@ fun MainScreen() {
         floatingActionButton = {
             if (showFloatingActionButton)
                 FloatingActionButton(onClick = { /*TODO*/ }, currentDestination = navBackStackEntry?.destination)
+        },
+        topBar = {
+            if (showTopBar)
+                TopBar(currentDestination = navBackStackEntry?.destination)
         }
     ) { padding ->
         NavHost(
@@ -146,6 +161,7 @@ fun MainScreen() {
                 )
             }
             composable(NavigationItem.HomeDestination.route) {
+                homeViewModel.getCurrentUser()
                 HomeScreen(
                     viewModel = homeViewModel,
                     onConferenceClick = {
@@ -215,7 +231,7 @@ private fun BottomNavigationBar(
 }
 
 @Composable
-fun FloatingActionButton(
+private fun FloatingActionButton(
     onClick: () -> Unit,
     currentDestination: NavDestination?
 ) {
@@ -245,4 +261,18 @@ fun FloatingActionButton(
                 contentDescription = "edit icon")
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun TopBar(
+    currentDestination: NavDestination?,
+) {
+    TopAppBar(
+        title = { Text(text = if (currentDestination?.route == null) "" else currentDestination.route!!) },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = Blue,
+            titleContentColor = Color.White,
+        )
+    )
 }
