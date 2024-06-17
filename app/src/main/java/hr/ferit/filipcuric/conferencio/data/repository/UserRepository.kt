@@ -10,4 +10,5 @@ interface UserRepository {
     suspend fun getCurrentUser(): User?
     fun logout()
     suspend fun getUserById(userId: String): User
+    suspend fun updateUser(user: User, imageUri: Uri)
 }

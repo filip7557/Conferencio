@@ -10,9 +10,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -26,7 +24,6 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.colorspace.ColorSpaces
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -35,7 +32,7 @@ import hr.ferit.filipcuric.conferencio.ui.theme.Blue
 import hr.ferit.filipcuric.conferencio.ui.theme.DarkTertiaryColor
 
 @Composable
-fun UploadProfilePictureCard(
+fun EditProfilePictureCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     imageUri: Uri? = null,
@@ -84,22 +81,11 @@ fun UploadProfilePictureCard(
                     colorFilter = ColorFilter.tint(Blue),
                 )
                 Text(
-                    text = "Upload your profile picture",
+                    text = "Edit your profile picture",
                     color = Blue,
                     fontSize = 18.sp,
                 )
             }
         }
     }
-}
-
-@Preview
-@Composable
-fun UploadProfilePictureCardPreview() {
-    UploadProfilePictureCard(
-        onClick = {},
-        modifier = Modifier
-            .height(300.dp)
-            .width(300.dp)
-    )
 }

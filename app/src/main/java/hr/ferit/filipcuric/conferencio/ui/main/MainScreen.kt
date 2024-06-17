@@ -51,6 +51,8 @@ import hr.ferit.filipcuric.conferencio.R
 import hr.ferit.filipcuric.conferencio.navigation.NavigationItem
 import hr.ferit.filipcuric.conferencio.ui.browse.BrowseScreen
 import hr.ferit.filipcuric.conferencio.ui.browse.BrowseViewModel
+import hr.ferit.filipcuric.conferencio.ui.editprofile.EditProfileScreen
+import hr.ferit.filipcuric.conferencio.ui.editprofile.EditProfileViewModel
 import hr.ferit.filipcuric.conferencio.ui.home.HomeScreen
 import hr.ferit.filipcuric.conferencio.ui.home.HomeViewModel
 import hr.ferit.filipcuric.conferencio.ui.login.LoginScreen
@@ -87,15 +89,15 @@ fun MainScreen() {
 
     val showFloatingActionButton by remember {
         derivedStateOf {
-            navBackStackEntry?.destination?.route == NavigationItem.HomeDestination.route ||
-                    navBackStackEntry?.destination?.route == NavigationItem.ProfileDestination.route
+            navBackStackEntry?.destination?.route == NavigationItem.HomeDestination.route
         }
     }
 
     val showTopBar by remember {
         derivedStateOf {
             navBackStackEntry?.destination?.route != NavigationItem.LoginDestination.route &&
-                    navBackStackEntry?.destination?.route != NavigationItem.RegisterDestination.route
+                    navBackStackEntry?.destination?.route != NavigationItem.RegisterDestination.route &&
+                    navBackStackEntry?.destination?.route != NavigationItem.EditProfileDestination.route
             //TODO: Add a check for conf info screen
         }
     }
@@ -110,6 +112,7 @@ fun MainScreen() {
     val browseViewModel = koinViewModel<BrowseViewModel>()
     val searchViewModel = koinViewModel<SearchViewModel>()
     val profileViewModel = koinViewModel<ProfileViewModel>()
+    val editProfileViewModel = koinViewModel<EditProfileViewModel>()
 
     ModalNavigationDrawer(
         drawerContent = {
@@ -123,8 +126,21 @@ fun MainScreen() {
                 Text(text = "Menu", fontSize = 20.sp, modifier = Modifier.padding(5.dp))
                 Divider()
                 Text(text = "Profile", fontSize = 18.sp, modifier = Modifier.padding(5.dp))
-                NavigationDrawerItem(label = { Text(text = "Edit profile", fontWeight = FontWeight.Thin) }, selected = false, onClick = { /*TODO: Navigate to edit profile*/ }, modifier = Modifier.requiredHeight(40.dp))
-                NavigationDrawerItem(label = { Text(text = "Log out", fontWeight = FontWeight.Thin) }, selected = false, onClick = {
+                NavigationDrawerItem(
+                    label = { Text(text = "Edit profile", fontWeight = FontWeight.Thin) },
+                    selected = false,
+                    onClick = {
+                        scope.launch {
+                            drawerState.close()
+                        }
+                        navController.navigate(NavigationItem.EditProfileDestination.route)
+                    },
+                    modifier = Modifier.requiredHeight(40.dp)
+                )
+                NavigationDrawerItem(
+                    label = { Text(text = "Log out", fontWeight = FontWeight.Thin) },
+                    selected = false,
+                    onClick = {
                         scope.launch {
                             drawerState.close()
                         }
@@ -162,10 +178,7 @@ fun MainScreen() {
             },
             floatingActionButton = {
                 if (showFloatingActionButton)
-                    FloatingActionButton(
-                        onClick = { /*TODO*/ },
-                        currentDestination = navBackStackEntry?.destination
-                    )
+                    FloatingActionButton { /*TODO*/ }
             },
             topBar = {
                 if (showTopBar)
@@ -204,11 +217,12 @@ fun MainScreen() {
                             navController.popBackStack()
                         },
                         onRegisterClick = {
-                            navController.navigate(NavigationItem.ProfileDestination.route)
+                            navController.navigate(NavigationItem.HomeDestination.route)
                         }
                     )
                 }
                 composable(NavigationItem.ProfileDestination.route) {
+                    profileViewModel.getCurrentUser()
                     ProfileScreen(
                         viewModel = profileViewModel,
                         onSignOutClick = {
@@ -238,6 +252,18 @@ fun MainScreen() {
                         viewModel = browseViewModel,
                         onConferenceClick = {
                             //TODO: Navigate to conference screen
+                        }
+                    )
+                }
+                composable(NavigationItem.EditProfileDestination.route) {
+                    editProfileViewModel.getCurrentUserData()
+                    EditProfileScreen(
+                        viewModel = editProfileViewModel,
+                        onBackClick = {
+                            navController.popBackStack()
+                        },
+                        onSaveClick = {
+                            navController.navigate(NavigationItem.HomeDestination.route)
                         }
                     )
                 }
@@ -289,8 +315,7 @@ private fun BottomNavigationBar(
 
 @Composable
 private fun FloatingActionButton(
-    onClick: () -> Unit,
-    currentDestination: NavDestination?
+    onClick: () -> Unit
 ) {
     SmallFloatingActionButton(
         onClick = onClick,
@@ -303,20 +328,12 @@ private fun FloatingActionButton(
             hoveredElevation = 2.dp,
         )
     ) {
-        if (currentDestination?.route == NavigationItem.HomeDestination.route) {
             Icon(
                 painter = painterResource(
                     id = R.drawable.baseline_add_24
                 ),
                 contentDescription = "add icon"
             )
-        } else if (currentDestination?.route == NavigationItem.ProfileDestination.route) {
-            Icon(
-                painter = painterResource(
-                    id = R.drawable.ic_edit
-                ),
-                contentDescription = "edit icon")
-        }
     }
 }
 

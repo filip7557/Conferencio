@@ -8,6 +8,7 @@ const val HOME_ROUTE = "Home"
 const val PROFILE_ROUTE = "Profile"
 const val SEARCH_ROUTE = "Search"
 const val BROWSE_ROUTE = "Browse"
+const val EDIT_PROFILE_ROUTE = "Edit profile"
 
 sealed class ConferencioDestination(
     open val route: String,
@@ -27,6 +28,10 @@ sealed class NavigationItem(
 
     data object RegisterDestination : NavigationItem(
         route = REGISTER_ROUTE
+    )
+
+    data object EditProfileDestination : NavigationItem(
+        route = EDIT_PROFILE_ROUTE
     )
 
     data object ProfileDestination : NavigationItem(

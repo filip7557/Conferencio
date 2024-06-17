@@ -25,6 +25,15 @@ class UserRepositoryImpl : UserRepository {
         db.collection("users").add(user).addOnSuccessListener { Log.d("REGISTER", "Saved acc data") }
     }
 
+    override suspend fun updateUser(user: User, imageUri: Uri) {
+        val document = db.collection("users").whereEqualTo("id", auth.currentUser?.uid).get().await().documents.first()
+        var imageUrl = uploadProfilePicture(imageUri)
+        if (imageUrl == "")
+            imageUrl = storageRef.storage.getReferenceFromUrl("gs://conferencio-57027.appspot.com/profile_pictures/default.profile.jpg").downloadUrl.await().toString()
+        user.imageUrl = imageUrl
+        db.collection("users").document(document.id).set(user).await()
+    }
+
     override suspend fun login(email: String, password: String) {
         auth.signInWithEmailAndPassword(email, password).await()
         val user = auth.currentUser
