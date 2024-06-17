@@ -130,7 +130,7 @@ fun Title() {
 @Composable
 fun Subtitle() {
     Text(
-        text = "Create your new account",
+        text = "Create your new account.",
         fontSize = 20.sp,
         fontWeight = FontWeight.Thin,
         modifier = Modifier
