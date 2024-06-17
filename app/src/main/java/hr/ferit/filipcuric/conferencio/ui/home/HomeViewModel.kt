@@ -100,7 +100,7 @@ class HomeViewModel(
 
     fun getCurrentUser() {
         runBlocking {
-            currentUser = userRepository.getCurrentUser()!!
+            currentUser = if (userRepository.getCurrentUser() == null) User() else userRepository.getCurrentUser()!!
         }
     }
 }
