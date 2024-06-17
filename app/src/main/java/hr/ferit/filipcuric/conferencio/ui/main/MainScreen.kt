@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -102,6 +103,7 @@ fun MainScreen() {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
+
     val loginViewModel = koinViewModel<LoginViewModel>()
     val registerViewModel = koinViewModel<RegisterViewModel>()
     val homeViewModel = koinViewModel<HomeViewModel>()
@@ -114,17 +116,26 @@ fun MainScreen() {
             ModalDrawerSheet(
                 drawerShape = RoundedCornerShape(bottomEnd = 8.dp, topEnd = 8.dp),
                 modifier = Modifier
-                    .requiredWidth(200.dp)
+                    .requiredWidth(160.dp)
+                    .requiredHeight(230.dp)
+                    .padding(top = 65.dp),
             ) {
                 Text(text = "Menu", fontSize = 20.sp, modifier = Modifier.padding(5.dp))
                 Divider()
-                NavigationDrawerItem(label = { Text(text = "Log out") }, selected = false, onClick = {
-                    auth.signOut()
-                    navController.navigate(NavigationItem.LoginDestination.route)
-                })
+                Text(text = "Profile", fontSize = 18.sp, modifier = Modifier.padding(5.dp))
+                NavigationDrawerItem(label = { Text(text = "Edit profile", fontWeight = FontWeight.Thin) }, selected = false, onClick = { /*TODO: Navigate to edit profile*/ }, modifier = Modifier.requiredHeight(40.dp))
+                NavigationDrawerItem(label = { Text(text = "Log out", fontWeight = FontWeight.Thin) }, selected = false, onClick = {
+                        scope.launch {
+                            drawerState.close()
+                        }
+                        auth.signOut()
+                        navController.navigate(NavigationItem.LoginDestination.route)
+                    },
+                    modifier = Modifier.requiredHeight(40.dp)
+                )
             }
         },
-        gesturesEnabled = showTopBar,
+        gesturesEnabled = drawerState.isOpen,
         drawerState = drawerState,
     ) {
         Scaffold(
@@ -168,7 +179,7 @@ fun MainScreen() {
                             }
                         }
                     })
-            }
+            },
         ) { padding ->
             NavHost(
                 navController = navController,
