@@ -64,8 +64,6 @@ import hr.ferit.filipcuric.conferencio.ui.register.RegisterViewModel
 import hr.ferit.filipcuric.conferencio.ui.search.SearchScreen
 import hr.ferit.filipcuric.conferencio.ui.search.SearchViewModel
 import hr.ferit.filipcuric.conferencio.ui.theme.Blue
-import hr.ferit.filipcuric.conferencio.ui.theme.DarkTertiaryColor
-import hr.ferit.filipcuric.conferencio.ui.theme.TertiaryColor
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
