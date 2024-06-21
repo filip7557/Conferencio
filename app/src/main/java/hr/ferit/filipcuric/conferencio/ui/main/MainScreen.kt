@@ -280,7 +280,7 @@ private fun BottomNavigationBar(
     currentDestination: NavDestination?
 ) {
     NavigationBar(
-        containerColor = if (isSystemInDarkTheme()) DarkTertiaryColor else TertiaryColor,
+        containerColor = /*if (isSystemInDarkTheme()) DarkTertiaryColor else TertiaryColor*/ Color(0f, 0f, 0f, 0f),
     ) {
         destinations.forEach {destination ->
             NavigationBarItem(
@@ -306,7 +306,7 @@ private fun BottomNavigationBar(
                     selectedTextColor = Blue,
                     unselectedIconColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
                     unselectedTextColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
-                    indicatorColor = if (isSystemInDarkTheme()) DarkTertiaryColor else TertiaryColor
+                    indicatorColor = /*if (isSystemInDarkTheme()) DarkTertiaryColor else TertiaryColor*/ MaterialTheme.colorScheme.background
                 )
             )
         }
@@ -344,7 +344,7 @@ private fun TopBar(
     onNavIconClick: () -> Unit,
 ) {
     TopAppBar(
-        title = { Text(text = if (currentDestination?.route == null) "" else currentDestination.route!!) },
+        title = { Text(text = if (currentDestination?.route == null) "" else currentDestination.route!!, modifier = Modifier.padding(start = 8.dp)) },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = Blue,
             titleContentColor = Color.White,
@@ -356,7 +356,7 @@ private fun TopBar(
                 contentDescription = "menu icon",
                 modifier = Modifier
                     .clickable(onClick = onNavIconClick)
-                    .padding(5.dp)
+                    .padding(8.dp)
             )
         }
     )
