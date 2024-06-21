@@ -26,6 +26,8 @@ fun TextBox(
         keyboardType = KeyboardType.Text
     ),
     visualTransformation: VisualTransformation = VisualTransformation.None,
+    readOnly: Boolean = false,
+    modifier: Modifier = Modifier,
     onValueChange: (String) -> Unit,
 ) {
     if(isSystemInDarkTheme()) {
@@ -48,7 +50,8 @@ fun TextBox(
                 focusedTextColor = DarkOnTertiaryColor,
                 unfocusedTextColor = DarkOnTertiaryColor,
             ),
-            modifier = Modifier
+            readOnly = readOnly,
+            modifier = modifier
                 .fillMaxWidth()
                 .padding(bottom = 15.dp)
         )
