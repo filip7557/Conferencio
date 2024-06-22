@@ -276,6 +276,7 @@ fun MainScreen() {
                         onBackClick = { navController.popBackStack() },
                         onCreateClick = {
                             //TODO: Navigate to created conference
+                            navController.navigate(NavigationItem.HomeDestination.route)
                         }
                     )
                 }

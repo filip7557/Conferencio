@@ -7,13 +7,12 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import hr.ferit.filipcuric.conferencio.data.repository.ConferenceRepository
-import hr.ferit.filipcuric.conferencio.data.repository.UserRepository
+import hr.ferit.filipcuric.conferencio.model.Conference
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.ZoneId
 
 class CreateConferenceViewModel(
-    private val userRepository: UserRepository,
     private val conferenceRepository: ConferenceRepository,
 ) : ViewModel() {
 
@@ -65,7 +64,12 @@ class CreateConferenceViewModel(
 
     fun onCreateClick(onCreateClick: () -> Unit) {
         viewModelScope.launch {
-            //TODO: Create a conference
+            val conference = Conference(
+                title = title,
+                startDateTime = startDate.toEpochMilli(),
+                endDateTime = endDate.toEpochMilli()
+            )
+            conferenceRepository.createConference(conference, imageUri)
         }.invokeOnCompletion {
             onCreateClick()
         }
