@@ -33,15 +33,26 @@ fun BrowseScreen(
         item {
             Subtitle()
         }
-        items(
-            items = conferences,
-            key = { conference -> conference.id!!}
-        ) {
-            ConferenceCard(
-                conference = it,
-                user = viewModel.getConferenceOwnerByUserId(it.ownerId),
-                onClick = { onConferenceClick(it.id!!) /*TODO: Destination.createNavigation*/ }
-            )
+        if (conferences.isEmpty()) {
+            item {
+                Text(
+                    text = "There are no upcoming conferences yet.",
+                    fontWeight = FontWeight.Light,
+                    modifier = Modifier
+                        .padding(top = 10.dp)
+                )
+            }
+        } else {
+            items(
+                items = conferences,
+                key = { conference -> conference.id!! }
+            ) {
+                ConferenceCard(
+                    conference = it,
+                    user = viewModel.getConferenceOwnerByUserId(it.ownerId),
+                    onClick = { onConferenceClick(it.id!!) /*TODO: Destination.createNavigation*/ }
+                )
+            }
         }
     }
 }

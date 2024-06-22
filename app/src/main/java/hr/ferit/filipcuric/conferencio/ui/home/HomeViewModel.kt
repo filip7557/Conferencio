@@ -38,7 +38,7 @@ class HomeViewModel(
 
     val organizedConferences: StateFlow<Flow<List<Conference>>> =
         snapshotFlow { isActiveSelected }
-            .map { conferenceRepository.getActiveConferences() }
+            .map { conferenceRepository.getOrganizingConferences() }
             .map { flow ->
                 flow.map {
                     it.filter { conference ->
@@ -60,9 +60,10 @@ class HomeViewModel(
             .map {flow ->
                 flow.map {
                     it.filter { conference ->
-                        if (isActiveSelected) conference.endDateTime > Instant.now()
-                            .toEpochMilli() else conference.endDateTime < Instant.now()
-                            .toEpochMilli()
+                        if (isActiveSelected)
+                            conference.endDateTime > Instant.now().toEpochMilli()
+                        else
+                            conference.endDateTime < Instant.now().toEpochMilli()
                     }
                 }
             }
@@ -92,7 +93,7 @@ class HomeViewModel(
         //TODO: Add a loading effect
         var user: User
         runBlocking {
-            user = userRepository.getUserById(userId)
+            user = userRepository.getUserById(userId) ?: User()
         }
         Log.d("GET USER", user.toString())
         return user

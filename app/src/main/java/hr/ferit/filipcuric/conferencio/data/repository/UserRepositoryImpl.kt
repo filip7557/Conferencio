@@ -55,10 +55,10 @@ class UserRepositoryImpl : UserRepository {
             ?.toObject(User::class.java)
     }
 
-    override suspend fun getUserById(userId: String) : User {
+    override suspend fun getUserById(userId: String) : User? {
         Log.d("GET USE", "Getting user with id $userId")
-        val user = db.collection("users").whereEqualTo("id", userId).get().await().first().toObject(User::class.java)
-        Log.d("GOT USER", "Got user with id ${user.id}")
+        val user: User? = db.collection("users").whereEqualTo("id", userId).get().await().firstOrNull()?.toObject(User::class.java)
+        Log.d("GOT USER", "Got user with id ${user?.id}")
         return user
     }
 

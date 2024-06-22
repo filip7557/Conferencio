@@ -3,6 +3,7 @@ package hr.ferit.filipcuric.conferencio
 import android.app.Application
 import hr.ferit.filipcuric.conferencio.data.di.dataModule
 import hr.ferit.filipcuric.conferencio.ui.browse.di.browseModule
+import hr.ferit.filipcuric.conferencio.ui.createconference.di.createConferenceModule
 import hr.ferit.filipcuric.conferencio.ui.editprofile.di.editProfileModule
 import hr.ferit.filipcuric.conferencio.ui.home.di.homeModule
 import hr.ferit.filipcuric.conferencio.ui.login.di.loginModule
@@ -26,6 +27,7 @@ class ConferencioApp : Application() {
                 searchModule,
                 profileModule,
                 editProfileModule,
+                createConferenceModule,
             )
         }
     }

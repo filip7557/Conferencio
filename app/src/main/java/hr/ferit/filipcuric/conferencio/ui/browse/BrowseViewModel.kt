@@ -20,7 +20,7 @@ class BrowseViewModel(
 ) : ViewModel() {
 
     val conferences: StateFlow<List<Conference>> =
-        conferenceRepository.getActiveConferences()
+        conferenceRepository.getCurrentConferences()
             .map {
                 it.filter { conference ->
                     conference.endDateTime > Instant.now().toEpochMilli()
@@ -35,7 +35,7 @@ class BrowseViewModel(
     fun getConferenceOwnerByUserId(userId: String) : User {
         var user: User
         runBlocking {
-            user = userRepository.getUserById(userId)
+            user = userRepository.getUserById(userId) ?: User()
         }
         Log.d("GET USER", user.toString())
         return user

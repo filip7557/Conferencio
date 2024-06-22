@@ -9,6 +9,7 @@ const val PROFILE_ROUTE = "Profile"
 const val SEARCH_ROUTE = "Search"
 const val BROWSE_ROUTE = "Browse"
 const val EDIT_PROFILE_ROUTE = "Edit profile"
+const val CREATE_CONFERENCE_ROUTE = "Create conference"
 
 sealed class ConferencioDestination(
     open val route: String,
@@ -32,6 +33,10 @@ sealed class NavigationItem(
 
     data object EditProfileDestination : NavigationItem(
         route = EDIT_PROFILE_ROUTE
+    )
+
+    data object CreateConferenceDestination : NavigationItem(
+        route = CREATE_CONFERENCE_ROUTE
     )
 
     data object ProfileDestination : NavigationItem(

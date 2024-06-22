@@ -46,7 +46,7 @@ class SearchViewModel(
     fun getConferenceOwnerByUserId(userId: String) : User {
         var user: User
         runBlocking {
-            user = userRepository.getUserById(userId)
+            user = userRepository.getUserById(userId) ?: User()
         }
         Log.d("GET USER", user.toString())
         return user

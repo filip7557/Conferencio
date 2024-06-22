@@ -51,6 +51,8 @@ import hr.ferit.filipcuric.conferencio.R
 import hr.ferit.filipcuric.conferencio.navigation.NavigationItem
 import hr.ferit.filipcuric.conferencio.ui.browse.BrowseScreen
 import hr.ferit.filipcuric.conferencio.ui.browse.BrowseViewModel
+import hr.ferit.filipcuric.conferencio.ui.createconference.CreateConferenceScreen
+import hr.ferit.filipcuric.conferencio.ui.createconference.CreateConferenceViewModel
 import hr.ferit.filipcuric.conferencio.ui.editprofile.EditProfileScreen
 import hr.ferit.filipcuric.conferencio.ui.editprofile.EditProfileViewModel
 import hr.ferit.filipcuric.conferencio.ui.home.HomeScreen
@@ -95,7 +97,8 @@ fun MainScreen() {
         derivedStateOf {
             navBackStackEntry?.destination?.route != NavigationItem.LoginDestination.route &&
                     navBackStackEntry?.destination?.route != NavigationItem.RegisterDestination.route &&
-                    navBackStackEntry?.destination?.route != NavigationItem.EditProfileDestination.route
+                    navBackStackEntry?.destination?.route != NavigationItem.EditProfileDestination.route &&
+                    navBackStackEntry?.destination?.route != NavigationItem.CreateConferenceDestination.route
             //TODO: Add a check for conf info screen
         }
     }
@@ -111,6 +114,7 @@ fun MainScreen() {
     val searchViewModel = koinViewModel<SearchViewModel>()
     val profileViewModel = koinViewModel<ProfileViewModel>()
     val editProfileViewModel = koinViewModel<EditProfileViewModel>()
+    val createConferenceViewModel = koinViewModel<CreateConferenceViewModel>()
 
     ModalNavigationDrawer(
         drawerContent = {
@@ -176,7 +180,7 @@ fun MainScreen() {
             },
             floatingActionButton = {
                 if (showFloatingActionButton)
-                    FloatingActionButton { /*TODO*/ }
+                    FloatingActionButton { navController.navigate(NavigationItem.CreateConferenceDestination.route) }
             },
             topBar = {
                 if (showTopBar)
@@ -262,6 +266,16 @@ fun MainScreen() {
                         },
                         onSaveClick = {
                             navController.navigate(NavigationItem.HomeDestination.route)
+                        }
+                    )
+                }
+                composable(NavigationItem.CreateConferenceDestination.route) {
+                    createConferenceViewModel.clearViewModel()
+                    CreateConferenceScreen(
+                        viewModel = createConferenceViewModel,
+                        onBackClick = { navController.popBackStack() },
+                        onCreateClick = {
+                            //TODO: Navigate to created conference
                         }
                     )
                 }
