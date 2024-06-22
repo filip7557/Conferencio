@@ -5,8 +5,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import hr.ferit.filipcuric.conferencio.data.repository.ConferenceRepository
 import hr.ferit.filipcuric.conferencio.data.repository.UserRepository
+import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.ZoneId
 
@@ -21,18 +23,29 @@ class CreateConferenceViewModel(
     var title by mutableStateOf("")
         private set
 
-    var startDate: Instant by mutableStateOf(Instant.now())
+    private var startDate: Instant by mutableStateOf(Instant.now())
 
-    var endDate: Instant by mutableStateOf(Instant.now())
+    private var endDate: Instant by mutableStateOf(Instant.now())
 
     var startDateTextValue by mutableStateOf("Choose date")
         private set
 
-    var showDatePicker by mutableStateOf(false)
+    var endDateTextValue by mutableStateOf("Choose date")
+        private set
+
+    var showStartDatePicker by mutableStateOf(false)
+    var showEndDatePicker by mutableStateOf(false)
 
     fun onStartDateTextValueChange(value: Instant) {
+        startDate = value
         val date = value.atZone(ZoneId.systemDefault())
         startDateTextValue = "${date.dayOfMonth}/${if (date.monthValue < 10) '0' else ""}${date.monthValue}/${date.year}"
+    }
+
+    fun onEndDateTextValueChange(value: Instant) {
+        endDate = value
+        val date = value.atZone(ZoneId.systemDefault())
+        endDateTextValue = "${date.dayOfMonth}/${if (date.monthValue < 10) '0' else ""}${date.monthValue}/${date.year}"
     }
 
     fun onTitleChange(value: String) {
@@ -41,5 +54,20 @@ class CreateConferenceViewModel(
 
     fun onImageSelected(uri: Uri) {
         imageUri = uri
+    }
+
+    fun clearViewModel() {
+        imageUri = Uri.EMPTY
+        title = ""
+        startDateTextValue = "Choose date"
+        endDateTextValue = "Choose date"
+    }
+
+    fun onCreateClick(onCreateClick: () -> Unit) {
+        viewModelScope.launch {
+            //TODO: Create a conference
+        }.invokeOnCompletion {
+            onCreateClick()
+        }
     }
 }
