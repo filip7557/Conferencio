@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.runBlocking
-import java.time.Instant
 
 class BrowseViewModel(
     conferenceRepository: ConferenceRepository,
@@ -22,9 +21,7 @@ class BrowseViewModel(
     val conferences: StateFlow<List<Conference>> =
         conferenceRepository.getActiveConferences()
             .map {
-                it.filter { conference ->
-                    conference.endDateTime > Instant.now().toEpochMilli()
-                }.sortedBy { conference -> conference.startDateTime }
+                it.sortedBy { conference -> conference.startDateTime }
             }
             .stateIn(
                 viewModelScope,
