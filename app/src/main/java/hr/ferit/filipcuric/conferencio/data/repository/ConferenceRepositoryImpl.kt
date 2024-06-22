@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.tasks.await
 
 class ConferenceRepositoryImpl : ConferenceRepository {
 
@@ -27,7 +28,7 @@ class ConferenceRepositoryImpl : ConferenceRepository {
         replay = 1,
     )
 
-    override fun getOrganizingConferences(): Flow<List<Conference>> {
+    override suspend fun getOrganizingConferences(): Flow<List<Conference>> {
         val conferences = mutableListOf<Conference>()
         db.collection("conferences").whereEqualTo("ownerId", auth.currentUser?.uid).get().addOnSuccessListener {documents ->
             for (document in documents) {
@@ -36,7 +37,7 @@ class ConferenceRepositoryImpl : ConferenceRepository {
                 conferences.add(conference)
                 Log.d("GET CONF", conference.toString())
             }
-        }
+        }.await()
         return flowOf(conferences).shareIn(
             scope = CoroutineScope(Dispatchers.IO),
             started = SharingStarted.WhileSubscribed(1000L),

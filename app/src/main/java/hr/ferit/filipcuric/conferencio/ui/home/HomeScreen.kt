@@ -23,7 +23,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -47,10 +46,10 @@ fun HomeScreen(
     viewModel: HomeViewModel,
     onConferenceClick: (String) -> Unit,
 ) {
-    val conferencesFlow by viewModel.organizedConferences.collectAsState()
-    val conferences by conferencesFlow.collectAsState(initial = listOf())
-    val attendingConferencesFlow by viewModel.attendingConferences.collectAsState()
-    val attendingConferences by attendingConferencesFlow.collectAsState(initial = listOf())
+    val organizedConferences = viewModel.organizedConferences.collectAsState()
+    val attendingConferences = viewModel.attendingConferences.collectAsState()
+    val isActiveSelected = viewModel.activeSelected.collectAsState()
+
     LazyColumn(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -64,9 +63,13 @@ fun HomeScreen(
             )
             Subtitle()
             ActivePastSwitcher(
-                isActiveSelected = viewModel.isActiveSelected,
-                onActiveClick = { viewModel.onActiveClick() },
-                onPastClick = { viewModel.onPastClick() }
+                isActiveSelected = isActiveSelected.value,
+                onActiveClick = {
+                    viewModel.onActiveClick()
+                },
+                onPastClick = {
+                    viewModel.onPastClick()
+                }
             )
             OrganizedHeader(
                 isToggled = viewModel.isOrganizedToggled,
@@ -76,7 +79,7 @@ fun HomeScreen(
             )
         }
         if (viewModel.isOrganizedToggled) {
-            if (conferences.isEmpty()) {
+            if (organizedConferences.value.isEmpty()) {
                 item {
                     Text(
                         text = "You haven't organized any conferences yet.",
@@ -87,7 +90,7 @@ fun HomeScreen(
                 }
             } else {
                 items(
-                    items = conferences,
+                    items = organizedConferences.value,
                     key = { conference -> conference.id!! }
                 ) {
                     ConferenceCard(
@@ -105,10 +108,10 @@ fun HomeScreen(
             )
         }
         if (viewModel.isAttendingToggled) {
-            if (attendingConferences.isEmpty()) {
+            if (attendingConferences.value.isEmpty()) {
                 item {
                     Text(
-                        text = "You aren't attending any conferences yet.",
+                        text = if (isActiveSelected.value) "You aren't attending any conferences." else "You haven't attended any conferences yet.",
                         fontWeight = FontWeight.Light,
                         modifier = Modifier
                             .padding(top = 10.dp)
@@ -116,7 +119,7 @@ fun HomeScreen(
                 }
             } else {
                 items(
-                    items = attendingConferences,
+                    items = attendingConferences.value,
                     key = { conference -> conference.id!! }
                 ) {
                     ConferenceCard(

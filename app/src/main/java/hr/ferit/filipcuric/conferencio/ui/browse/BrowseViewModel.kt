@@ -20,7 +20,7 @@ class BrowseViewModel(
 ) : ViewModel() {
 
     val conferences: StateFlow<List<Conference>> =
-        conferenceRepository.getCurrentConferences()
+        conferenceRepository.getActiveConferences()
             .map {
                 it.filter { conference ->
                     conference.endDateTime > Instant.now().toEpochMilli()

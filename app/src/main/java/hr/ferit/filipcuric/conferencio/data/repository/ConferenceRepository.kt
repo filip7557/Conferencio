@@ -6,5 +6,5 @@ import kotlinx.coroutines.flow.Flow
 interface ConferenceRepository {
     fun getConferencesFromSearch(searchValue: String): Flow<List<Conference>>
     fun getActiveConferences(): Flow<List<Conference>>
-    fun getOrganizingConferences(): Flow<List<Conference>>
+    suspend fun getOrganizingConferences(): Flow<List<Conference>>
 }
