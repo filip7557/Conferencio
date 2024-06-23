@@ -109,6 +109,41 @@ class ConferenceRepositoryImpl : ConferenceRepository {
         emit(conference!!)
     }.flowOn(Dispatchers.IO)
 
+    override suspend fun getAttendanceFromConferenceId(conferenceId: String): Boolean {
+        return !db.collection("attendances")
+            .whereEqualTo("conferenceId", conferenceId)
+            .whereEqualTo("userId", auth.currentUser?.uid)
+            .get()
+            .await()
+            .isEmpty
+    }
+
+    override suspend fun getAttendanceCount(conferenceId: String): Int {
+        return db.collection("attendances").whereEqualTo("conferenceId", conferenceId).get().await().count()
+    }
+
+    override suspend fun toggleAttendance(conferenceId: String) {
+        val attendance = getAttendanceFromConferenceId(conferenceId)
+            if (attendance) {
+                val id = db.collection("attendances")
+                    .whereEqualTo("conferenceId", conferenceId)
+                    .whereEqualTo("userId", auth.currentUser?.uid)
+                    .get()
+                    .await()
+                    .documents
+                    .first()
+                    .id
+                db.collection("attendances").document(id).delete().await()
+
+            } else {
+                val newAttendance = Attendance(
+                    userId = auth.currentUser?.uid!!,
+                    conferenceId = conferenceId
+                )
+                db.collection("attendances").add(newAttendance).await()
+            }
+    }
+
     override suspend fun uploadBanner(imageUri: Uri?) : String {
         val currentUser = auth.currentUser!!
         val imageRef = storageRef.child("conference_banners/${currentUser.uid}_banner")
@@ -122,7 +157,8 @@ class ConferenceRepositoryImpl : ConferenceRepository {
         }
     }
 
-    override suspend fun createConference(conference: Conference, imageUri: Uri?) {
+    override suspend fun createConference(conference: Conference, imageUri: Uri?) : String {
+        var conferenceId = ""
         val newConference = auth.currentUser?.uid?.let {
             Conference(
                 imageUrl = uploadBanner(imageUri),
@@ -133,8 +169,9 @@ class ConferenceRepositoryImpl : ConferenceRepository {
             )
         }
         if (newConference != null) {
-            db.collection("conferences").add(newConference).addOnSuccessListener { Log.d("ADD CONFERENCE", "Create conference with title ${newConference.title}") }.await()
+            db.collection("conferences").add(newConference).addOnSuccessListener { document -> conferenceId = document.id }.await()
         }
+        return conferenceId
     }
 
 }

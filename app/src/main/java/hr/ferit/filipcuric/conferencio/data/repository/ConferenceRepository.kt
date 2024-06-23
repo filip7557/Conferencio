@@ -9,7 +9,10 @@ interface ConferenceRepository {
     fun getActiveConferences(): Flow<List<Conference>>
     suspend fun getOrganizingConferences(): Flow<List<Conference>>
     suspend fun uploadBanner(imageUri: Uri?): String
-    suspend fun createConference(conference: Conference, imageUri: Uri?)
+    suspend fun createConference(conference: Conference, imageUri: Uri?) : String
     suspend fun getAttendingConferences(): Flow<List<Conference>>
     fun getConferenceFromId(conferenceId: String): Flow<Conference>
+    suspend fun getAttendanceFromConferenceId(conferenceId: String): Boolean
+    suspend fun toggleAttendance(conferenceId: String)
+    suspend fun getAttendanceCount(conferenceId: String): Int
 }
