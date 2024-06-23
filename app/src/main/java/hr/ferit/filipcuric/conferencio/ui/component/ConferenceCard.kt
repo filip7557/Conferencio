@@ -84,7 +84,7 @@ fun ConferenceCard(
                 }
             }
             Text(
-                text = "Hosted by: ${user.fullname}, ${user.position} @ ${user.company}",
+                text = "Hosted by: ${user.fullname}, ${user.position}${if (user.position != "" && user.company != "")" @ " else ""}${user.company}",
                 fontSize = 11.sp,
                 fontWeight = FontWeight.Light
             )
