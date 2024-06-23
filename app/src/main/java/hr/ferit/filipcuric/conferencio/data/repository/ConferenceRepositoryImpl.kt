@@ -6,6 +6,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
+import hr.ferit.filipcuric.conferencio.model.Attendance
 import hr.ferit.filipcuric.conferencio.model.Conference
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -32,6 +33,29 @@ class ConferenceRepositoryImpl : ConferenceRepository {
                 Log.d("GET CONF", conference.toString())
             }
         }.await()
+        return flowOf(conferences).shareIn(
+            scope = CoroutineScope(Dispatchers.IO),
+            started = SharingStarted.WhileSubscribed(1000L),
+            replay = 1
+        )
+    }
+
+    override suspend fun getAttendingConferences(): Flow<List<Conference>> {
+        val conferences = mutableListOf<Conference>()
+        val conferenceIds = mutableListOf<String>()
+        db.collection("attendances").whereEqualTo("userId", auth.currentUser?.uid).get().addOnSuccessListener { documents ->
+            for (document in documents) {
+                val attendance = document.toObject(Attendance::class.java)
+                conferenceIds.add(attendance.conferenceId)
+            }
+        }.await()
+        for (id in conferenceIds) {
+            val conference = db.collection("conferences").document(id).get().await().toObject(Conference::class.java)
+            if (conference != null) {
+                conference.id = id
+                conferences.add(conference)
+            }
+        }
         return flowOf(conferences).shareIn(
             scope = CoroutineScope(Dispatchers.IO),
             started = SharingStarted.WhileSubscribed(1000L),

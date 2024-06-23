@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -41,6 +42,7 @@ fun ConferenceCard(
         ),
         modifier = Modifier
             .fillMaxWidth()
+            .height(250.dp)
             .clickable(onClick = onClick)
             .padding(top = 15.dp)
     ) {
@@ -49,7 +51,7 @@ fun ConferenceCard(
             contentDescription = "conference banner",
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.7f),
+                .fillMaxHeight(0.75f),
             contentScale = ContentScale.Crop,
         )
         Column(
@@ -75,7 +77,7 @@ fun ConferenceCard(
                         fontWeight = FontWeight.Medium
                     )
                     Text(
-                        text = "${datetime.dayOfMonth}/${if (datetime.monthValue < 10) '0' else ""}${datetime.monthValue}/${datetime.year}",
+                        text = "${if (datetime.dayOfMonth < 10) '0' else ""}${datetime.dayOfMonth}/${if (datetime.monthValue < 10) '0' else ""}${datetime.monthValue}/${datetime.year}",
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Light
                     )

@@ -56,7 +56,7 @@ class HomeViewModel(
     @OptIn(ExperimentalCoroutinesApi::class)
     val attendingConferences: StateFlow<List<Conference>> =
         activeSelected.flatMapLatest {isActiveSelected ->
-            conferenceRepository.getOrganizingConferences()
+            conferenceRepository.getAttendingConferences()
                 .map {
                     it.filter { conference ->
                         if (isActiveSelected) {
