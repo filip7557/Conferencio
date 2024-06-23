@@ -7,7 +7,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -24,8 +23,8 @@ fun SearchScreen(
     viewModel: SearchViewModel,
     onConferenceClick: (String) -> Unit,
 ) {
-    val foundConferences by viewModel.foundConferences.collectAsState()
-    val conferences by foundConferences.collectAsState(initial = listOf())
+    val foundConferences = viewModel.foundConferences.collectAsState()
+    val searchValue = viewModel.searchValue.collectAsState()
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
@@ -36,19 +35,30 @@ fun SearchScreen(
             Subtitle()
             TextBox(
                 label = "Search by title",
-                value = viewModel.searchValue,
+                value = searchValue.value,
                 onValueChange =  { viewModel.onSearchValueChange(it) }
             )
         }
-        items(
-            items = conferences,
-            key = { conference -> conference.id!!}
-        ) {
-            ConferenceCard(
-                conference = it,
-                user = viewModel.getConferenceOwnerByUserId(it.ownerId),
-                onClick = { onConferenceClick(it.id!!) /*TODO: Destination.createNavigation*/ }
-            )
+        if (foundConferences.value.isEmpty() && searchValue.value.length >= 3)
+            item {
+                Text(
+                    text = "There are no conferences meeting your search criteria.",
+                    fontWeight = FontWeight.Light,
+                    modifier = Modifier
+                        .padding(top = 10.dp)
+                )
+            }
+        else {
+            items(
+                items = foundConferences.value,
+                key = { conference -> conference.id!! }
+            ) {
+                ConferenceCard(
+                    conference = it,
+                    user = viewModel.getConferenceOwnerByUserId(it.ownerId),
+                    onClick = { onConferenceClick(it.id!!) /*TODO: Destination.createNavigation*/ }
+                )
+            }
         }
     }
 }

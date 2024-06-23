@@ -1,46 +1,43 @@
 package hr.ferit.filipcuric.conferencio.ui.search
 
 import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import hr.ferit.filipcuric.conferencio.data.repository.ConferenceRepository
 import hr.ferit.filipcuric.conferencio.data.repository.UserRepository
 import hr.ferit.filipcuric.conferencio.model.Conference
 import hr.ferit.filipcuric.conferencio.model.User
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 class SearchViewModel(
     private val conferenceRepository: ConferenceRepository,
     private val userRepository: UserRepository,
 ) : ViewModel() {
-    var searchValue by mutableStateOf("")
-        private set
 
-    val foundConferences: StateFlow<Flow<List<Conference>>> =
-        snapshotFlow { searchValue }
-            .map { conferenceRepository.getConferencesFromSearch(searchValue)
-                .map {
-                    if (searchValue.length < 3) listOf() else it
-                }
-            }
-            .stateIn(
-                    scope = viewModelScope,
-                    started = SharingStarted.WhileSubscribed(5_000),
-                    initialValue = flowOf(listOf())
-                )
+    val searchValue = MutableStateFlow("")
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val foundConferences: StateFlow<List<Conference>> =
+        searchValue.flatMapLatest {value ->
+            if (value.length >= 3) conferenceRepository.getConferencesFromSearch(value) else flowOf(listOf())
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = listOf()
+        )
 
     fun onSearchValueChange(value: String) {
-        searchValue = value
+        viewModelScope.launch {
+            searchValue.emit(value)
+        }
     }
 
     fun getConferenceOwnerByUserId(userId: String) : User {
