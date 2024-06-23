@@ -124,24 +124,23 @@ class ConferenceRepositoryImpl : ConferenceRepository {
 
     override suspend fun toggleAttendance(conferenceId: String) {
         val attendance = getAttendanceFromConferenceId(conferenceId)
-            if (attendance) {
-                val id = db.collection("attendances")
-                    .whereEqualTo("conferenceId", conferenceId)
-                    .whereEqualTo("userId", auth.currentUser?.uid)
-                    .get()
-                    .await()
-                    .documents
-                    .first()
-                    .id
-                db.collection("attendances").document(id).delete().await()
-
-            } else {
-                val newAttendance = Attendance(
-                    userId = auth.currentUser?.uid!!,
-                    conferenceId = conferenceId
-                )
-                db.collection("attendances").add(newAttendance).await()
-            }
+        if (attendance) {
+            val id = db.collection("attendances")
+                .whereEqualTo("conferenceId", conferenceId)
+                .whereEqualTo("userId", auth.currentUser?.uid)
+                .get()
+                .await()
+                .documents
+                .first()
+                .id
+            db.collection("attendances").document(id).delete().await()
+        } else {
+            val newAttendance = Attendance(
+                userId = auth.currentUser?.uid!!,
+                conferenceId = conferenceId
+            )
+            db.collection("attendances").add(newAttendance).await()
+        }
     }
 
     override suspend fun uploadBanner(imageUri: Uri?) : String {
