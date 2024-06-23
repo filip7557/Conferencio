@@ -37,7 +37,7 @@ fun ConferenceDatePickerDialog(
                     containerColor = Blue,
                 )
             ) {
-                Text(text = "Confirm")
+                Text(text = "Confirm", color = Color.White)
             }
         },
         dismissButton = {
@@ -62,7 +62,10 @@ fun ConferenceDatePickerDialog(
                     currentYearContentColor = Blue,
                     todayDateBorderColor = Blue,
                     todayContentColor = Blue,
-                )
+                ),
+                dateValidator = {
+                    it >= Instant.now().toEpochMilli()
+                }
             )
         }
     )
