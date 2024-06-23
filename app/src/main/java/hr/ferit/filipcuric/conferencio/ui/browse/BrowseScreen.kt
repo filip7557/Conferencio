@@ -7,7 +7,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -23,7 +22,7 @@ fun BrowseScreen(
     viewModel: BrowseViewModel,
     onConferenceClick: (String) -> Unit,
 ) {
-    val conferences by viewModel.conferences.collectAsState()
+    val conferences = viewModel.conferences.collectAsState()
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
@@ -33,7 +32,7 @@ fun BrowseScreen(
         item {
             Subtitle()
         }
-        if (conferences.isEmpty()) {
+        if (conferences.value.isEmpty()) {
             item {
                 Text(
                     text = "There are no upcoming conferences yet.",
@@ -44,7 +43,7 @@ fun BrowseScreen(
             }
         } else {
             items(
-                items = conferences,
+                items = conferences.value,
                 key = { conference -> conference.id!! }
             ) {
                 ConferenceCard(

@@ -56,13 +56,16 @@ class ConferenceRepositoryImpl : ConferenceRepository {
     }
     override fun getActiveConferences() : Flow<List<Conference>> {
         val conferences = mutableListOf<Conference>()
-        db.collection("conferences").whereLessThanOrEqualTo("endDateTime", Instant.now().toEpochMilli()).get().addOnSuccessListener {documents ->
+        Log.d("CONF REPO", "Getting conferences with date less then or equal to ${Instant.now().toEpochMilli()}")
+        db.collection("conferences").whereGreaterThanOrEqualTo("endDateTime", Instant.now().toEpochMilli()).get().addOnSuccessListener {documents ->
             for (document in documents) {
                 val conference = document.toObject(Conference::class.java)
                 conference.id = document.id
                 conferences.add(conference)
+                Log.d("CONF REPO", "Got conf with id ${conference.id} and added it to list")
             }
         }
+        Log.d("CONF REPO", "LIST: $conferences")
         return flowOf(conferences).shareIn(
             scope = CoroutineScope(Dispatchers.IO),
             started = SharingStarted.WhileSubscribed(1000L),
