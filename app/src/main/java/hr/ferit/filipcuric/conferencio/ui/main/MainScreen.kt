@@ -44,17 +44,23 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavDestination
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import hr.ferit.filipcuric.conferencio.R
+import hr.ferit.filipcuric.conferencio.navigation.CONFERENCE_ID_KEY
+import hr.ferit.filipcuric.conferencio.navigation.ConferenceDestination
 import hr.ferit.filipcuric.conferencio.navigation.NavigationItem
 import hr.ferit.filipcuric.conferencio.ui.browse.BrowseScreen
 import hr.ferit.filipcuric.conferencio.ui.browse.BrowseViewModel
+import hr.ferit.filipcuric.conferencio.ui.conference.ConferenceScreen
+import hr.ferit.filipcuric.conferencio.ui.conference.ConferenceViewModel
 import hr.ferit.filipcuric.conferencio.ui.createconference.CreateConferenceScreen
 import hr.ferit.filipcuric.conferencio.ui.createconference.CreateConferenceViewModel
 import hr.ferit.filipcuric.conferencio.ui.editprofile.EditProfileScreen
@@ -73,6 +79,7 @@ import hr.ferit.filipcuric.conferencio.ui.theme.Blue
 import hr.ferit.filipcuric.conferencio.ui.theme.DarkBlue
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 private lateinit var auth: FirebaseAuth
 
@@ -100,11 +107,10 @@ fun MainScreen() {
 
     val showTopBar by remember {
         derivedStateOf {
-            navBackStackEntry?.destination?.route != NavigationItem.LoginDestination.route &&
-                    navBackStackEntry?.destination?.route != NavigationItem.RegisterDestination.route &&
-                    navBackStackEntry?.destination?.route != NavigationItem.EditProfileDestination.route &&
-                    navBackStackEntry?.destination?.route != NavigationItem.CreateConferenceDestination.route
-            //TODO: Add a check for conf info screen
+            navBackStackEntry?.destination?.route == NavigationItem.HomeDestination.route ||
+                    navBackStackEntry?.destination?.route == NavigationItem.BrowseDestination.route ||
+                    navBackStackEntry?.destination?.route == NavigationItem.SearchDestination.route ||
+                    navBackStackEntry?.destination?.route == NavigationItem.ProfileDestination.route
         }
     }
 
@@ -249,7 +255,7 @@ fun MainScreen() {
                     HomeScreen(
                         viewModel = homeViewModel,
                         onConferenceClick = {
-                            //TODO: Navigate to conference screen
+                            navController.navigate(it)
                         }
                     )
                 }
@@ -257,7 +263,7 @@ fun MainScreen() {
                     SearchScreen(
                         viewModel = searchViewModel,
                         onConferenceClick = {
-                            //TODO: Navigate to conference screen
+                            navController.navigate(it)
                         }
                     )
                 }
@@ -265,7 +271,7 @@ fun MainScreen() {
                     BrowseScreen(
                         viewModel = browseViewModel,
                         onConferenceClick = {
-                            //TODO: Navigate to conference screen
+                            navController.navigate(it)
                         }
                     )
                 }
@@ -287,8 +293,20 @@ fun MainScreen() {
                         viewModel = createConferenceViewModel,
                         onBackClick = { navController.popBackStack() },
                         onCreateClick = {
-                            //TODO: Navigate to created conference
-                            navController.navigate(NavigationItem.HomeDestination.route)
+                            navController.navigate(it)
+                        }
+                    )
+                }
+                composable(
+                    route = ConferenceDestination.route,
+                    arguments = listOf(navArgument(CONFERENCE_ID_KEY) { type = NavType.StringType }),
+                ) {
+                    val conferenceId = it.arguments?.getString(CONFERENCE_ID_KEY)
+                    val viewModel = koinViewModel<ConferenceViewModel>(parameters = { parametersOf(conferenceId) })
+                    ConferenceScreen(
+                        viewModel = viewModel,
+                        onBackClick = {
+                            navController.popBackStack()
                         }
                     )
                 }

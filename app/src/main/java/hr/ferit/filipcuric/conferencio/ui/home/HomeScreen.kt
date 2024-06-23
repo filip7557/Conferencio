@@ -38,6 +38,7 @@ import coil.compose.AsyncImage
 import hr.ferit.filipcuric.conferencio.R
 import hr.ferit.filipcuric.conferencio.data.repository.ConferenceRepositoryImpl
 import hr.ferit.filipcuric.conferencio.data.repository.UserRepositoryImpl
+import hr.ferit.filipcuric.conferencio.navigation.ConferenceDestination
 import hr.ferit.filipcuric.conferencio.ui.component.ConferenceCard
 import hr.ferit.filipcuric.conferencio.ui.theme.Blue
 
@@ -96,7 +97,7 @@ fun HomeScreen(
                     ConferenceCard(
                         conference = it,
                         user = viewModel.currentUser,
-                        onClick = { onConferenceClick(it.id!!) /*TODO: Destination.createNavigation*/ }
+                        onClick = { onConferenceClick(ConferenceDestination.createNavigation(it.id!!)) }
                     )
                 }
             }

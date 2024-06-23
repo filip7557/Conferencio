@@ -10,6 +10,9 @@ const val SEARCH_ROUTE = "Search"
 const val BROWSE_ROUTE = "Browse"
 const val EDIT_PROFILE_ROUTE = "Edit profile"
 const val CREATE_CONFERENCE_ROUTE = "Create conference"
+const val CONFERENCE_ROUTE = "Conference"
+const val CONFERENCE_ID_KEY = "conferenceId"
+const val CONFERENCE_ROUTE_WITH_PARAMS = "$CONFERENCE_ROUTE/{$CONFERENCE_ID_KEY}"
 
 sealed class ConferencioDestination(
     open val route: String,
@@ -62,4 +65,8 @@ sealed class NavigationItem(
         labelId = R.string.browse,
         iconId = R.drawable.ic_browse
     )
+}
+
+data object ConferenceDestination : ConferencioDestination(CONFERENCE_ROUTE_WITH_PARAMS, 0 ,0) {
+    fun createNavigation(conferenceId: String): String = "$CONFERENCE_ROUTE/${conferenceId}"
 }

@@ -32,7 +32,7 @@ import hr.ferit.filipcuric.conferencio.ui.theme.Blue
 fun CreateConferenceScreen(
     viewModel: CreateConferenceViewModel,
     onBackClick: () -> Unit,
-    onCreateClick: () -> Unit,
+    onCreateClick: (String) -> Unit,
 ) {
     LazyColumn(
         verticalArrangement = Arrangement.Center,

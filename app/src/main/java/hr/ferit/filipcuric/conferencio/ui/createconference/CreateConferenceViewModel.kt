@@ -62,16 +62,17 @@ class CreateConferenceViewModel(
         endDateTextValue = "Choose date"
     }
 
-    fun onCreateClick(onCreateClick: () -> Unit) {
+    fun onCreateClick(onCreateClick: (String) -> Unit) {
+        var conferenceId = ""
         viewModelScope.launch {
             val conference = Conference(
                 title = title,
                 startDateTime = startDate.toEpochMilli(),
                 endDateTime = endDate.toEpochMilli()
             )
-            conferenceRepository.createConference(conference, imageUri)
+            conferenceId = conferenceRepository.createConference(conference, imageUri)
         }.invokeOnCompletion {
-            onCreateClick()
+            onCreateClick(conferenceId)
         }
     }
 }

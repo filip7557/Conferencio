@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import hr.ferit.filipcuric.conferencio.data.repository.ConferenceRepositoryImpl
 import hr.ferit.filipcuric.conferencio.data.repository.UserRepositoryImpl
+import hr.ferit.filipcuric.conferencio.navigation.ConferenceDestination
 import hr.ferit.filipcuric.conferencio.ui.component.ConferenceCard
 
 @Composable
@@ -49,7 +50,7 @@ fun BrowseScreen(
                 ConferenceCard(
                     conference = it,
                     user = viewModel.getConferenceOwnerByUserId(it.ownerId),
-                    onClick = { onConferenceClick(it.id!!) /*TODO: Destination.createNavigation*/ }
+                    onClick = { onConferenceClick(ConferenceDestination.createNavigation(it.id!!)) }
                 )
             }
         }
