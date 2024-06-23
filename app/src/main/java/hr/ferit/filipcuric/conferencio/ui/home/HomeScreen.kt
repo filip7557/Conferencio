@@ -263,6 +263,7 @@ fun OrganizedHeader(
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 20.dp)
+            .clickable(onClick = onClick)
     ) {
         Text(
             text = "Organized",
@@ -275,7 +276,6 @@ fun OrganizedHeader(
             tint = if (isSystemInDarkTheme()) Color.White else Color.Black,
             modifier = Modifier
                 .rotate(if (isToggled) 0f else 180f)
-                .clickable(onClick = onClick)
                 .padding(top = 2.dp)
         )
     }
@@ -291,6 +291,7 @@ fun AttendingHeader(
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 20.dp)
+            .clickable(onClick = onClick)
     ) {
         Text(
             text = "Attending",
@@ -303,7 +304,6 @@ fun AttendingHeader(
             tint = if (isSystemInDarkTheme()) Color.White else Color.Black,
             modifier = Modifier
                 .rotate(if (isToggled) 0f else 180f)
-                .clickable(onClick = onClick)
                 .padding(top = 2.dp)
         )
     }
