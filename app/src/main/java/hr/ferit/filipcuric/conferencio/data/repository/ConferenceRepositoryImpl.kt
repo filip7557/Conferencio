@@ -12,7 +12,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.tasks.await
 import java.time.Instant
@@ -100,6 +102,12 @@ class ConferenceRepositoryImpl : ConferenceRepository {
             replay = 1
         )
     }
+
+    override fun getConferenceFromId(conferenceId: String) : Flow<Conference> = flow {
+        val conference = db.collection("conferences").document(conferenceId).get().await().toObject(Conference::class.java)
+        conference?.id = conferenceId
+        emit(conference!!)
+    }.flowOn(Dispatchers.IO)
 
     override suspend fun uploadBanner(imageUri: Uri?) : String {
         val currentUser = auth.currentUser!!

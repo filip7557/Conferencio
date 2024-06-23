@@ -11,4 +11,5 @@ interface ConferenceRepository {
     suspend fun uploadBanner(imageUri: Uri?): String
     suspend fun createConference(conference: Conference, imageUri: Uri?)
     suspend fun getAttendingConferences(): Flow<List<Conference>>
+    fun getConferenceFromId(conferenceId: String): Flow<Conference>
 }
