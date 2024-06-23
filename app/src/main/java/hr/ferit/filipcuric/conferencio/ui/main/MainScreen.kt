@@ -1,5 +1,6 @@
 package hr.ferit.filipcuric.conferencio.ui.main
 
+import android.app.Activity
 import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -27,12 +28,15 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
@@ -66,6 +70,7 @@ import hr.ferit.filipcuric.conferencio.ui.register.RegisterViewModel
 import hr.ferit.filipcuric.conferencio.ui.search.SearchScreen
 import hr.ferit.filipcuric.conferencio.ui.search.SearchViewModel
 import hr.ferit.filipcuric.conferencio.ui.theme.Blue
+import hr.ferit.filipcuric.conferencio.ui.theme.DarkBlue
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -101,6 +106,13 @@ fun MainScreen() {
                     navBackStackEntry?.destination?.route != NavigationItem.CreateConferenceDestination.route
             //TODO: Add a check for conf info screen
         }
+    }
+
+    val view = LocalView.current
+    val color = if (showTopBar) DarkBlue.toArgb() else MaterialTheme.colorScheme.background.toArgb()
+    SideEffect {
+        val window = (view.context as Activity).window
+        window.statusBarColor = color
     }
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
