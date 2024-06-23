@@ -109,7 +109,7 @@ fun MainScreen() {
     }
 
     val view = LocalView.current
-    val color = if (showTopBar) DarkBlue.toArgb() else MaterialTheme.colorScheme.background.toArgb()
+    val color = if (showTopBar) DarkBlue.toArgb() else Color.Transparent.toArgb()
     SideEffect {
         val window = (view.context as Activity).window
         window.statusBarColor = color
