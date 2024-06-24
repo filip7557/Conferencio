@@ -83,8 +83,10 @@ fun ConferenceScreen(
         item {
             Title(title = conference.value.title)
         }
-        item {
-            Timer(conference.value.startDateTime, duration.value)
+        if (conference.value.endDateTime >= Instant.now().toEpochMilli()) { // If conference ended, don't show timer.
+            item {
+                Timer(conference.value.startDateTime, duration.value)
+            }
         }
         item {
             AttendingCounter(peopleAttending = viewModel.attendingCount)
