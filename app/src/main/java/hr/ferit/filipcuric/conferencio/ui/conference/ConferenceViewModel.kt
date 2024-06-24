@@ -46,7 +46,15 @@ class ConferenceViewModel(
 
     private fun changeDuration() {
         viewModelScope.launch(Dispatchers.IO) {
-            duration.emit(Duration.between(Instant.now(), Instant.ofEpochMilli(conference.value.startDateTime)))
+            duration.emit(
+                Duration.between(
+                    Instant.now(),
+                    if (conference.value.startDateTime > Instant.now().toEpochMilli())
+                        Instant.ofEpochMilli(conference.value.startDateTime)
+                    else
+                        Instant.ofEpochMilli(conference.value.startDateTime)
+                )
+            )
             changeDuration()
         }
     }
@@ -63,5 +71,9 @@ class ConferenceViewModel(
         viewModelScope.launch {
             attendingCount = conferenceRepository.getAttendanceCount(conferenceId)
         }
+    }
+
+    fun isUserManager() : Boolean {
+        return conferenceRepository.isUserManager(conference.value.ownerId)
     }
 }
