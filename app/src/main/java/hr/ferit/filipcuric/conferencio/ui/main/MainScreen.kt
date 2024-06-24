@@ -307,6 +307,9 @@ fun MainScreen() {
                         viewModel = viewModel,
                         onBackClick = {
                             navController.popBackStack()
+                        },
+                        onManageClick = {
+
                         }
                     )
                 }
