@@ -31,6 +31,7 @@ import coil.compose.AsyncImage
 import hr.ferit.filipcuric.conferencio.R
 import hr.ferit.filipcuric.conferencio.data.repository.ConferenceRepositoryImpl
 import hr.ferit.filipcuric.conferencio.ui.component.BackButton
+import hr.ferit.filipcuric.conferencio.ui.component.ManageButton
 import hr.ferit.filipcuric.conferencio.ui.theme.Blue
 import hr.ferit.filipcuric.conferencio.ui.theme.DarkTertiaryColor
 import hr.ferit.filipcuric.conferencio.ui.theme.TertiaryColor
@@ -41,6 +42,7 @@ import java.time.Instant
 fun ConferenceScreen(
     viewModel: ConferenceViewModel,
     onBackClick: () -> Unit,
+    onManageClick: (String) -> Unit,
 ) {
     val conference = viewModel.conference.collectAsState()
     val duration = viewModel.duration.collectAsState()
@@ -65,7 +67,17 @@ fun ConferenceScreen(
                         .fillMaxSize(),
                     contentScale = ContentScale.Crop,
                 )
-                BackButton(onClick = onBackClick, modifier = Modifier.padding(10.dp))
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(10.dp)
+                ) {
+                    BackButton(onClick = onBackClick)
+                    if (viewModel.isUserManager()) {
+                        ManageButton(onClick = { onManageClick(conference.value.id!!) })
+                    }
+                }
             }
         }
         item {
@@ -255,7 +267,7 @@ fun Attendance(
 @Preview
 @Composable
 fun ConferenceScreenPreview() {
-    ConferenceScreen(viewModel = ConferenceViewModel(conferenceRepository = ConferenceRepositoryImpl(), conferenceId = "6KaEdyk8QEo8C6FpNQeo")) {
+    ConferenceScreen(viewModel = ConferenceViewModel(conferenceRepository = ConferenceRepositoryImpl(), conferenceId = "6KaEdyk8QEo8C6FpNQeo"), { }) {
         
     }
 }
