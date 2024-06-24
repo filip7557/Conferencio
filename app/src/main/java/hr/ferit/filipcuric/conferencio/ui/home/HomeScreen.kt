@@ -126,7 +126,7 @@ fun HomeScreen(
                     ConferenceCard(
                         conference = it,
                         user = viewModel.getConferenceOwnerByUserId(it.ownerId),
-                        onClick = { onConferenceClick(it.id!!) /*TODO: Destination.createNavigation*/ }
+                        onClick = { onConferenceClick(ConferenceDestination.createNavigation(it.id!!)) }
                     )
                 }
             }
