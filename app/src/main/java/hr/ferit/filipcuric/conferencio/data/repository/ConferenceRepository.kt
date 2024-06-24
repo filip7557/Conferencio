@@ -15,4 +15,5 @@ interface ConferenceRepository {
     suspend fun getAttendanceFromConferenceId(conferenceId: String): Boolean
     suspend fun toggleAttendance(conferenceId: String)
     suspend fun getAttendanceCount(conferenceId: String): Int
+    fun isUserManager(conferenceOwnerId: String): Boolean
 }

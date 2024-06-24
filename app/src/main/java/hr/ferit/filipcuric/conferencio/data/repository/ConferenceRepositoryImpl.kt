@@ -143,6 +143,10 @@ class ConferenceRepositoryImpl : ConferenceRepository {
         }
     }
 
+    override fun isUserManager(conferenceOwnerId: String): Boolean {
+        return conferenceOwnerId == auth.currentUser?.uid
+    }
+
     override suspend fun uploadBanner(imageUri: Uri?) : String {
         val currentUser = auth.currentUser!!
         val imageRef = storageRef.child("conference_banners/${currentUser.uid}_banner")
