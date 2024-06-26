@@ -55,7 +55,8 @@ class ConferenceRepositoryImpl : ConferenceRepository {
             val conference = db.collection("conferences").document(id).get().await().toObject(Conference::class.java)
             if (conference != null) {
                 conference.id = id
-                conferences.add(conference)
+                if (conference.ownerId != auth.currentUser?.uid)
+                    conferences.add(conference)
             }
         }
         return flowOf(conferences).shareIn(
