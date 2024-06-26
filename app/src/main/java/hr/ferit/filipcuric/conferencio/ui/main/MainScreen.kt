@@ -4,6 +4,8 @@ import android.app.Activity
 import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredWidth
@@ -76,7 +78,6 @@ import hr.ferit.filipcuric.conferencio.ui.register.RegisterViewModel
 import hr.ferit.filipcuric.conferencio.ui.search.SearchScreen
 import hr.ferit.filipcuric.conferencio.ui.search.SearchViewModel
 import hr.ferit.filipcuric.conferencio.ui.theme.Blue
-import hr.ferit.filipcuric.conferencio.ui.theme.DarkBlue
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -115,10 +116,12 @@ fun MainScreen() {
     }
 
     val view = LocalView.current
-    val color = if (showTopBar) DarkBlue.toArgb() else Color.Transparent.toArgb()
+    val color = /*if (showTopBar) DarkBlue.toArgb() else */Color.Transparent.toArgb()
     SideEffect {
         val window = (view.context as Activity).window
         window.statusBarColor = color
+        window.isStatusBarContrastEnforced = true
+        window.navigationBarColor = Color.Transparent.toArgb()
     }
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -140,8 +143,8 @@ fun MainScreen() {
                 drawerShape = RoundedCornerShape(bottomEnd = 8.dp, topEnd = 8.dp),
                 modifier = Modifier
                     .requiredWidth(160.dp)
-                    .requiredHeight(230.dp)
-                    .padding(top = 65.dp),
+                    .requiredHeight(210.dp)
+                    .padding(top = 0.dp),
             ) {
                 Text(text = "Menu", fontSize = 20.sp, modifier = Modifier.padding(5.dp))
                 Divider()
@@ -175,7 +178,7 @@ fun MainScreen() {
         drawerState = drawerState,
     ) {
         Scaffold(
-            containerColor = MaterialTheme.colorScheme.background,
+            containerColor = Color.Transparent,
             bottomBar = {
                 if (showBottomBar)
                     BottomNavigationBar(
@@ -213,6 +216,7 @@ fun MainScreen() {
                         }
                     })
             },
+            contentWindowInsets = WindowInsets.ime,
         ) { padding ->
             NavHost(
                 navController = navController,
@@ -326,7 +330,7 @@ private fun BottomNavigationBar(
     currentDestination: NavDestination?
 ) {
     NavigationBar(
-        containerColor = /*if (isSystemInDarkTheme()) DarkTertiaryColor else TertiaryColor*/ Color(0f, 0f, 0f, 0f),
+        containerColor = Color.Transparent,
     ) {
         destinations.forEach {destination ->
             NavigationBarItem(
