@@ -62,8 +62,7 @@ class RegisterViewModel(
         )
         viewModelScope.launch(Dispatchers.IO) {
             userRepository.createUser(user, password, imageUri!!)
-        }.invokeOnCompletion {
-            onRegisterClick()
         }
+        onRegisterClick()
     }
 }
