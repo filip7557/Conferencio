@@ -53,7 +53,7 @@ class ConferenceViewModel(
                     if (conference.value.startDateTime > Instant.now().toEpochMilli())
                         Instant.ofEpochMilli(conference.value.startDateTime)
                     else
-                        Instant.ofEpochMilli(conference.value.startDateTime)
+                        Instant.ofEpochMilli(conference.value.endDateTime)
                 )
             )
             changeDuration()
