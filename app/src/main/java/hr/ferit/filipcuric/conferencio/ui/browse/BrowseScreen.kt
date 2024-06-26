@@ -24,6 +24,7 @@ fun BrowseScreen(
     onConferenceClick: (String) -> Unit,
 ) {
     val conferences = viewModel.conferences.collectAsState()
+    val owners = viewModel.owners.collectAsState()
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
@@ -49,7 +50,7 @@ fun BrowseScreen(
             ) {
                 ConferenceCard(
                     conference = it,
-                    user = viewModel.getConferenceOwnerByUserId(it.ownerId),
+                    user = owners.value[conferences.value.indexOf(it)],
                     onClick = { onConferenceClick(ConferenceDestination.createNavigation(it.id!!)) }
                 )
             }
