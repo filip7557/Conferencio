@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import hr.ferit.filipcuric.conferencio.data.repository.ConferenceRepository
 import hr.ferit.filipcuric.conferencio.model.Conference
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -31,14 +32,14 @@ class ConferenceViewModel(
     val duration = MutableStateFlow(Duration.ZERO)
 
     val conference: StateFlow<Conference> = conferenceRepository.getConferenceFromId(conferenceId).stateIn(
-            scope = viewModelScope,
+            scope = CoroutineScope(Dispatchers.IO),
             started = SharingStarted.Eagerly,
             initialValue = Conference()
         )
 
     init {
         changeDuration()
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             isAttending = conferenceRepository.getAttendanceFromConferenceId(conferenceId)
         }
         getAttendanceCount()
@@ -68,7 +69,7 @@ class ConferenceViewModel(
     }
 
     private fun getAttendanceCount() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             attendingCount = conferenceRepository.getAttendanceCount(conferenceId)
         }
     }

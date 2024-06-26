@@ -7,6 +7,8 @@ import hr.ferit.filipcuric.conferencio.data.repository.ConferenceRepository
 import hr.ferit.filipcuric.conferencio.data.repository.UserRepository
 import hr.ferit.filipcuric.conferencio.model.Conference
 import hr.ferit.filipcuric.conferencio.model.User
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -29,13 +31,13 @@ class SearchViewModel(
         searchValue.flatMapLatest {value ->
             if (value.length >= 3) conferenceRepository.getConferencesFromSearch(value) else flowOf(listOf())
         }.stateIn(
-            scope = viewModelScope,
+            scope = CoroutineScope(Dispatchers.IO),
             started = SharingStarted.Eagerly,
             initialValue = listOf()
         )
 
     fun onSearchValueChange(value: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             searchValue.emit(value)
         }
     }

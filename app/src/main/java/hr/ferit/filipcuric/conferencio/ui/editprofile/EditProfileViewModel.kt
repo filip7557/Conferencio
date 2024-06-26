@@ -11,6 +11,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import hr.ferit.filipcuric.conferencio.data.repository.UserRepository
 import hr.ferit.filipcuric.conferencio.model.User
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 private lateinit var auth: FirebaseAuth
@@ -56,7 +57,7 @@ class EditProfileViewModel(
             email = currentUser.email,
             id = currentUser.id,
         )
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             userRepository.updateUser(user, imageUri!!)
         }.invokeOnCompletion {
             onSaveClick()
@@ -64,7 +65,7 @@ class EditProfileViewModel(
     }
 
     fun getCurrentUserData() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             currentUser = userRepository.getCurrentUser()!!
             fullname = currentUser.fullname
             position = currentUser.position

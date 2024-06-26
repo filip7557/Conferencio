@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import hr.ferit.filipcuric.conferencio.data.repository.ConferenceRepository
 import hr.ferit.filipcuric.conferencio.model.Conference
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.ZoneId
@@ -64,7 +65,7 @@ class CreateConferenceViewModel(
 
     fun onCreateClick(onCreateClick: (String) -> Unit) {
         var conferenceId = ""
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val conference = Conference(
                 title = title,
                 startDateTime = startDate.toEpochMilli(),

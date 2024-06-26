@@ -7,6 +7,8 @@ import hr.ferit.filipcuric.conferencio.data.repository.ConferenceRepository
 import hr.ferit.filipcuric.conferencio.data.repository.UserRepository
 import hr.ferit.filipcuric.conferencio.model.Conference
 import hr.ferit.filipcuric.conferencio.model.User
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -24,7 +26,7 @@ class BrowseViewModel(
                 it.sortedBy { conference -> conference.startDateTime }
             }
             .stateIn(
-                viewModelScope,
+                CoroutineScope(Dispatchers.IO),
                 SharingStarted.WhileSubscribed(5_000),
                 listOf()
             )

@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import hr.ferit.filipcuric.conferencio.data.repository.UserRepository
 import hr.ferit.filipcuric.conferencio.model.User
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class ProfileViewModel(
@@ -31,7 +32,7 @@ class ProfileViewModel(
     }
 
     fun getCurrentUser() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             user = if(userRepository.getCurrentUser() != null) {
                 userRepository.getCurrentUser()!!
             } else {

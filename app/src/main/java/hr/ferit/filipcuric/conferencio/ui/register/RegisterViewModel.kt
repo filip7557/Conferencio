@@ -6,14 +6,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.Firebase
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.auth
 import hr.ferit.filipcuric.conferencio.data.repository.UserRepository
 import hr.ferit.filipcuric.conferencio.model.User
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-
-private lateinit var auth: FirebaseAuth
 
 class RegisterViewModel(
     private val userRepository: UserRepository,
@@ -58,14 +54,13 @@ class RegisterViewModel(
 
     fun onRegisterClick(onRegisterClick: () -> Unit) {
         //TODO: Add error checks
-        auth = Firebase.auth
         val user = User(
             fullname = fullname,
             company = company,
             email = email,
             position = position,
         )
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             userRepository.createUser(user, password, imageUri!!)
         }.invokeOnCompletion {
             onRegisterClick()

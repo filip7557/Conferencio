@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import hr.ferit.filipcuric.conferencio.data.repository.UserRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class LoginViewModel(
@@ -27,7 +28,7 @@ class LoginViewModel(
 
     fun login(onLoginClick: () -> Unit) {
         //TODO: Add error checks.
-        val job = viewModelScope.launch {
+        val job = viewModelScope.launch(Dispatchers.IO) {
             userRepository.login(email, password)
         }
         job.invokeOnCompletion { onLoginClick() }
