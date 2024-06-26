@@ -20,7 +20,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import java.time.Instant
 
 class HomeViewModel(
@@ -33,12 +32,14 @@ class HomeViewModel(
     var isAttendingToggled by mutableStateOf(true)
         private set
 
-    lateinit var currentUser: User
+    var currentUser by mutableStateOf(User())
+        private set
 
     val activeSelected = MutableStateFlow(true)
     @OptIn(ExperimentalCoroutinesApi::class)
     val organizedConferences: StateFlow<List<Conference>> =
         activeSelected.flatMapLatest {isActiveSelected ->
+            Log.d("HOME VM", "Getting organized conferences")
             conferenceRepository.getOrganizingConferences()
                 .map {
                     it.filter { conference ->
@@ -51,7 +52,7 @@ class HomeViewModel(
                 }
         }.stateIn(
             scope = CoroutineScope(Dispatchers.IO),
-            started = SharingStarted.Eagerly,
+            started = SharingStarted.WhileSubscribed(5_000),
             initialValue = listOf()
         )
 
@@ -70,9 +71,13 @@ class HomeViewModel(
                 }
         }.stateIn(
             scope = CoroutineScope(Dispatchers.IO),
-            started = SharingStarted.Eagerly,
+            started = SharingStarted.WhileSubscribed(5_000),
             initialValue = listOf()
         )
+
+    init {
+        getCurrentUser()
+    }
 
     fun toggleOrganized() {
         isOrganizedToggled = !isOrganizedToggled
@@ -83,7 +88,7 @@ class HomeViewModel(
     }
 
     fun onActiveClick() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             activeSelected.emit(true)
         }
     }
@@ -96,16 +101,16 @@ class HomeViewModel(
 
     fun getConferenceOwnerByUserId(userId: String) : User {
         //TODO: Add a loading effect
-        var user: User
-        runBlocking {
+        var user = User()
+        viewModelScope.launch(Dispatchers.IO) {
             user = userRepository.getUserById(userId) ?: User()
         }
         Log.d("GET USER", user.toString())
         return user
     }
 
-    fun getCurrentUser() {
-        runBlocking {
+    private fun getCurrentUser() {
+        viewModelScope.launch(Dispatchers.IO) {
             currentUser = if (userRepository.getCurrentUser() == null) User() else userRepository.getCurrentUser()!!
         }
     }

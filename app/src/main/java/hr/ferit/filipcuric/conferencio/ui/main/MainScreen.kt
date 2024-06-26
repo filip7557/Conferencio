@@ -251,7 +251,7 @@ fun MainScreen() {
                     )
                 }
                 composable(NavigationItem.HomeDestination.route) {
-                    homeViewModel.getCurrentUser()
+                    homeViewModel.onActiveClick()
                     HomeScreen(
                         viewModel = homeViewModel,
                         onConferenceClick = {
