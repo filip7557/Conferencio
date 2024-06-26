@@ -10,7 +10,6 @@ import hr.ferit.filipcuric.conferencio.data.repository.ConferenceRepository
 import hr.ferit.filipcuric.conferencio.data.repository.UserRepository
 import hr.ferit.filipcuric.conferencio.model.Conference
 import hr.ferit.filipcuric.conferencio.model.User
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,13 +34,17 @@ class HomeViewModel(
     var currentUser by mutableStateOf(User())
         private set
 
+    var attendingOwners = MutableStateFlow(listOf<User>())
+
     val activeSelected = MutableStateFlow(true)
+
     @OptIn(ExperimentalCoroutinesApi::class)
     val organizedConferences: StateFlow<List<Conference>> =
-        activeSelected.flatMapLatest {isActiveSelected ->
+        activeSelected.flatMapLatest { isActiveSelected ->
             Log.d("HOME VM", "Getting organized conferences")
             conferenceRepository.getOrganizingConferences()
                 .map {
+                    Log.d("HOME VM", "[ORGANIZED] Got $it")
                     it.filter { conference ->
                         if (isActiveSelected) {
                             conference.endDateTime > Instant.now().toEpochMilli()
@@ -51,26 +54,33 @@ class HomeViewModel(
                     }
                 }
         }.stateIn(
-            scope = CoroutineScope(Dispatchers.IO),
+            scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = listOf()
         )
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val attendingConferences: StateFlow<List<Conference>> =
-        activeSelected.flatMapLatest {isActiveSelected ->
+        activeSelected.flatMapLatest { isActiveSelected ->
+            Log.d("HOME VM", "Getting attending conferences")
             conferenceRepository.getAttendingConferences()
                 .map {
+                    Log.d("HOME VM", "[ATTENDING] Got $it")
+                    val users = mutableListOf<User>()
                     it.filter { conference ->
                         if (isActiveSelected) {
                             conference.endDateTime > Instant.now().toEpochMilli()
                         } else {
                             conference.endDateTime < Instant.now().toEpochMilli()
                         }
-                    }
+                    }.map { conference ->
+                        users.add(userRepository.getUserById(conference.ownerId)!!)
+                        attendingOwners.emit(users)
+                        it
+                    }.flatten()
                 }
         }.stateIn(
-            scope = CoroutineScope(Dispatchers.IO),
+            scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = listOf()
         )
@@ -97,16 +107,6 @@ class HomeViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             activeSelected.emit(false)
         }
-    }
-
-    fun getConferenceOwnerByUserId(userId: String) : User {
-        //TODO: Add a loading effect
-        var user = User()
-        viewModelScope.launch(Dispatchers.IO) {
-            user = userRepository.getUserById(userId) ?: User()
-        }
-        Log.d("GET USER", user.toString())
-        return user
     }
 
     private fun getCurrentUser() {

@@ -38,6 +38,7 @@ import coil.compose.AsyncImage
 import hr.ferit.filipcuric.conferencio.R
 import hr.ferit.filipcuric.conferencio.data.repository.ConferenceRepositoryImpl
 import hr.ferit.filipcuric.conferencio.data.repository.UserRepositoryImpl
+import hr.ferit.filipcuric.conferencio.model.User
 import hr.ferit.filipcuric.conferencio.navigation.ConferenceDestination
 import hr.ferit.filipcuric.conferencio.ui.component.ConferenceCard
 import hr.ferit.filipcuric.conferencio.ui.theme.Blue
@@ -47,9 +48,10 @@ fun HomeScreen(
     viewModel: HomeViewModel,
     onConferenceClick: (String) -> Unit,
 ) {
-    val organizedConferences = viewModel.organizedConferences.collectAsState()
-    val attendingConferences = viewModel.attendingConferences.collectAsState()
     val isActiveSelected = viewModel.activeSelected.collectAsState()
+    val attendingConferences = viewModel.attendingConferences.collectAsState()
+    val organizedConferences = viewModel.organizedConferences.collectAsState()
+    val owners = viewModel.attendingOwners.collectAsState()
 
     LazyColumn(
         verticalArrangement = Arrangement.Top,
@@ -123,9 +125,10 @@ fun HomeScreen(
                     items = attendingConferences.value,
                     key = { conference -> conference.id!! }
                 ) {
+                    Log.d("HOME SCREEN", "Drawing $it")
                     ConferenceCard(
                         conference = it,
-                        user = viewModel.getConferenceOwnerByUserId(it.ownerId),
+                        user = if (owners.value.size < attendingConferences.value.size) User() else owners.value[attendingConferences.value.indexOf(it)],
                         onClick = { onConferenceClick(ConferenceDestination.createNavigation(it.id!!)) }
                     )
                 }

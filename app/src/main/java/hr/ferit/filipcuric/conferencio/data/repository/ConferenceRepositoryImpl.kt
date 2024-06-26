@@ -27,14 +27,15 @@ class ConferenceRepositoryImpl : ConferenceRepository {
 
     override suspend fun getOrganizingConferences(): Flow<List<Conference>> {
         val conferences = mutableListOf<Conference>()
-        db.collection("conferences").whereEqualTo("ownerId", auth.currentUser?.uid).get().addOnSuccessListener {documents ->
-            for (document in documents) {
-                val conference = document.toObject(Conference::class.java)
-                conference.id = document.id
-                conferences.add(conference)
-                Log.d("GET CONF", conference.toString())
-            }
-        }.await()
+        db.collection("conferences").whereEqualTo("ownerId", auth.currentUser?.uid).get()
+            .addOnSuccessListener { documents ->
+                for (document in documents) {
+                    val conference = document.toObject(Conference::class.java)
+                    conference.id = document.id
+                    conferences.add(conference)
+                    Log.d("GET CONF", conference.toString())
+                }
+            }.await()
         return flowOf(conferences).shareIn(
             scope = CoroutineScope(Dispatchers.IO),
             started = SharingStarted.WhileSubscribed(1000L),
@@ -45,19 +46,22 @@ class ConferenceRepositoryImpl : ConferenceRepository {
     override suspend fun getAttendingConferences(): Flow<List<Conference>> {
         val conferences = mutableListOf<Conference>()
         val conferenceIds = mutableListOf<String>()
-        db.collection("attendances").whereEqualTo("userId", auth.currentUser?.uid).get().addOnSuccessListener { documents ->
-            for (document in documents) {
-                val attendance = document.toObject(Attendance::class.java)
-                conferenceIds.add(attendance.conferenceId)
-            }
-        }.await()
-        for (id in conferenceIds) {
-            val conference = db.collection("conferences").document(id).get().await().toObject(Conference::class.java)
-            if (conference != null) {
-                conference.id = id
-                if (conference.ownerId != auth.currentUser?.uid)
-                    conferences.add(conference)
-            }
+        db.collection("attendances").whereEqualTo("userId", auth.currentUser?.uid).get()
+            .addOnSuccessListener { documents ->
+                for (document in documents) {
+                    val attendance = document.toObject(Attendance::class.java)
+                    conferenceIds.add(attendance.conferenceId)
+                    Log.d("GETTING ATTENDING CONFS", "Got $attendance")
+                }
+            }.await()
+        conferenceIds.forEach {
+            db.collection("conferences").document(it).get().addOnSuccessListener { document ->
+                val conference = document.toObject(Conference::class.java)
+                    conference!!.id = it
+                    Log.d("GETTING ATTENDING CONFS", "Got $conference")
+                    if (conference.ownerId != auth.currentUser?.uid)
+                        conferences.add(conference)
+            }.await()
         }
         return flowOf(conferences).shareIn(
             scope = CoroutineScope(Dispatchers.IO),
