@@ -24,6 +24,7 @@ class ProfileViewModel(
     init {
         organized = 10
         attended = 25
+        //TODO: Get actual data.
     }
 
     fun logout(onSignOutClick: () -> Unit) {
