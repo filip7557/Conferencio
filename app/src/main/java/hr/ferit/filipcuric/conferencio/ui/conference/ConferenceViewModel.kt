@@ -41,6 +41,8 @@ class ConferenceViewModel(
 
     var messages = MutableStateFlow(listOf<ChatMessage>())
 
+    var newMessage by mutableStateOf("")
+
     val conference: StateFlow<Conference> = conferenceRepository.getConferenceFromId(conferenceId).stateIn(
             scope = CoroutineScope(Dispatchers.IO),
             started = SharingStarted.Eagerly,
@@ -55,6 +57,10 @@ class ConferenceViewModel(
             isAttending = conferenceRepository.getAttendanceFromConferenceId(conferenceId)
         }
         getAttendanceCount()
+    }
+
+    fun onNewMessageChange(value: String) {
+        newMessage = value
     }
 
     private fun changeDuration() {
@@ -103,5 +109,9 @@ class ConferenceViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             currentUser = if (userRepository.getCurrentUser() == null) User() else userRepository.getCurrentUser()!!
         }
+    }
+
+    fun sendMessage() {
+        conferenceRepository.sendMessage(conferenceId, newMessage)
     }
 }

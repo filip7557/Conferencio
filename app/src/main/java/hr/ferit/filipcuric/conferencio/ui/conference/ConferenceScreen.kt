@@ -1,12 +1,12 @@
 package hr.ferit.filipcuric.conferencio.ui.conference
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -33,12 +33,14 @@ import hr.ferit.filipcuric.conferencio.model.User
 import hr.ferit.filipcuric.conferencio.ui.component.BackButton
 import hr.ferit.filipcuric.conferencio.ui.component.ManageButton
 import hr.ferit.filipcuric.conferencio.ui.component.Message
+import hr.ferit.filipcuric.conferencio.ui.component.SendMessageCard
 import hr.ferit.filipcuric.conferencio.ui.theme.Blue
 import hr.ferit.filipcuric.conferencio.ui.theme.DarkTertiaryColor
 import hr.ferit.filipcuric.conferencio.ui.theme.TertiaryColor
 import java.time.Duration
 import java.time.Instant
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ConferenceScreen(
     viewModel: ConferenceViewModel,
@@ -53,7 +55,7 @@ fun ConferenceScreen(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        item {
+        stickyHeader {
             Box(
                 contentAlignment = Alignment.TopStart,
                 modifier = Modifier
@@ -96,7 +98,7 @@ fun ConferenceScreen(
             Attendance(onClick = { viewModel.toggleAttendance() }, isAttending = viewModel.isAttending)
         }
         item {
-            Box(
+            Box( //TODO: Change colors of messages and add send message also make toggleable
                 modifier = Modifier
                     .padding(top = 20.dp)
                     .fillMaxWidth()
@@ -123,7 +125,15 @@ fun ConferenceScreen(
                             modifier = Modifier.padding(top = 5.dp, bottom = 2.5.dp)
                         )
                     }
-                    Messages(messages = messages.value, currentUser = viewModel.currentUser)
+                    Messages(messages = messages.value, currentUser = viewModel.currentUser, conferenceOwnerId = conference.value.ownerId)
+                    SendMessageCard(
+                        textValue = viewModel.newMessage,
+                        onTextChange = { viewModel.onNewMessageChange(it) },
+                        onSendClick = {
+                            viewModel.sendMessage()
+                            viewModel.newMessage = ""
+                                      },
+                    )
                 }
             }
         }
@@ -303,11 +313,14 @@ fun Attendance(
 fun Messages(
     messages: List<ChatMessage>,
     currentUser: User,
+    conferenceOwnerId: String,
 ) {
     LazyColumn(
-        contentPadding = PaddingValues(vertical = 5.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        reverseLayout = true,
         modifier = Modifier
-            .height(200.dp)
+            .height(if (messages.size < 3) 0.dp else 220.dp)
+            .padding(bottom = 10.dp)
             .fillMaxWidth()
     ) {
         items(
@@ -316,7 +329,8 @@ fun Messages(
         ) {
             Message(
                 message = it,
-                user = currentUser
+                user = currentUser,
+                conferenceOwnerId = conferenceOwnerId
             )
         }
     }

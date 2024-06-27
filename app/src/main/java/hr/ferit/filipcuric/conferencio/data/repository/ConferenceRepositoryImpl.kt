@@ -185,7 +185,7 @@ class ConferenceRepositoryImpl : ConferenceRepository {
 
     override suspend fun getConferenceChatById(conferenceId: String) : List<ChatMessage> {
         val messages = mutableListOf<ChatMessage>()
-        val documents = db.collection("messages").whereEqualTo("isEventChat", false)
+        val documents = db.collection("messages").whereEqualTo("eventChat", false)
             .whereEqualTo("eventId", conferenceId).get().await()
         for (document in documents) {
             val message = document.toObject(ChatMessage::class.java)
@@ -197,7 +197,7 @@ class ConferenceRepositoryImpl : ConferenceRepository {
 
     override fun getEventChatById(eventId: String) : Flow<List<ChatMessage>> = flow {
         val messages = mutableListOf<ChatMessage>()
-        db.collection("messages").whereEqualTo("isEventChat", true).whereEqualTo("eventId", eventId).get().addOnSuccessListener { documents ->
+        db.collection("messages").whereEqualTo("eventChat", true).whereEqualTo("eventId", eventId).get().addOnSuccessListener { documents ->
             for (document in documents) {
                 messages.add(document.toObject(ChatMessage::class.java))
             }

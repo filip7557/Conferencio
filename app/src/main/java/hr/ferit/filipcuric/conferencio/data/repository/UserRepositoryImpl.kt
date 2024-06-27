@@ -47,12 +47,14 @@ class UserRepositoryImpl : UserRepository {
 
     override suspend fun getCurrentUser() : User? {
         val currentUser = auth.currentUser
-        return db.collection("users")
+        val user = db.collection("users")
             .whereEqualTo("id", currentUser?.uid)
             .get()
             .await()
             .firstOrNull()
             ?.toObject(User::class.java)
+        user?.id = currentUser?.uid
+        return user
     }
 
     override suspend fun getUserById(userId: String) : User? {
