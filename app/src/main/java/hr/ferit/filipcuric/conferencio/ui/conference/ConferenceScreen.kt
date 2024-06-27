@@ -1,6 +1,5 @@
 package hr.ferit.filipcuric.conferencio.ui.conference
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -56,15 +55,14 @@ fun ConferenceScreen(
                 contentAlignment = Alignment.TopStart,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(187.5.dp)
+                    .height(200.dp)
                     .clip(RoundedCornerShape(bottomStart = 8.dp, bottomEnd = 8.dp))
             ) {
-                Log.d("CONF SCREEN", conference.value.toString())
                 AsyncImage(
                     model = conference.value.imageUrl,
                     contentDescription = "conference banner",
                     modifier = Modifier
-                        .fillMaxSize(),
+                        .fillMaxWidth(),
                     contentScale = ContentScale.Crop,
                 )
                 Row(
@@ -83,7 +81,7 @@ fun ConferenceScreen(
         item {
             Title(title = conference.value.title)
         }
-        if (conference.value.endDateTime >= Instant.now().toEpochMilli()) { // If conference ended, don't show timer.
+        if (conference.value.endDateTime >= Instant.now().toEpochMilli()) { // If conference hasn't ended yet, show timer.
             item {
                 Timer(conference.value.startDateTime, duration.value)
             }
