@@ -1,5 +1,6 @@
 package hr.ferit.filipcuric.conferencio.ui.conference
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -7,7 +8,10 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import hr.ferit.filipcuric.conferencio.data.repository.ConferenceRepository
+import hr.ferit.filipcuric.conferencio.data.repository.UserRepository
+import hr.ferit.filipcuric.conferencio.model.ChatMessage
 import hr.ferit.filipcuric.conferencio.model.Conference
+import hr.ferit.filipcuric.conferencio.model.User
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,6 +24,7 @@ import java.time.Instant
 
 class ConferenceViewModel(
     private val conferenceRepository: ConferenceRepository,
+    private val userRepository: UserRepository,
     private val conferenceId: String,
 ) : ViewModel() {
 
@@ -29,7 +34,12 @@ class ConferenceViewModel(
     var attendingCount by mutableIntStateOf(0)
         private set
 
+    var currentUser by mutableStateOf(User())
+        private set
+
     val duration = MutableStateFlow(Duration.ZERO)
+
+    var messages = MutableStateFlow(listOf<ChatMessage>())
 
     val conference: StateFlow<Conference> = conferenceRepository.getConferenceFromId(conferenceId).stateIn(
             scope = CoroutineScope(Dispatchers.IO),
@@ -38,7 +48,9 @@ class ConferenceViewModel(
         )
 
     init {
+        getCurrentUser()
         changeDuration()
+        getMessages()
         viewModelScope.launch(Dispatchers.IO) {
             isAttending = conferenceRepository.getAttendanceFromConferenceId(conferenceId)
         }
@@ -74,7 +86,22 @@ class ConferenceViewModel(
         }
     }
 
+    private fun getMessages() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val newMessages = conferenceRepository.getConferenceChatById(conferenceId)
+            messages.emit(newMessages)
+            Log.d("CONF VM", "Got messages $newMessages")
+            getMessages()
+        }
+    }
+
     fun isUserManager() : Boolean {
         return conferenceRepository.isUserManager(conference.value.ownerId)
+    }
+
+    private fun getCurrentUser() {
+        viewModelScope.launch(Dispatchers.IO) {
+            currentUser = if (userRepository.getCurrentUser() == null) User() else userRepository.getCurrentUser()!!
+        }
     }
 }

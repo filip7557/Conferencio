@@ -7,6 +7,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import hr.ferit.filipcuric.conferencio.model.Attendance
+import hr.ferit.filipcuric.conferencio.model.ChatMessage
 import hr.ferit.filipcuric.conferencio.model.Conference
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -180,6 +181,45 @@ class ConferenceRepositoryImpl : ConferenceRepository {
             db.collection("conferences").add(newConference).addOnSuccessListener { document -> conferenceId = document.id }.await()
         }
         return conferenceId
+    }
+
+    override suspend fun getConferenceChatById(conferenceId: String) : List<ChatMessage> {
+        val messages = mutableListOf<ChatMessage>()
+        val documents = db.collection("messages").whereEqualTo("isEventChat", false)
+            .whereEqualTo("eventId", conferenceId).get().await()
+        for (document in documents) {
+            val message = document.toObject(ChatMessage::class.java)
+            messages.add(message)
+        }
+        Log.d("CONF REPO", "Got messages $messages")
+        return messages
+    }
+
+    override fun getEventChatById(eventId: String) : Flow<List<ChatMessage>> = flow {
+        val messages = mutableListOf<ChatMessage>()
+        db.collection("messages").whereEqualTo("isEventChat", true).whereEqualTo("eventId", eventId).get().addOnSuccessListener { documents ->
+            for (document in documents) {
+                messages.add(document.toObject(ChatMessage::class.java))
+            }
+        }
+        emit(messages.sortedBy { p -> p.timeStamp })
+    }.shareIn(
+        scope = CoroutineScope(Dispatchers.IO),
+        started = SharingStarted.WhileSubscribed(1000L),
+        replay = 1,
+    )
+
+    override fun sendMessage(eventId: String, message: String, isEventChat: Boolean) {
+        val chatMessage = ChatMessage(
+            isEventChat = isEventChat,
+            eventId = eventId,
+            userId = auth.currentUser!!.uid,
+            timeStamp = Instant.now().toEpochMilli(),
+            message = message
+        )
+        db.collection("messages").add(chatMessage).addOnSuccessListener {
+            Log.d("CHAT", "Sent message from user ${auth.currentUser!!.uid} to conf/event $eventId")
+        }
     }
 
 }

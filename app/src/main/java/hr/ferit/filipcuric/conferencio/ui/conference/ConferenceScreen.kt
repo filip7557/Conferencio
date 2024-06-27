@@ -6,12 +6,13 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -23,14 +24,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import hr.ferit.filipcuric.conferencio.R
-import hr.ferit.filipcuric.conferencio.data.repository.ConferenceRepositoryImpl
+import hr.ferit.filipcuric.conferencio.model.ChatMessage
+import hr.ferit.filipcuric.conferencio.model.User
 import hr.ferit.filipcuric.conferencio.ui.component.BackButton
 import hr.ferit.filipcuric.conferencio.ui.component.ManageButton
+import hr.ferit.filipcuric.conferencio.ui.component.Message
 import hr.ferit.filipcuric.conferencio.ui.theme.Blue
 import hr.ferit.filipcuric.conferencio.ui.theme.DarkTertiaryColor
 import hr.ferit.filipcuric.conferencio.ui.theme.TertiaryColor
@@ -45,6 +47,7 @@ fun ConferenceScreen(
 ) {
     val conference = viewModel.conference.collectAsState()
     val duration = viewModel.duration.collectAsState()
+    val messages = viewModel.messages.collectAsState()
 
     LazyColumn(
         verticalArrangement = Arrangement.Top,
@@ -91,6 +94,38 @@ fun ConferenceScreen(
         }
         item {
             Attendance(onClick = { viewModel.toggleAttendance() }, isAttending = viewModel.isAttending)
+        }
+        item {
+            Box(
+                modifier = Modifier
+                    .padding(top = 20.dp)
+                    .fillMaxWidth()
+                    .background(
+                        if (isSystemInDarkTheme()) DarkTertiaryColor else TertiaryColor,
+                        RoundedCornerShape(8.dp)
+                    ),
+                contentAlignment = Alignment.TopCenter
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Row {
+                        Text(
+                            text = "Chat ",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Medium,
+                            modifier = Modifier.padding(top = 5.dp, bottom = 2.5.dp)
+                        )
+                        Text(
+                            text = messages.value.size.toString(),
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.ExtraLight,
+                            modifier = Modifier.padding(top = 5.dp, bottom = 2.5.dp)
+                        )
+                    }
+                    Messages(messages = messages.value, currentUser = viewModel.currentUser)
+                }
+            }
         }
     }
 }
@@ -264,10 +299,25 @@ fun Attendance(
     }
 }
 
-@Preview
 @Composable
-fun ConferenceScreenPreview() {
-    ConferenceScreen(viewModel = ConferenceViewModel(conferenceRepository = ConferenceRepositoryImpl(), conferenceId = "6KaEdyk8QEo8C6FpNQeo"), { }) {
-        
+fun Messages(
+    messages: List<ChatMessage>,
+    currentUser: User,
+) {
+    LazyColumn(
+        contentPadding = PaddingValues(vertical = 5.dp),
+        modifier = Modifier
+            .height(200.dp)
+            .fillMaxWidth()
+    ) {
+        items(
+            items = messages,
+            key = { message -> messages.indexOf(message) }
+        ) {
+            Message(
+                message = it,
+                user = currentUser
+            )
+        }
     }
 }

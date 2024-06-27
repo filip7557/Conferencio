@@ -5,4 +5,5 @@ data class ChatMessage(
     val eventId: String = "",
     val userId: String = "",
     val timeStamp: Long = 0,
+    val message: String = "",
 )

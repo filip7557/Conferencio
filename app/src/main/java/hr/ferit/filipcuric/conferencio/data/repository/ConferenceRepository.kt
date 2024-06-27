@@ -1,6 +1,7 @@
 package hr.ferit.filipcuric.conferencio.data.repository
 
 import android.net.Uri
+import hr.ferit.filipcuric.conferencio.model.ChatMessage
 import hr.ferit.filipcuric.conferencio.model.Conference
 import kotlinx.coroutines.flow.Flow
 
@@ -16,4 +17,7 @@ interface ConferenceRepository {
     suspend fun toggleAttendance(conferenceId: String)
     suspend fun getAttendanceCount(conferenceId: String): Int
     fun isUserManager(conferenceOwnerId: String): Boolean
+    suspend fun getConferenceChatById(conferenceId: String): List<ChatMessage>
+    fun sendMessage(eventId: String, message: String, isEventChat: Boolean = false)
+    fun getEventChatById(eventId: String): Flow<List<ChatMessage>>
 }

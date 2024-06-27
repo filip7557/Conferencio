@@ -7,9 +7,10 @@ import org.koin.dsl.module
 val conferenceModule = module {
     viewModel {
             (conferenceId : String) ->
-            ConferenceViewModel(
-            conferenceId = conferenceId,
-            conferenceRepository = get()
-        )
+                ConferenceViewModel(
+                    conferenceId = conferenceId,
+                    conferenceRepository = get(),
+                    userRepository = get(),
+                )
     }
 }
