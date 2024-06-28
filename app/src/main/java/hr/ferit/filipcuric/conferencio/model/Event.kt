@@ -8,5 +8,6 @@ data class Event(
     val location: String = "",
     val duration: String = "",
     val hostId: String = "",
-    val type: String,
+    val type: String = "",
+    val description: String = "",
 )
