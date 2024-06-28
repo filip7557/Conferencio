@@ -34,14 +34,13 @@ class ConferenceViewModel(
     var attendingCount by mutableIntStateOf(0)
         private set
 
-    var currentUser by mutableStateOf(User())
-        private set
-
     val duration = MutableStateFlow(Duration.ZERO)
 
     var messages = MutableStateFlow(listOf<ChatMessage>())
 
     var newMessage by mutableStateOf("")
+
+    val messageAuthors = MutableStateFlow(listOf<User>())
 
     val conference: StateFlow<Conference> = conferenceRepository.getConferenceFromId(conferenceId).stateIn(
             scope = CoroutineScope(Dispatchers.IO),
@@ -50,7 +49,6 @@ class ConferenceViewModel(
         )
 
     init {
-        getCurrentUser()
         changeDuration()
         getMessages()
         viewModelScope.launch(Dispatchers.IO) {
@@ -95,6 +93,11 @@ class ConferenceViewModel(
     private fun getMessages() {
         viewModelScope.launch(Dispatchers.IO) {
             val newMessages = conferenceRepository.getConferenceChatById(conferenceId)
+            val authors = mutableListOf<User>()
+            for (message in newMessages) {
+                authors.add(userRepository.getUserById(message.userId)!!)
+            }
+            messageAuthors.emit(authors)
             messages.emit(newMessages)
             Log.d("CONF VM", "Got messages $newMessages")
             getMessages()
@@ -103,12 +106,6 @@ class ConferenceViewModel(
 
     fun isUserManager() : Boolean {
         return conferenceRepository.isUserManager(conference.value.ownerId)
-    }
-
-    private fun getCurrentUser() {
-        viewModelScope.launch(Dispatchers.IO) {
-            currentUser = if (userRepository.getCurrentUser() == null) User() else userRepository.getCurrentUser()!!
-        }
     }
 
     fun sendMessage() {

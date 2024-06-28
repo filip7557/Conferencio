@@ -28,8 +28,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import hr.ferit.filipcuric.conferencio.R
-import hr.ferit.filipcuric.conferencio.model.ChatMessage
-import hr.ferit.filipcuric.conferencio.model.User
 import hr.ferit.filipcuric.conferencio.ui.component.BackButton
 import hr.ferit.filipcuric.conferencio.ui.component.ManageButton
 import hr.ferit.filipcuric.conferencio.ui.component.Message
@@ -50,6 +48,7 @@ fun ConferenceScreen(
     val conference = viewModel.conference.collectAsState()
     val duration = viewModel.duration.collectAsState()
     val messages = viewModel.messages.collectAsState()
+    val authors = viewModel.messageAuthors.collectAsState()
 
     LazyColumn(
         verticalArrangement = Arrangement.Top,
@@ -125,7 +124,25 @@ fun ConferenceScreen(
                             modifier = Modifier.padding(top = 5.dp, bottom = 2.5.dp)
                         )
                     }
-                    Messages(messages = messages.value, currentUser = viewModel.currentUser, conferenceOwnerId = conference.value.ownerId)
+                    LazyColumn(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        reverseLayout = true,
+                        modifier = Modifier
+                            .height(if (messages.value.isEmpty()) 0.dp else if (messages.value.size < 2) 110.dp else 220.dp)
+                            .padding(bottom = 10.dp)
+                            .fillMaxWidth()
+                    ) {
+                        items(
+                            items = messages.value,
+                            key = { message -> messages.value.indexOf(message) }
+                        ) {
+                            Message(
+                                message = it,
+                                user = authors.value[messages.value.indexOf(it)],
+                                conferenceOwnerId = conference.value.ownerId
+                            )
+                        }
+                    }
                     SendMessageCard(
                         textValue = viewModel.newMessage,
                         onTextChange = { viewModel.onNewMessageChange(it) },
@@ -306,32 +323,5 @@ fun Attendance(
                 modifier = Modifier
                     .clickable(onClick = onClick)
             )
-    }
-}
-
-@Composable
-fun Messages(
-    messages: List<ChatMessage>,
-    currentUser: User,
-    conferenceOwnerId: String,
-) {
-    LazyColumn(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        reverseLayout = true,
-        modifier = Modifier
-            .height(if (messages.size < 3) 0.dp else 220.dp)
-            .padding(bottom = 10.dp)
-            .fillMaxWidth()
-    ) {
-        items(
-            items = messages,
-            key = { message -> messages.indexOf(message) }
-        ) {
-            Message(
-                message = it,
-                user = currentUser,
-                conferenceOwnerId = conferenceOwnerId
-            )
-        }
     }
 }
