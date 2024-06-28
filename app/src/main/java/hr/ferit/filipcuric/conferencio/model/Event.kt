@@ -6,7 +6,7 @@ data class Event(
     val title: String = "",
     val dateTime: Long = 0,
     val location: String = "",
-    val duration: String = "",
+    val duration: Int = 0,
     val hostId: String = "",
     val type: String = "",
     val description: String = "",
