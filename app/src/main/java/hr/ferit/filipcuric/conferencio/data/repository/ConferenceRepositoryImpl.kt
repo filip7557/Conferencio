@@ -192,7 +192,7 @@ class ConferenceRepositoryImpl : ConferenceRepository {
             messages.add(message)
         }
         Log.d("CONF REPO", "Got messages $messages")
-        return messages
+        return messages.sortedBy { p -> p.timeStamp }
     }
 
     override fun getEventChatById(eventId: String) : Flow<List<ChatMessage>> = flow {
