@@ -11,6 +11,7 @@ import hr.ferit.filipcuric.conferencio.data.repository.ConferenceRepository
 import hr.ferit.filipcuric.conferencio.data.repository.UserRepository
 import hr.ferit.filipcuric.conferencio.model.ChatMessage
 import hr.ferit.filipcuric.conferencio.model.Conference
+import hr.ferit.filipcuric.conferencio.model.Event
 import hr.ferit.filipcuric.conferencio.model.User
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -40,6 +41,9 @@ class ConferenceViewModel(
 
     var newMessage by mutableStateOf("")
 
+    var showEvents by mutableStateOf(true)
+        private set
+
     val messageAuthors = MutableStateFlow(listOf<User>())
 
     val conference: StateFlow<Conference> = conferenceRepository.getConferenceFromId(conferenceId).stateIn(
@@ -47,6 +51,12 @@ class ConferenceViewModel(
             started = SharingStarted.Eagerly,
             initialValue = Conference()
         )
+
+    val events: StateFlow<List<Event>> = conferenceRepository.getEventsByConferenceId(conferenceId).stateIn(
+        scope = CoroutineScope(Dispatchers.IO),
+        started = SharingStarted.Eagerly,
+        initialValue = listOf()
+    )
 
     init {
         changeDuration()
@@ -59,6 +69,10 @@ class ConferenceViewModel(
 
     fun onNewMessageChange(value: String) {
         newMessage = value
+    }
+
+    fun toggleShowEvents() {
+        showEvents = !showEvents
     }
 
     private fun changeDuration() {

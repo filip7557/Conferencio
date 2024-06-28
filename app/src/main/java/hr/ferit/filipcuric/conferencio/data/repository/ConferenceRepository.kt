@@ -3,6 +3,7 @@ package hr.ferit.filipcuric.conferencio.data.repository
 import android.net.Uri
 import hr.ferit.filipcuric.conferencio.model.ChatMessage
 import hr.ferit.filipcuric.conferencio.model.Conference
+import hr.ferit.filipcuric.conferencio.model.Event
 import kotlinx.coroutines.flow.Flow
 
 interface ConferenceRepository {
@@ -20,4 +21,5 @@ interface ConferenceRepository {
     suspend fun getConferenceChatById(conferenceId: String): List<ChatMessage>
     fun sendMessage(eventId: String, message: String, isEventChat: Boolean = false)
     fun getEventChatById(eventId: String): Flow<List<ChatMessage>>
+    fun getEventsByConferenceId(conferenceId: String): Flow<List<Event>>
 }

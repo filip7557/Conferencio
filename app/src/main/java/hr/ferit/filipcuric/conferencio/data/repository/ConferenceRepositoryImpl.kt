@@ -3,11 +3,13 @@ package hr.ferit.filipcuric.conferencio.data.repository
 import android.net.Uri
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.firestore.toObject
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import hr.ferit.filipcuric.conferencio.model.Attendance
 import hr.ferit.filipcuric.conferencio.model.ChatMessage
 import hr.ferit.filipcuric.conferencio.model.Conference
+import hr.ferit.filipcuric.conferencio.model.Event
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -210,4 +212,19 @@ class ConferenceRepositoryImpl : ConferenceRepository {
         }
     }
 
+    override fun getEventsByConferenceId(conferenceId: String) : Flow<List<Event>> {
+        val events = mutableListOf<Event>()
+        db.collection("events").whereEqualTo("conferenceId", conferenceId).get().addOnSuccessListener { documents ->
+            for (document in documents) {
+                val event = document.toObject(Event::class.java)
+                event.id = document.id
+                events.add(event)
+            }
+        }
+        return flowOf(events.sortedBy { p -> p.dateTime }).shareIn(
+            scope = CoroutineScope(Dispatchers.IO),
+            started = SharingStarted.WhileSubscribed(5_000),
+            replay = 1,
+        )
+    }
 }

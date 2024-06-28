@@ -21,6 +21,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -29,6 +31,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import hr.ferit.filipcuric.conferencio.R
 import hr.ferit.filipcuric.conferencio.ui.component.BackButton
+import hr.ferit.filipcuric.conferencio.ui.component.EventCard
 import hr.ferit.filipcuric.conferencio.ui.component.ManageButton
 import hr.ferit.filipcuric.conferencio.ui.component.Message
 import hr.ferit.filipcuric.conferencio.ui.component.SendMessageCard
@@ -44,9 +47,11 @@ fun ConferenceScreen(
     viewModel: ConferenceViewModel,
     onBackClick: () -> Unit,
     onManageClick: (String) -> Unit,
+    onEventClick: (String) -> Unit,
 ) {
     val conference = viewModel.conference.collectAsState()
     val duration = viewModel.duration.collectAsState()
+    val events = viewModel.events.collectAsState()
     val messages = viewModel.messages.collectAsState()
     val authors = viewModel.messageAuthors.collectAsState()
 
@@ -77,7 +82,7 @@ fun ConferenceScreen(
                 ) {
                     BackButton(onClick = onBackClick)
                     if (viewModel.isUserManager()) {
-                        ManageButton(onClick = { onManageClick(conference.value.id!!) })
+                        ManageButton(onClick = { onManageClick(conference.value.id!!) /*TODO: Create navigation!!*/ })
                     }
                 }
             }
@@ -97,7 +102,60 @@ fun ConferenceScreen(
             Attendance(onClick = { viewModel.toggleAttendance() }, isAttending = viewModel.isAttending)
         }
         item {
-            Box( //TODO: Change colors of messages and add send message also make toggleable
+            Box(
+                contentAlignment = Alignment.TopEnd,
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(
+                            onClick = {
+                                viewModel.toggleShowEvents()
+                            }
+                        )
+                ) {
+                    Text(text = "")
+                    Text(
+                        text = "Events",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                        modifier = Modifier.padding(top = 5.dp, bottom = 2.5.dp)
+                    )
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_expand),
+                        contentDescription = "expand",
+                        tint = if (isSystemInDarkTheme()) Color.White else Color.Black,
+                        modifier = Modifier
+                            .rotate(if (viewModel.showEvents) 0f else 180f)
+                            .padding(top = 2.dp)
+                    )
+                }
+                if (viewModel.showEvents) {
+                    LazyColumn(
+                        modifier = Modifier
+                            .height(if (events.value.isEmpty()) 0.dp else if (events.value.size < 2) 150.dp else if (events.value.size < 4) 250.dp else 350.dp)
+                            .padding(10.dp)
+                    ) {
+                        items(
+                            items = events.value,
+                            key = { event -> event.id!! }
+                        ) {
+                            EventCard(
+                                event = it,
+                                onClick = { eventId ->
+                                    onEventClick(eventId) /*TODO: Create navigation!!*/
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+        }
+        item {
+            Box(
                 modifier = Modifier
                     .padding(top = 20.dp)
                     .fillMaxWidth()

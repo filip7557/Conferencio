@@ -2,7 +2,7 @@ package hr.ferit.filipcuric.conferencio.model
 
 data class Event(
     val conferenceId: String = "",
-    val id: String? = "",
+    var id: String? = "",
     val title: String = "",
     val dateTime: Long = 0,
     val location: String = "",
