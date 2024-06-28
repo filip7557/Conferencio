@@ -29,7 +29,7 @@ fun ManageButton(
             .padding(top = 30.dp)
             .clip(CircleShape)
             .size(32.dp)
-            .background(if(isSystemInDarkTheme()) DarkTertiaryColor.copy(alpha = 0.9f) else TertiaryColor.copy(alpha = 0.8f))
+            .background(if(isSystemInDarkTheme()) DarkTertiaryColor.copy(alpha = 0.8f) else TertiaryColor.copy(alpha = 0.8f))
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center
     ) {
