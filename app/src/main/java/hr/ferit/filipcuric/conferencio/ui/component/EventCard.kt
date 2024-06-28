@@ -17,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import hr.ferit.filipcuric.conferencio.R
@@ -101,68 +100,5 @@ fun EventCard(
                 }
             }
         }
-    }
-}
-
-@Preview
-@Composable
-fun EventCardPreview() {
-    Column {
-        EventCard(
-            event = Event(
-                "",
-                "",
-                "Poćetak karijere u IT-u",
-                1719648000000,
-                "K2-1",
-                0,
-                "",
-                "Lecture",
-                ""
-            ),
-            onClick = {}
-        )
-        EventCard(
-            event = Event(
-                "",
-                "",
-                "Poćetak karijere u IT-u",
-                1719648000000,
-                "K2-1",
-                0,
-                "",
-                "Workshop",
-                ""
-            ),
-            onClick = {}
-        )
-        EventCard(
-            event = Event(
-                "",
-                "",
-                "Poćetak karijere u IT-u",
-                1719648000000,
-                "K2-1",
-                0,
-                "",
-                "Fair",
-                ""
-            ),
-            onClick = {}
-        )
-        EventCard(
-            event = Event(
-                "",
-                "",
-                "Poćetak karijere u IT-u",
-                1719648000000,
-                "K2-1",
-                0,
-                "",
-                "Other",
-                ""
-            ),
-            onClick = {}
-        )
     }
 }
