@@ -8,6 +8,7 @@ val profileModule = module {
     viewModel {
         ProfileViewModel(
             userRepository = get(),
+            conferenceRepository = get(),
         )
     }
 }

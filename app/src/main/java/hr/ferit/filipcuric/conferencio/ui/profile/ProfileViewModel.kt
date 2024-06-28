@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import hr.ferit.filipcuric.conferencio.data.repository.ConferenceRepository
 import hr.ferit.filipcuric.conferencio.data.repository.UserRepository
 import hr.ferit.filipcuric.conferencio.model.User
 import kotlinx.coroutines.Dispatchers
@@ -13,6 +14,7 @@ import kotlinx.coroutines.launch
 
 class ProfileViewModel(
     private val userRepository: UserRepository,
+    private val conferenceRepository: ConferenceRepository,
 ) : ViewModel() {
 
     var user by mutableStateOf(User())
@@ -22,9 +24,8 @@ class ProfileViewModel(
         private set
 
     init {
-        organized = 10
-        attended = 25
-        //TODO: Get actual data.
+        getNumberOfAttendingConferences()
+        getNumberOfOrganizedConferences()
     }
 
     fun logout(onSignOutClick: () -> Unit) {
@@ -38,6 +39,22 @@ class ProfileViewModel(
                 userRepository.getCurrentUser()!!
             } else {
                 User()
+            }
+        }
+    }
+
+    private fun getNumberOfOrganizedConferences() {
+        viewModelScope.launch(Dispatchers.IO) {
+            conferenceRepository.getOrganizingConferences().collect {
+                organized = it.size
+            }
+        }
+    }
+
+    private fun getNumberOfAttendingConferences() {
+        viewModelScope.launch(Dispatchers.IO) {
+            conferenceRepository.getAttendingConferences().collect {
+                attended = it.size
             }
         }
     }
