@@ -1,5 +1,6 @@
 package hr.ferit.filipcuric.conferencio.ui.conference
 
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -52,6 +53,7 @@ fun ConferenceScreen(
     val conference = viewModel.conference.collectAsState()
     val duration = viewModel.duration.collectAsState()
     val events = viewModel.events.collectAsState()
+    Log.d("EVENTS SCREEN", "Got events: ${events.value}")
     val messages = viewModel.messages.collectAsState()
     val authors = viewModel.messageAuthors.collectAsState()
 
@@ -102,13 +104,17 @@ fun ConferenceScreen(
             Attendance(onClick = { viewModel.toggleAttendance() }, isAttending = viewModel.isAttending)
         }
         item {
-            Box(
-                contentAlignment = Alignment.TopEnd,
+            Column(
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
+                    .padding(top = 20.dp)
                     .fillMaxWidth()
+                    .background(if (isSystemInDarkTheme()) DarkTertiaryColor else TertiaryColor, RoundedCornerShape(8.dp))
             ) {
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable(
@@ -130,25 +136,34 @@ fun ConferenceScreen(
                         tint = if (isSystemInDarkTheme()) Color.White else Color.Black,
                         modifier = Modifier
                             .rotate(if (viewModel.showEvents) 0f else 180f)
-                            .padding(top = 2.dp)
+                            .padding(top = 2.dp, end = 5.dp)
                     )
                 }
                 if (viewModel.showEvents) {
-                    LazyColumn(
-                        modifier = Modifier
-                            .height(if (events.value.isEmpty()) 0.dp else if (events.value.size < 2) 150.dp else if (events.value.size < 4) 250.dp else 350.dp)
-                            .padding(10.dp)
-                    ) {
-                        items(
-                            items = events.value,
-                            key = { event -> event.id!! }
+                    if (events.value.isEmpty()) {
+                        Text(
+                            text = "There are no events planned in this conference.",
+                            fontWeight = FontWeight.Light,
+                            modifier = Modifier
+                                .padding(top = 30.dp, bottom = 10.dp)
+                        )
+                    } else {
+                        LazyColumn(
+                            modifier = Modifier
+                                .height(if (events.value.isEmpty()) 0.dp else if (events.value.size < 2) 100.dp else if (events.value.size < 3) 200.dp else if (events.value.size < 4) 300.dp else 400.dp)
+                                .padding(10.dp)
                         ) {
-                            EventCard(
-                                event = it,
-                                onClick = { eventId ->
-                                    onEventClick(eventId) /*TODO: Create navigation!!*/
-                                }
-                            )
+                            items(
+                                items = events.value,
+                                key = { event -> event.id!! }
+                            ) {
+                                EventCard(
+                                    event = it,
+                                    onClick = { eventId ->
+                                        onEventClick(eventId) /*TODO: Create navigation!!*/
+                                    }
+                                )
+                            }
                         }
                     }
                 }

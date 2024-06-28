@@ -86,7 +86,7 @@ fun EventCard(
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
-                    .fillMaxWidth(0.6f)
+                    .fillMaxWidth(0.8f)
             ) {
                 val datetime = Instant.ofEpochMilli(event.dateTime).atZone(ZoneId.systemDefault())
                 Text(text = "${if (datetime.dayOfMonth < 10) '0' else ""}${datetime.dayOfMonth}/${if (datetime.monthValue < 10) '0' else ""}${datetime.monthValue}/${datetime.year}")

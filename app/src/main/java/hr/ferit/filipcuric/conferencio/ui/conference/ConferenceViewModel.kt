@@ -1,6 +1,5 @@
 package hr.ferit.filipcuric.conferencio.ui.conference
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -15,9 +14,11 @@ import hr.ferit.filipcuric.conferencio.model.Event
 import hr.ferit.filipcuric.conferencio.model.User
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.Duration
@@ -52,7 +53,11 @@ class ConferenceViewModel(
             initialValue = Conference()
         )
 
-    val events: StateFlow<List<Event>> = conferenceRepository.getEventsByConferenceId(conferenceId).stateIn(
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val events: StateFlow<List<Event>> =
+        conference.flatMapLatest {
+            conferenceRepository.getEventsByConferenceId(conferenceId)
+        }.stateIn(
         scope = CoroutineScope(Dispatchers.IO),
         started = SharingStarted.Eagerly,
         initialValue = listOf()
