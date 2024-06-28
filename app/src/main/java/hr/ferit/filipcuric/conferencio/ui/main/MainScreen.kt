@@ -311,6 +311,9 @@ fun MainScreen() {
                         },
                         onManageClick = {
 
+                        },
+                        onEventClick = {
+
                         }
                     )
                 }
