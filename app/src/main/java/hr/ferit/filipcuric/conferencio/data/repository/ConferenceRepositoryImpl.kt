@@ -1,7 +1,6 @@
 package hr.ferit.filipcuric.conferencio.data.repository
 
 import android.net.Uri
-import android.util.Log
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -34,7 +33,6 @@ class ConferenceRepositoryImpl : ConferenceRepository {
                     val conference = document.toObject(Conference::class.java)
                     conference.id = document.id
                     conferences.add(conference)
-                    Log.d("GET CONF", conference.toString())
                 }
             }.await()
         return flowOf(conferences).shareIn(
@@ -52,14 +50,12 @@ class ConferenceRepositoryImpl : ConferenceRepository {
                 for (document in documents) {
                     val attendance = document.toObject(Attendance::class.java)
                     conferenceIds.add(attendance.conferenceId)
-                    Log.d("GETTING ATTENDING CONFS", "Got $attendance")
                 }
             }.await()
         conferenceIds.forEach {
             db.collection("conferences").document(it).get().addOnSuccessListener { document ->
                 val conference = document.toObject(Conference::class.java)
                     conference!!.id = it
-                    Log.d("GETTING ATTENDING CONFS", "Got $conference")
                     if (conference.ownerId != auth.currentUser?.uid)
                         conferences.add(conference)
             }.await()
@@ -73,14 +69,12 @@ class ConferenceRepositoryImpl : ConferenceRepository {
 
     override suspend fun getConferencesFromSearch(searchValue: String): Flow<List<Conference>> {
         val conferences = mutableListOf<Conference>()
-        Log.d("CONF REPO", "Got here!!")
         db.collection("conferences").get().addOnSuccessListener { documents ->
             for (document in documents) {
                 val conference = document.toObject(Conference::class.java)
                 if (conference.title.lowercase().contains(searchValue.lowercase())) {
                     conference.id = document.id
                     conferences.add(conference)
-                    Log.d("CONF REPO", "Found conference with title ${conference.title}")
                 }
             }
         }.await()
@@ -92,16 +86,13 @@ class ConferenceRepositoryImpl : ConferenceRepository {
     }
     override fun getActiveConferences() : Flow<List<Conference>> {
         val conferences = mutableListOf<Conference>()
-        Log.d("CONF REPO", "Getting conferences with date less then or equal to ${Instant.now().toEpochMilli()}")
         db.collection("conferences").whereGreaterThanOrEqualTo("endDateTime", Instant.now().toEpochMilli()).get().addOnSuccessListener {documents ->
             for (document in documents) {
                 val conference = document.toObject(Conference::class.java)
                 conference.id = document.id
                 conferences.add(conference)
-                Log.d("CONF REPO", "Got conf with id ${conference.id} and added it to list")
             }
         }
-        Log.d("CONF REPO", "LIST: $conferences")
         return flowOf(conferences).shareIn(
             scope = CoroutineScope(Dispatchers.IO),
             started = SharingStarted.WhileSubscribed(1000L),
@@ -159,7 +150,6 @@ class ConferenceRepositoryImpl : ConferenceRepository {
         return if (imageUri != null) {
             imageRef.putFile(imageUri).await()
             val imageUrl = imageRef.downloadUrl.await().toString()
-            Log.d("PICTURE", imageUrl)
             imageUrl
         } else {
             ""
@@ -191,8 +181,7 @@ class ConferenceRepositoryImpl : ConferenceRepository {
             val message = document.toObject(ChatMessage::class.java)
             messages.add(message)
         }
-        Log.d("CONF REPO", "Got messages $messages")
-        return messages.sortedBy { p -> p.timeStamp }
+        return messages.sortedBy { p -> -p.timeStamp }
     }
 
     override fun getEventChatById(eventId: String) : Flow<List<ChatMessage>> = flow {
@@ -218,7 +207,6 @@ class ConferenceRepositoryImpl : ConferenceRepository {
             message = message
         )
         db.collection("messages").add(chatMessage).addOnSuccessListener {
-            Log.d("CHAT", "Sent message from user ${auth.currentUser!!.uid} to conf/event $eventId")
         }
     }
 
