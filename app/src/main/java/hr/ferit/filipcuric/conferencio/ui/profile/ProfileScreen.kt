@@ -23,13 +23,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import hr.ferit.filipcuric.conferencio.ui.component.BlueButton
 import hr.ferit.filipcuric.conferencio.ui.theme.Blue
 
 @Composable
 fun ProfileScreen(
     viewModel: ProfileViewModel,
-    onSignOutClick: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -42,9 +40,6 @@ fun ProfileScreen(
         Fullname(fullname = viewModel.user.fullname)
         CompanyAndPosition(company = viewModel.user.company, position = viewModel.user.position)
         ConferencesInfo(organized = viewModel.organized, attended = viewModel.attended)
-        BlueButton(text = "LOGOUT (TESTING ONLY)") {
-            viewModel.logout(onSignOutClick)
-        }
     }
 }
 
@@ -125,12 +120,6 @@ fun ConferencesInfo(
                 fontWeight = FontWeight.Thin
             )
         }
-        /*Image(
-            painter = painterResource(id = R.drawable.divider),
-            contentDescription = "separator",
-            modifier = Modifier
-                .size(width = 50.dp, height = 100.dp) //TODO: Fix size of separator
-        )*/
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(50))

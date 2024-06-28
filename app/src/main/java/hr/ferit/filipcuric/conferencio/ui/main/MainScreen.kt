@@ -249,9 +249,6 @@ fun MainScreen() {
                     profileViewModel.getCurrentUser()
                     ProfileScreen(
                         viewModel = profileViewModel,
-                        onSignOutClick = {
-                            navController.navigate(NavigationItem.LoginDestination.route)
-                        }
                     )
                 }
                 composable(NavigationItem.HomeDestination.route) {
