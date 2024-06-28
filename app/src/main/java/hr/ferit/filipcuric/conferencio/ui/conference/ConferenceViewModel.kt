@@ -113,7 +113,6 @@ class ConferenceViewModel(
             }
             messageAuthors.emit(authors)
             messages.emit(newMessages)
-            Log.d("CONF VM", "Got messages $newMessages")
             getMessages()
         }
     }
