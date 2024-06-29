@@ -28,9 +28,10 @@ import java.time.ZoneId
 fun EventCard(
     event: Event,
     onClick: (String) -> Unit,
+    isOnEventScreen: Boolean = false,
 ) {
     Card(
-        shape = RoundedCornerShape(8.dp),
+        shape = if (isOnEventScreen) RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp) else RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(
             containerColor = when (event.type) {
                 "Lecture" -> Color(151, 252, 134).copy(alpha = 0.58f)
@@ -88,15 +89,18 @@ fun EventCard(
                 modifier = Modifier
                     .fillMaxWidth(0.8f)
             ) {
-                val datetime = Instant.ofEpochMilli(event.dateTime).atZone(ZoneId.systemDefault())
-                Text(text = "${if (datetime.dayOfMonth < 10) '0' else ""}${datetime.dayOfMonth}/${if (datetime.monthValue < 10) '0' else ""}${datetime.monthValue}/${datetime.year}")
-                Row(
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    Text(text = "${if (datetime.hour < 10) '0' else ""}${datetime.hour}:${if (datetime.minute < 10) '0' else ""}${datetime.minute}")
-                    Text(text = event.location)
+                if (!isOnEventScreen) {
+                    val datetime =
+                        Instant.ofEpochMilli(event.dateTime).atZone(ZoneId.systemDefault())
+                    Text(text = "${if (datetime.dayOfMonth < 10) '0' else ""}${datetime.dayOfMonth}/${if (datetime.monthValue < 10) '0' else ""}${datetime.monthValue}/${datetime.year}")
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
+                        Text(text = "${if (datetime.hour < 10) '0' else ""}${datetime.hour}:${if (datetime.minute < 10) '0' else ""}${datetime.minute}")
+                        Text(text = event.location)
+                    }
                 }
             }
         }
