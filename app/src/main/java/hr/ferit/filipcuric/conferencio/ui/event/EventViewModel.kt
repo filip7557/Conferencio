@@ -46,6 +46,7 @@ class EventViewModel(
 
     init {
         getHostUser()
+        getMessages()
     }
 
     var host by mutableStateOf(User())
