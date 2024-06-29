@@ -65,12 +65,14 @@ class EditProfileViewModel(
     }
 
     fun getCurrentUserData() {
-        viewModelScope.launch(Dispatchers.IO) {
-            currentUser = userRepository.getCurrentUser()!!
-            fullname = currentUser.fullname
-            position = currentUser.position
-            company = currentUser.company
-            imageUri = Uri.parse(currentUser.imageUrl)
+        if (fullname == "") {
+            viewModelScope.launch(Dispatchers.IO) {
+                currentUser = userRepository.getCurrentUser()!!
+                fullname = currentUser.fullname
+                position = currentUser.position
+                company = currentUser.company
+                imageUri = Uri.parse(currentUser.imageUrl)
+            }
         }
     }
 }
