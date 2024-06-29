@@ -227,4 +227,15 @@ class ConferenceRepositoryImpl : ConferenceRepository {
             replay = 1,
         )
     }
+
+    override suspend fun editConferenceById(conferenceId: String, editedConference: Conference, imageUri: Uri) {
+        val conference =
+            if (imageUri.toString().startsWith("http"))
+                editedConference
+            else
+                editedConference.copy(
+                    imageUrl = uploadBanner(imageUri)
+                )
+        db.collection("conferences").document(conferenceId).set(conference).await()
+    }
 }

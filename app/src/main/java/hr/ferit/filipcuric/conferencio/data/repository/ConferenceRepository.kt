@@ -22,4 +22,5 @@ interface ConferenceRepository {
     fun sendMessage(eventId: String, message: String, isEventChat: Boolean = false)
     fun getEventChatById(eventId: String): Flow<List<ChatMessage>>
     suspend fun getEventsByConferenceId(conferenceId: String): Flow<List<Event>>
+    suspend fun editConferenceById(conferenceId: String, editedConference: Conference, imageUri: Uri)
 }
