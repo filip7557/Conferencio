@@ -45,10 +45,23 @@ class ConferenceRepositoryImpl : ConferenceRepository {
         )
     }
 
+    override suspend fun uploadFile(fileUri: Uri, eventId: String) {
+        Log.d("EVENT REPO", fileUri.toString())
+        val fileRef = storageRef.child("files/${fileUri.pathSegments.last()}")
+        fileRef.putFile(fileUri).await()
+        val link = fileRef.downloadUrl.await().toString()
+        val file = File(
+            eventId = eventId,
+            name = fileUri.lastPathSegment!!,
+            link = link
+        )
+        db.collection("files").add(file).await()
+    }
+
     override suspend fun getAttendingConferences(): Flow<List<Conference>> {
         val conferences = mutableListOf<Conference>()
         val conferenceIds = mutableListOf<String>()
-        db.collection("attendances").whereEqualTo("userId", auth.currentUser?.uid).get()
+        db.collection("attendances").whereEqualTo("event", false).whereEqualTo("userId", auth.currentUser?.uid).get()
             .addOnSuccessListener { documents ->
                 for (document in documents) {
                     val attendance = document.toObject(Attendance::class.java)
@@ -191,6 +204,7 @@ class ConferenceRepositoryImpl : ConferenceRepository {
     }
 
     override fun isUserManager(conferenceOwnerId: String): Boolean {
+        Log.d("EVENT VM", "Checking $conferenceOwnerId and ${auth.currentUser?.uid}")
         return conferenceOwnerId == auth.currentUser?.uid
     }
 

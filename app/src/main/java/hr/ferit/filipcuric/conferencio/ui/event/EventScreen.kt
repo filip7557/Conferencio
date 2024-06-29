@@ -2,6 +2,8 @@ package hr.ferit.filipcuric.conferencio.ui.event
 
 import android.content.Intent
 import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -33,6 +35,7 @@ import hr.ferit.filipcuric.conferencio.model.File
 import hr.ferit.filipcuric.conferencio.model.User
 import hr.ferit.filipcuric.conferencio.navigation.ModifyConferenceDestination
 import hr.ferit.filipcuric.conferencio.ui.component.BackButton
+import hr.ferit.filipcuric.conferencio.ui.component.BlueButton
 import hr.ferit.filipcuric.conferencio.ui.component.EventCard
 import hr.ferit.filipcuric.conferencio.ui.component.ManageButton
 import hr.ferit.filipcuric.conferencio.ui.component.Message
@@ -60,26 +63,28 @@ fun EventScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         stickyHeader {
-            Column {
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 10.dp, end = 10.dp, bottom = 20.dp, top = 10.dp)
-                ) {
-                    BackButton(onClick = onBackClick)
-                    if (viewModel.isUserManager()) {
-                        ManageButton(onClick = {
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 10.dp, end = 10.dp, bottom = 20.dp, top = 10.dp)
+            ) {
+                BackButton(onClick = onBackClick)
+                if (viewModel.isUserManager()) {
+                    ManageButton(
+                        onClick = {
                             onManageClick(
                                 ModifyConferenceDestination.createNavigation( //TODO: Change to proper navigation once screen is made
-                                    event.value.id!!
+                                event.value.id!!
                                 )
                             )
-                        })
-                    }
+                        }
+                    )
                 }
-                EventCard(event = event.value, onClick = { /*Do nothing*/ }, isOnEventScreen = true)
             }
+        }
+        item {
+            EventCard(event = event.value, onClick = { /*Do nothing*/ }, isOnEventScreen = true)
         }
         item {
             Info(event = event.value, host = viewModel.host)
@@ -98,6 +103,20 @@ fun EventScreen(
                     context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it)))
                 }
             )
+        }
+        if (viewModel.isUserManager()) {
+            item {
+                val launcher = rememberLauncherForActivityResult(
+                    contract = ActivityResultContracts.GetContent(),
+                    onResult = { uri: Uri? -> uri?.let { viewModel.onFileSelected(it) } }
+                )
+                BlueButton(
+                    text = "Add files",
+                    onClick = {
+                        launcher.launch("application/pdf")
+                    }
+                )
+            }
         }
         item {
             Box(

@@ -29,4 +29,5 @@ interface ConferenceRepository {
     suspend fun getAttendanceFromEventId(eventId: String): Boolean
     fun getFilesFromEventId(eventId: String): Flow<List<File>>
     suspend fun getEventChatById(eventId: String): List<ChatMessage>
+    suspend fun uploadFile(fileUri: Uri, eventId: String)
 }

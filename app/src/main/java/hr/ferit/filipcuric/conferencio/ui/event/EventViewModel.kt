@@ -1,5 +1,7 @@
 package hr.ferit.filipcuric.conferencio.ui.event
 
+import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -17,6 +19,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -32,11 +35,7 @@ class EventViewModel(
         initialValue = Event()
     )
 
-    val files: StateFlow<List<File>> = conferenceRepository.getFilesFromEventId(eventId).stateIn(
-        scope = CoroutineScope(Dispatchers.IO),
-        started = SharingStarted.Eagerly,
-        initialValue = listOf()
-    )
+    val files = MutableStateFlow(listOf<File>())
 
     var messages = MutableStateFlow(listOf<ChatMessage>())
 
@@ -48,6 +47,15 @@ class EventViewModel(
         getHostUser()
         getMessages()
         getAttendanceCount()
+        getFiles()
+    }
+
+    private fun getFiles() {
+        viewModelScope.launch(Dispatchers.IO) {
+            conferenceRepository.getFilesFromEventId(eventId).collectLatest {
+                files.emit(it)
+            }
+        }
     }
 
     var host by mutableStateOf(User())
@@ -60,7 +68,9 @@ class EventViewModel(
         private set
 
     fun isUserManager() : Boolean {
-        return conferenceRepository.isUserManager(event.value.hostId)
+        val state = conferenceRepository.isUserManager(event.value.hostId)
+        Log.d("EVENT VM", "User is manager: $state")
+        return state
     }
 
     private fun getHostUser() {
@@ -106,5 +116,13 @@ class EventViewModel(
 
     fun onNewMessageChange(value: String) {
         newMessage = value
+    }
+
+    fun onFileSelected(it: Uri) {
+        viewModelScope.launch {
+            conferenceRepository.uploadFile(it, eventId)
+        }.invokeOnCompletion {
+            getFiles()
+        }
     }
 }
