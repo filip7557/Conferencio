@@ -52,13 +52,13 @@ class ModifyConferenceViewModel(
     fun onStartDateTextValueChange(value: Instant) {
         startDate = value
         val date = value.atZone(ZoneId.systemDefault())
-        startDateTextValue = "${date.dayOfMonth}/${if (date.monthValue < 10) '0' else ""}${date.monthValue}/${date.year}"
+        startDateTextValue = "${if (date.dayOfMonth < 10) '0' else ""}${date.dayOfMonth}/${if (date.monthValue < 10) '0' else ""}${date.monthValue}/${date.year}"
     }
 
     fun onEndDateTextValueChange(value: Instant) {
         endDate = value
         val date = value.atZone(ZoneId.systemDefault())
-        endDateTextValue = "${date.dayOfMonth}/${if (date.monthValue < 10) '0' else ""}${date.monthValue}/${date.year}"
+        endDateTextValue = "${if (date.dayOfMonth < 10) '0' else ""}${date.dayOfMonth}/${if (date.monthValue < 10) '0' else ""}${date.monthValue}/${date.year}"
     }
 
     fun onTitleChange(value: String) {
