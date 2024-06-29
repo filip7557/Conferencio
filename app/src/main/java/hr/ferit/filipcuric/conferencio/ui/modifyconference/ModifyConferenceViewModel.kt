@@ -1,6 +1,7 @@
 package hr.ferit.filipcuric.conferencio.ui.modifyconference
 
 import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -89,11 +90,13 @@ class ModifyConferenceViewModel(
     }
 
     fun setValues() {
-        imageUri = Uri.parse(conference.value.imageUrl)
-        title = conference.value.title
-        startDate = Instant.ofEpochMilli(conference.value.startDateTime)
-        endDate = Instant.ofEpochMilli(conference.value.endDateTime)
-        onStartDateTextValueChange(startDate)
-        onEndDateTextValueChange(endDate)
+        Log.d("MODIFY CONF VM", "Setting values to current")
+        if (title == "") {
+            val conference = conference.value
+            onImageSelected(Uri.parse(conference.imageUrl))
+            onTitleChange(conference.title)
+            onStartDateTextValueChange(Instant.ofEpochMilli(conference.startDateTime))
+            onEndDateTextValueChange(Instant.ofEpochMilli(conference.endDateTime))
+        }
     }
 }

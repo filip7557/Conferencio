@@ -331,6 +331,8 @@ fun MainScreen() {
                 ) {
                     val conferenceId = it.arguments?.getString(MODIFY_CONFERENCE_ID_KEY)
                     val viewModel = koinViewModel<ModifyConferenceViewModel>(parameters = { parametersOf(conferenceId) })
+                    Log.d("MAIN SCREEN", "Navigated to modify conference screen.")
+                    viewModel.setValues()
                     ModifyConferenceScreen(
                         viewModel = viewModel,
                         onBackClick = {
@@ -344,7 +346,6 @@ fun MainScreen() {
                             }
                         }
                     )
-                    viewModel.setValues()
                 }
             }
 
