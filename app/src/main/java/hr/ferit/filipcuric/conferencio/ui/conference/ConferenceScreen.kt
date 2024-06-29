@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import hr.ferit.filipcuric.conferencio.R
+import hr.ferit.filipcuric.conferencio.navigation.EventDestination
 import hr.ferit.filipcuric.conferencio.navigation.ModifyConferenceDestination
 import hr.ferit.filipcuric.conferencio.ui.component.BackButton
 import hr.ferit.filipcuric.conferencio.ui.component.EventCard
@@ -161,8 +162,9 @@ fun ConferenceScreen(
                                 EventCard(
                                     event = it,
                                     onClick = { eventId ->
-                                        onEventClick(eventId) /*TODO: Create navigation!!*/
-                                    }
+                                        onEventClick(EventDestination.createNavigation(eventId))
+                                    },
+                                    isOnEventScreen = false
                                 )
                             }
                         }

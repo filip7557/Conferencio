@@ -16,6 +16,9 @@ const val CONFERENCE_ROUTE_WITH_PARAMS = "$CONFERENCE_ROUTE/{$CONFERENCE_ID_KEY}
 const val MODIFY_CONFERENCE_ROUTE = "Modify conference"
 const val MODIFY_CONFERENCE_ID_KEY = "conferenceId"
 const val MODIFY_CONFERENCE_ROUTE_WITH_PARAMS = "$MODIFY_CONFERENCE_ROUTE/{$MODIFY_CONFERENCE_ID_KEY}"
+const val EVENT_ROUTE = "Event"
+const val EVENT_ID_KEY = "eventId"
+const val EVENT_ROUTE_WITH_PARAMS = "$EVENT_ROUTE/{$EVENT_ID_KEY}"
 
 sealed class ConferencioDestination(
     open val route: String,
@@ -76,4 +79,8 @@ data object ConferenceDestination : ConferencioDestination(CONFERENCE_ROUTE_WITH
 
 data object ModifyConferenceDestination : ConferencioDestination(MODIFY_CONFERENCE_ROUTE_WITH_PARAMS, 0, 0) {
     fun createNavigation(conferenceId: String): String = "$MODIFY_CONFERENCE_ROUTE/${conferenceId}"
+}
+
+data object EventDestination : ConferencioDestination(EVENT_ROUTE_WITH_PARAMS, 0, 0) {
+    fun createNavigation(eventId: String): String = "$EVENT_ROUTE/${eventId}"
 }

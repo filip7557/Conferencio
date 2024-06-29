@@ -58,6 +58,8 @@ import com.google.firebase.auth.auth
 import hr.ferit.filipcuric.conferencio.R
 import hr.ferit.filipcuric.conferencio.navigation.CONFERENCE_ID_KEY
 import hr.ferit.filipcuric.conferencio.navigation.ConferenceDestination
+import hr.ferit.filipcuric.conferencio.navigation.EVENT_ID_KEY
+import hr.ferit.filipcuric.conferencio.navigation.EventDestination
 import hr.ferit.filipcuric.conferencio.navigation.MODIFY_CONFERENCE_ID_KEY
 import hr.ferit.filipcuric.conferencio.navigation.ModifyConferenceDestination
 import hr.ferit.filipcuric.conferencio.navigation.NavigationItem
@@ -69,6 +71,8 @@ import hr.ferit.filipcuric.conferencio.ui.createconference.CreateConferenceScree
 import hr.ferit.filipcuric.conferencio.ui.createconference.CreateConferenceViewModel
 import hr.ferit.filipcuric.conferencio.ui.editprofile.EditProfileScreen
 import hr.ferit.filipcuric.conferencio.ui.editprofile.EditProfileViewModel
+import hr.ferit.filipcuric.conferencio.ui.event.EventScreen
+import hr.ferit.filipcuric.conferencio.ui.event.EventViewModel
 import hr.ferit.filipcuric.conferencio.ui.home.HomeScreen
 import hr.ferit.filipcuric.conferencio.ui.home.HomeViewModel
 import hr.ferit.filipcuric.conferencio.ui.login.LoginScreen
@@ -320,8 +324,8 @@ fun MainScreen() {
                         onManageClick = { confId ->
                             navController.navigate(confId)
                         },
-                        onEventClick = {
-
+                        onEventClick = { eventId ->
+                            navController.navigate(eventId)
                         }
                     )
                 }
@@ -344,6 +348,20 @@ fun MainScreen() {
                                     inclusive = true
                                 }
                             }
+                        }
+                    )
+                }
+                composable(
+                    route = EventDestination.route,
+                    arguments = listOf(navArgument(EVENT_ID_KEY) { type = NavType.StringType })
+                ) {
+                    val eventId = it.arguments?.getString(EVENT_ID_KEY)
+                    val viewModel = koinViewModel<EventViewModel>(parameters = { parametersOf(eventId) })
+                    EventScreen(
+                        viewModel = viewModel,
+                        onBackClick = { navController.popBackStack() },
+                        onManageClick = {
+                            //TODO: Create navigation
                         }
                     )
                 }
