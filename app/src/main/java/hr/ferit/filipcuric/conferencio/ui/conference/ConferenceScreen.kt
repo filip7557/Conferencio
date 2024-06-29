@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import hr.ferit.filipcuric.conferencio.R
+import hr.ferit.filipcuric.conferencio.navigation.ModifyConferenceDestination
 import hr.ferit.filipcuric.conferencio.ui.component.BackButton
 import hr.ferit.filipcuric.conferencio.ui.component.EventCard
 import hr.ferit.filipcuric.conferencio.ui.component.ManageButton
@@ -84,7 +85,7 @@ fun ConferenceScreen(
                 ) {
                     BackButton(onClick = onBackClick)
                     if (viewModel.isUserManager()) {
-                        ManageButton(onClick = { onManageClick(conference.value.id!!) /*TODO: Create navigation!!*/ })
+                        ManageButton(onClick = { onManageClick(ModifyConferenceDestination.createNavigation(conference.value.id!!)) })
                     }
                 }
             }
