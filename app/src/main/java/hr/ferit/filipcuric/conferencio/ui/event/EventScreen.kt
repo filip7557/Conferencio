@@ -65,7 +65,7 @@ fun EventScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 10.dp, end = 10.dp, bottom = 20.dp)
+                        .padding(start = 10.dp, end = 10.dp, bottom = 20.dp, top = 10.dp)
                 ) {
                     BackButton(onClick = onBackClick)
                     if (viewModel.isUserManager()) {
@@ -318,10 +318,13 @@ fun SharedFiles(
                 RoundedCornerShape(8.dp)
             )
     ) {
+        //TODO: Add "add files" for host.
         Text(
             text = "Shared files",
             fontSize = 16.sp,
             fontWeight = FontWeight.Medium,
+            modifier = Modifier
+                .padding(vertical = 10.dp)
         )
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
