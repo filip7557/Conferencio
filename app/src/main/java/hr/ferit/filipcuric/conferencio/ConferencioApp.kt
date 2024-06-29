@@ -8,6 +8,7 @@ import hr.ferit.filipcuric.conferencio.ui.createconference.di.createConferenceMo
 import hr.ferit.filipcuric.conferencio.ui.editprofile.di.editProfileModule
 import hr.ferit.filipcuric.conferencio.ui.home.di.homeModule
 import hr.ferit.filipcuric.conferencio.ui.login.di.loginModule
+import hr.ferit.filipcuric.conferencio.ui.modifyconference.di.modifyConferenceModule
 import hr.ferit.filipcuric.conferencio.ui.profile.di.profileModule
 import hr.ferit.filipcuric.conferencio.ui.register.di.registerModule
 import hr.ferit.filipcuric.conferencio.ui.search.di.searchModule
@@ -30,6 +31,7 @@ class ConferencioApp : Application() {
                 editProfileModule,
                 createConferenceModule,
                 conferenceModule,
+                modifyConferenceModule,
             )
         }
     }
