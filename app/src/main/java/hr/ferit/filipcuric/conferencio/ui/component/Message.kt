@@ -26,6 +26,7 @@ fun Message(
     message: ChatMessage,
     user: User,
     conferenceOwnerId: String,
+    isEvent: Boolean = false,
 ) {
     Column(
         modifier = Modifier
@@ -51,7 +52,7 @@ fun Message(
                 )
                 if (user.id == conferenceOwnerId) {
                     Text(
-                        text = "Organizer",
+                        text = if (isEvent) "Host" else "Organizer",
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Thin,
                         color = Blue,
