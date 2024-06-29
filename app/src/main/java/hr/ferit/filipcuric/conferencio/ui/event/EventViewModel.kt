@@ -47,6 +47,7 @@ class EventViewModel(
     init {
         getHostUser()
         getMessages()
+        getAttendanceCount()
     }
 
     var host by mutableStateOf(User())
@@ -74,7 +75,7 @@ class EventViewModel(
 
     private fun getAttendanceCount() {
         viewModelScope.launch(Dispatchers.IO) {
-            attendingCount = conferenceRepository.getAttendanceCount(eventId)
+            attendingCount = conferenceRepository.getEventAttendanceCount(eventId)
         }
     }
 
