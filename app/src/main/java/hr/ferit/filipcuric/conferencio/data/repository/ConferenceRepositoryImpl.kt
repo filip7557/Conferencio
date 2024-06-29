@@ -10,6 +10,7 @@ import hr.ferit.filipcuric.conferencio.model.Attendance
 import hr.ferit.filipcuric.conferencio.model.ChatMessage
 import hr.ferit.filipcuric.conferencio.model.Conference
 import hr.ferit.filipcuric.conferencio.model.Event
+import hr.ferit.filipcuric.conferencio.model.File
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -110,21 +111,45 @@ class ConferenceRepositoryImpl : ConferenceRepository {
 
     override suspend fun getAttendanceFromConferenceId(conferenceId: String): Boolean {
         return !db.collection("attendances")
+            .whereEqualTo("event", false)
             .whereEqualTo("conferenceId", conferenceId)
             .whereEqualTo("userId", auth.currentUser?.uid)
             .get()
             .await()
             .isEmpty
     }
+    override suspend fun getAttendanceFromEventId(eventId: String): Boolean {
+        return !db.collection("attendances")
+            .whereEqualTo("event", true)
+            .whereEqualTo("conferenceId", eventId)
+            .whereEqualTo("userId", auth.currentUser?.uid)
+            .get()
+            .await()
+            .isEmpty
+    }
+
+    override fun getFilesFromEventId(eventId: String): Flow<List<File>> = flow {
+        val files = mutableListOf<File>()
+        val documents = db.collection("files").whereEqualTo("eventId", eventId).get().await()
+        for (document in documents) {
+            val file = document.toObject(File::class.java)
+            files.add(file)
+        }
+        emit(files)
+    }.flowOn(Dispatchers.IO)
 
     override suspend fun getAttendanceCount(conferenceId: String): Int {
-        return db.collection("attendances").whereEqualTo("conferenceId", conferenceId).get().await().count()
+        return db.collection("attendances").whereEqualTo("event", false).whereEqualTo("conferenceId", conferenceId).get().await().count()
+    }
+    override suspend fun getEventAttendanceCount(eventId: String): Int {
+        return db.collection("attendances").whereEqualTo("event", true).whereEqualTo("conferenceId", eventId).get().await().count()
     }
 
     override suspend fun toggleAttendance(conferenceId: String) {
         val attendance = getAttendanceFromConferenceId(conferenceId)
         if (attendance) {
             val id = db.collection("attendances")
+                .whereEqualTo("event", false)
                 .whereEqualTo("conferenceId", conferenceId)
                 .whereEqualTo("userId", auth.currentUser?.uid)
                 .get()
@@ -137,6 +162,29 @@ class ConferenceRepositoryImpl : ConferenceRepository {
             val newAttendance = Attendance(
                 userId = auth.currentUser?.uid!!,
                 conferenceId = conferenceId
+            )
+            db.collection("attendances").add(newAttendance).await()
+        }
+    }
+
+    override suspend fun toggleEventAttendance(eventId: String) {
+        val attendance = getAttendanceFromEventId(eventId)
+        if (attendance) {
+            val id = db.collection("attendances")
+                .whereEqualTo("event", true)
+                .whereEqualTo("conferenceId", eventId)
+                .whereEqualTo("userId", auth.currentUser?.uid)
+                .get()
+                .await()
+                .documents
+                .first()
+                .id
+            db.collection("attendances").document(id).delete().await()
+        } else {
+            val newAttendance = Attendance(
+                event = true,
+                userId = auth.currentUser?.uid!!,
+                conferenceId = eventId
             )
             db.collection("attendances").add(newAttendance).await()
         }
@@ -186,19 +234,16 @@ class ConferenceRepositoryImpl : ConferenceRepository {
         return messages.sortedBy { p -> -p.timeStamp }
     }
 
-    override fun getEventChatById(eventId: String) : Flow<List<ChatMessage>> = flow {
+    override suspend fun getEventChatById(eventId: String) : List<ChatMessage> {
         val messages = mutableListOf<ChatMessage>()
-        db.collection("messages").whereEqualTo("eventChat", true).whereEqualTo("eventId", eventId).get().addOnSuccessListener { documents ->
-            for (document in documents) {
-                messages.add(document.toObject(ChatMessage::class.java))
-            }
+        val documents = db.collection("messages").whereEqualTo("eventChat", true)
+            .whereEqualTo("eventId", eventId).get().await()
+        for (document in documents) {
+            val message = document.toObject(ChatMessage::class.java)
+            messages.add(message)
         }
-        emit(messages.sortedBy { p -> p.timeStamp })
-    }.shareIn(
-        scope = CoroutineScope(Dispatchers.IO),
-        started = SharingStarted.WhileSubscribed(1000L),
-        replay = 1,
-    )
+        return messages.sortedBy { p -> -p.timeStamp }
+    }
 
     override fun sendMessage(eventId: String, message: String, isEventChat: Boolean) {
         val chatMessage = ChatMessage(
@@ -238,4 +283,10 @@ class ConferenceRepositoryImpl : ConferenceRepository {
                 )
         db.collection("conferences").document(conferenceId).set(conference).await()
     }
+
+    override fun getEventFromId(eventId: String): Flow<Event> = flow {
+        val event = db.collection("events").document(eventId).get().await().toObject(Event::class.java)
+        event?.id = eventId
+        emit(event!!)
+    }.flowOn(Dispatchers.IO)
 }

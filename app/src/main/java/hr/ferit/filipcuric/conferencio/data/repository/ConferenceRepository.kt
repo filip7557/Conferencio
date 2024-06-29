@@ -4,6 +4,7 @@ import android.net.Uri
 import hr.ferit.filipcuric.conferencio.model.ChatMessage
 import hr.ferit.filipcuric.conferencio.model.Conference
 import hr.ferit.filipcuric.conferencio.model.Event
+import hr.ferit.filipcuric.conferencio.model.File
 import kotlinx.coroutines.flow.Flow
 
 interface ConferenceRepository {
@@ -20,7 +21,12 @@ interface ConferenceRepository {
     fun isUserManager(conferenceOwnerId: String): Boolean
     suspend fun getConferenceChatById(conferenceId: String): List<ChatMessage>
     fun sendMessage(eventId: String, message: String, isEventChat: Boolean = false)
-    fun getEventChatById(eventId: String): Flow<List<ChatMessage>>
     suspend fun getEventsByConferenceId(conferenceId: String): Flow<List<Event>>
     suspend fun editConferenceById(conferenceId: String, editedConference: Conference, imageUri: Uri)
+    fun getEventFromId(eventId: String): Flow<Event>
+    suspend fun getEventAttendanceCount(eventId: String): Int
+    suspend fun toggleEventAttendance(eventId: String)
+    suspend fun getAttendanceFromEventId(eventId: String): Boolean
+    fun getFilesFromEventId(eventId: String): Flow<List<File>>
+    suspend fun getEventChatById(eventId: String): List<ChatMessage>
 }
