@@ -111,7 +111,7 @@ fun RegisterScreen(
                     onValueChange = {
                         viewModel.onPasswordChange(it)
                     })
-                BlueButton(text = "Register", onClick = { viewModel.onRegisterClick(onRegisterClick) })
+                BlueButton(text = "Register", enabled = !viewModel.registrationHasErrors(), onClick = { viewModel.onRegisterClick(onRegisterClick) })
             }
         }
     }

@@ -13,9 +13,11 @@ import hr.ferit.filipcuric.conferencio.ui.theme.Blue
 @Composable
 fun BlueButton(
     text: String,
+    enabled: Boolean,
     onClick: () -> Unit,
 ) {
     Button(
+        enabled = enabled,
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
             containerColor = Blue,

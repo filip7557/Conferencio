@@ -1,6 +1,7 @@
 package hr.ferit.filipcuric.conferencio.data.repository
 
 import android.net.Uri
+import android.util.Log
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -67,6 +68,22 @@ class UserRepositoryImpl : UserRepository {
             }
         }
         return users
+    }
+
+    override suspend fun isEmailAvailable(email: String) : Boolean {
+        var isEmailAvailable = true
+        db.collection("users")
+            .whereEqualTo("email", email)
+            .get()
+            .addOnSuccessListener {  documents ->
+                if(!documents.isEmpty)
+                    isEmailAvailable = false
+            }
+            .addOnFailureListener { exception ->
+                Log.w("DB", "Error getting documents: $exception")
+            }
+            .await()
+        return isEmailAvailable
     }
 
     override suspend fun uploadProfilePicture(imageUri: Uri?) : String {

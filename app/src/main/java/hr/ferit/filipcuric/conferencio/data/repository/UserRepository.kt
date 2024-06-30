@@ -12,4 +12,5 @@ interface UserRepository {
     suspend fun getUserById(userId: String): User?
     suspend fun updateUser(user: User, imageUri: Uri)
     suspend fun getUsersByEmail(email: String) : List<User>
+    suspend fun isEmailAvailable(it: String): Boolean
 }
