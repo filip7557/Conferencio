@@ -57,7 +57,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import hr.ferit.filipcuric.conferencio.R
 import hr.ferit.filipcuric.conferencio.navigation.CONFERENCE_ID_KEY
+import hr.ferit.filipcuric.conferencio.navigation.CREATE_EVENT_ID_KEY
 import hr.ferit.filipcuric.conferencio.navigation.ConferenceDestination
+import hr.ferit.filipcuric.conferencio.navigation.CreateEventDestination
 import hr.ferit.filipcuric.conferencio.navigation.EVENT_ID_KEY
 import hr.ferit.filipcuric.conferencio.navigation.EventDestination
 import hr.ferit.filipcuric.conferencio.navigation.MODIFY_CONFERENCE_ID_KEY
@@ -69,6 +71,8 @@ import hr.ferit.filipcuric.conferencio.ui.conference.ConferenceScreen
 import hr.ferit.filipcuric.conferencio.ui.conference.ConferenceViewModel
 import hr.ferit.filipcuric.conferencio.ui.createconference.CreateConferenceScreen
 import hr.ferit.filipcuric.conferencio.ui.createconference.CreateConferenceViewModel
+import hr.ferit.filipcuric.conferencio.ui.createvent.CreateEventScreen
+import hr.ferit.filipcuric.conferencio.ui.createvent.CreateEventViewModel
 import hr.ferit.filipcuric.conferencio.ui.editprofile.EditProfileScreen
 import hr.ferit.filipcuric.conferencio.ui.editprofile.EditProfileViewModel
 import hr.ferit.filipcuric.conferencio.ui.event.EventScreen
@@ -326,6 +330,9 @@ fun MainScreen() {
                         },
                         onEventClick = { eventId ->
                             navController.navigate(eventId)
+                        },
+                        onAddEventClick = { id ->
+                            navController.navigate(CreateEventDestination.createNavigation(id))
                         }
                     )
                 }
@@ -362,6 +369,24 @@ fun MainScreen() {
                         onBackClick = { navController.popBackStack() },
                         onManageClick = {
                             //TODO: Create navigation
+                        }
+                    )
+                }
+                composable(
+                    route = CreateEventDestination.route,
+                    arguments = listOf(navArgument(CREATE_EVENT_ID_KEY) { type = NavType.StringType })
+                ) {
+                    val conferenceId = it.arguments?.getString(CREATE_EVENT_ID_KEY)
+                    val viewModel = koinViewModel<CreateEventViewModel>(parameters = { parametersOf(conferenceId) })
+                    CreateEventScreen(
+                        viewModel = viewModel,
+                        onBackClick = { navController.popBackStack() },
+                        onCreateClick = { eventId ->
+                            navController.navigate(EventDestination.createNavigation(eventId))  {
+                                popUpTo(EventDestination.route) {
+                                    inclusive = true
+                                }
+                            }
                         }
                     )
                 }

@@ -34,6 +34,7 @@ import hr.ferit.filipcuric.conferencio.R
 import hr.ferit.filipcuric.conferencio.navigation.EventDestination
 import hr.ferit.filipcuric.conferencio.navigation.ModifyConferenceDestination
 import hr.ferit.filipcuric.conferencio.ui.component.BackButton
+import hr.ferit.filipcuric.conferencio.ui.component.BlueButton
 import hr.ferit.filipcuric.conferencio.ui.component.EventCard
 import hr.ferit.filipcuric.conferencio.ui.component.ManageButton
 import hr.ferit.filipcuric.conferencio.ui.component.Message
@@ -51,6 +52,7 @@ fun ConferenceScreen(
     onBackClick: () -> Unit,
     onManageClick: (String) -> Unit,
     onEventClick: (String) -> Unit,
+    onAddEventClick: (String) -> Unit,
 ) {
     val conference = viewModel.conference.collectAsState()
     val duration = viewModel.duration.collectAsState()
@@ -110,9 +112,12 @@ fun ConferenceScreen(
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
-                    .padding(top = 20.dp)
+                    .padding(top = 20.dp, bottom = 20.dp)
                     .fillMaxWidth()
-                    .background(if (isSystemInDarkTheme()) DarkTertiaryColor else TertiaryColor, RoundedCornerShape(8.dp))
+                    .background(
+                        if (isSystemInDarkTheme()) DarkTertiaryColor else TertiaryColor,
+                        RoundedCornerShape(8.dp)
+                    )
             ) {
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -171,6 +176,12 @@ fun ConferenceScreen(
                     }
                 }
             }
+        }
+        item {
+            BlueButton(
+                text = "Add an event",
+                onClick = { onAddEventClick(viewModel.conference.value.id!!) }
+            )
         }
         item {
             Box(
