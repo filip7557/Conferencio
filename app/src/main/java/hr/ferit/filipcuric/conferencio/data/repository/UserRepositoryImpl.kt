@@ -3,6 +3,7 @@ package hr.ferit.filipcuric.conferencio.data.repository
 import android.net.Uri
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.firestore.toObject
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import hr.ferit.filipcuric.conferencio.model.User
@@ -54,6 +55,19 @@ class UserRepositoryImpl : UserRepository {
     override suspend fun getUserById(userId: String): User? {
         return db.collection("users").whereEqualTo("id", userId).get().await().firstOrNull()
             ?.toObject(User::class.java)
+    }
+
+    override suspend fun getUsersByEmail(email: String): List<User> {
+        val users = mutableListOf<User>()
+        if (email.length > 2) {
+            val documents = db.collection("users").get().await()
+            for (document in documents) {
+                val user = document.toObject(User::class.java)
+                user.id = document.id
+                users.add(user)
+            }
+        }
+        return users
     }
 
     override suspend fun uploadProfilePicture(imageUri: Uri?) : String {
