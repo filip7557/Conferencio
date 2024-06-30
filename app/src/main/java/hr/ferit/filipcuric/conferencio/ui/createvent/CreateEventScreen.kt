@@ -3,6 +3,7 @@ package hr.ferit.filipcuric.conferencio.ui.createvent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -10,7 +11,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TimePickerDefaults
@@ -23,11 +27,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import hr.ferit.filipcuric.conferencio.data.repository.ConferenceRepositoryImpl
-import hr.ferit.filipcuric.conferencio.data.repository.UserRepositoryImpl
 import hr.ferit.filipcuric.conferencio.ui.component.BackButton
 import hr.ferit.filipcuric.conferencio.ui.component.BlueButton
 import hr.ferit.filipcuric.conferencio.ui.component.ConferenceDatePickerDialog
@@ -41,7 +42,7 @@ import hr.ferit.filipcuric.conferencio.ui.theme.Blue
 fun CreateEventScreen(
     viewModel: CreateEventViewModel,
     onBackClick: () -> Unit,
-    onCreateClick: () -> Unit,
+    onCreateClick: (String) -> Unit,
 ) {
     val timePickerState = rememberTimePickerState()
     LazyColumn(
@@ -79,16 +80,26 @@ fun CreateEventScreen(
                 label = "Host",
                 value = viewModel.host,
                 onValueChange = {
-                    viewModel.hostId = ""
                     viewModel.onHostChange(it)
                 }
             )
             if (viewModel.hostId == "") {
                 val users = viewModel.foundHosts.collectAsState()
                 for (user in users.value) {
-                    UserCard(user = user, onClick = { viewModel.hostId = it })
+                    UserCard(user = user, onClick = {
+                        viewModel.onHostChange("${user.fullname} (${user.email})")
+                        viewModel.hostId = it
+                    })
                 }
             }
+            TextBox(
+                label = "Description",
+                value = viewModel.description,
+                singleLine = false,
+                onValueChange = {
+                    viewModel.onDescriptionChange(it)
+                }
+            )
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -171,7 +182,7 @@ fun CreateEventScreen(
                         confirmButton = {
                             Button(
                                 onClick = {
-                                    viewModel.onTimeTextValueChange(timePickerState.hour, timePickerState.minute)
+                                    viewModel.onTimeTextValueChange(timePickerState.hour.toLong(), timePickerState.minute.toLong())
                                     viewModel.showTimePicker = false
                                 },
                                 colors = ButtonDefaults.buttonColors(
@@ -208,6 +219,41 @@ fun CreateEventScreen(
                     }
                 }
             }
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                ExposedDropdownMenuBox(
+                    expanded = viewModel.expanded,
+                    onExpandedChange = {
+                        viewModel.expanded = !viewModel.expanded
+                    }
+                ) {
+                    TextBox(
+                        label = "Type",
+                        value = viewModel.type,
+                        onValueChange = {},
+                        readOnly = true,
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = viewModel.expanded) },
+                        modifier = Modifier.menuAnchor()
+                    )
+
+                    ExposedDropdownMenu(
+                        expanded = viewModel.expanded,
+                        onDismissRequest = { viewModel.expanded = false }
+                    ) {
+                        viewModel.types.forEach { item ->
+                            DropdownMenuItem(
+                                text = { Text(text = item) },
+                                onClick = {
+                                    viewModel.type = item
+                                    viewModel.expanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+            }
         }
         item {
             BlueButton(
@@ -229,15 +275,5 @@ fun Title() {
         color = Blue,
         modifier = Modifier
             .padding(bottom = 20.dp, top = 20.dp)
-    )
-}
-
-@Preview
-@Composable
-fun CreateEventScreenPreview() {
-    CreateEventScreen(
-        CreateEventViewModel(UserRepositoryImpl(), ConferenceRepositoryImpl()),
-        {},
-        {}
     )
 }

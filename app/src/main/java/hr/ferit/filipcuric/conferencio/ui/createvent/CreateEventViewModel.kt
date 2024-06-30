@@ -1,7 +1,7 @@
 package hr.ferit.filipcuric.conferencio.ui.createvent
 
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
@@ -9,19 +9,23 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import hr.ferit.filipcuric.conferencio.data.repository.ConferenceRepository
 import hr.ferit.filipcuric.conferencio.data.repository.UserRepository
+import hr.ferit.filipcuric.conferencio.model.Event
 import hr.ferit.filipcuric.conferencio.model.User
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.ZoneId
 
 class CreateEventViewModel(
     private val userRepository: UserRepository,
     private val conferenceRepository: ConferenceRepository,
+    private val conferenceId: String,
 ) : ViewModel() {
 
     var title by mutableStateOf("")
@@ -33,8 +37,18 @@ class CreateEventViewModel(
     var host by mutableStateOf("")
         private set
 
+    var description by mutableStateOf("")
+        private set
+
+    var type by mutableStateOf("")
+
+    var expanded by mutableStateOf(false)
+
+    val types = arrayOf("Lecture", "Workshop", "Fair", "Other")
+
     var hostId by mutableStateOf("")
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     val foundHosts: StateFlow<List<User>> =
         snapshotFlow { host }
             .mapLatest { userRepository.getUsersByEmail(it) }
@@ -51,8 +65,8 @@ class CreateEventViewModel(
 
     var showStartDatePicker by mutableStateOf(false)
 
-    private var hour: Int by mutableIntStateOf(0)
-    private var minute: Int by mutableIntStateOf(0)
+    private var hour: Long by mutableLongStateOf(0)
+    private var minute: Long by mutableLongStateOf(0)
 
     var timeTextValue by mutableStateOf("Choose time")
 
@@ -64,7 +78,7 @@ class CreateEventViewModel(
         startDateTextValue = "${if (date.dayOfMonth < 10) '0' else ""}${date.dayOfMonth}/${if (date.monthValue < 10) '0' else ""}${date.monthValue}/${date.year}"
     }
 
-    fun onTimeTextValueChange(hour: Int, minute: Int) {
+    fun onTimeTextValueChange(hour: Long, minute: Long) {
         this.hour = hour
         this.minute = minute
         timeTextValue = "${if (hour < 10) '0' else ""}${hour}:${if (minute < 10) '0' else ""}${minute}"
@@ -80,10 +94,31 @@ class CreateEventViewModel(
         duration = value
     }
     fun onHostChange(value: String) {
+        hostId = ""
         host = value
     }
 
-    fun onCreateClick(onCreateClick: () -> Unit) {
+    fun onDescriptionChange(value: String) {
+        description = value
+    }
 
+    fun onCreateClick(onCreateClick: (String) -> Unit) {
+        lateinit var eventId: String
+        viewModelScope.launch {
+            val datetime = startDate.atZone(ZoneId.systemDefault()).plusHours(hour-1).plusMinutes(minute).toInstant().toEpochMilli()
+            val event = Event(
+                conferenceId = conferenceId,
+                title = title,
+                dateTime = datetime,
+                location = location,
+                duration = duration.toInt(),
+                hostId = hostId,
+                description = description,
+                type = type,
+            )
+            eventId = conferenceRepository.createEvent(event)
+        }.invokeOnCompletion {
+            onCreateClick(eventId)
+        }
     }
 }
