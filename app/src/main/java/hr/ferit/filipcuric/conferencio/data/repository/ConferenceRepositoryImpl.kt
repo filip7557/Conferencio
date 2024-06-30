@@ -65,6 +65,10 @@ class ConferenceRepositoryImpl : ConferenceRepository {
         return eventId
     }
 
+    override suspend fun updateEvent(event: Event) {
+        db.collection("events").document(event.id!!).set(event).await()
+    }
+
     override suspend fun getAttendingConferences(): Flow<List<Conference>> {
         val conferences = mutableListOf<Conference>()
         val conferenceIds = mutableListOf<String>()
@@ -128,6 +132,10 @@ class ConferenceRepositoryImpl : ConferenceRepository {
         conference?.id = conferenceId
         emit(conference!!)
     }.flowOn(Dispatchers.IO)
+
+    override fun isUserHost(hostId: String): Boolean {
+        return hostId == auth.currentUser?.uid
+    }
 
     override suspend fun getAttendanceFromConferenceId(conferenceId: String): Boolean {
         return !db.collection("attendances")

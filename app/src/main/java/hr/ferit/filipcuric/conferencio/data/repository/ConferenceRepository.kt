@@ -31,4 +31,6 @@ interface ConferenceRepository {
     suspend fun getEventChatById(eventId: String): List<ChatMessage>
     suspend fun uploadFile(fileUri: Uri, eventId: String)
     suspend fun createEvent(event: Event): String
+    suspend fun updateEvent(event: Event)
+    fun isUserHost(hostId: String): Boolean
 }
