@@ -58,6 +58,13 @@ class ConferenceRepositoryImpl : ConferenceRepository {
         db.collection("files").add(file).await()
     }
 
+    override suspend fun createEvent(event: Event): String {
+        lateinit var eventId: String
+        val document = db.collection("events").add(event.copy(conferenceOwnerId = auth.currentUser?.uid!!)).await()
+        eventId = document.id
+        return eventId
+    }
+
     override suspend fun getAttendingConferences(): Flow<List<Conference>> {
         val conferences = mutableListOf<Conference>()
         val conferenceIds = mutableListOf<String>()
