@@ -104,6 +104,6 @@ class RegisterViewModel(
     }
 
     fun registrationHasErrors() : Boolean {
-        return fullname.isEmpty() && !passwordHasError.value && !emailHasError.value && isEmailValid.value
+        return fullname.isEmpty() || email.isEmpty() || passwordHasError.value || emailHasError.value || isEmailValid.value
     }
 }

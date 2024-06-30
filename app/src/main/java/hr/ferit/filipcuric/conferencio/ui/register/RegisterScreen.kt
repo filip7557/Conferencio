@@ -3,6 +3,7 @@ package hr.ferit.filipcuric.conferencio.ui.register
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -14,6 +15,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -27,12 +29,16 @@ import hr.ferit.filipcuric.conferencio.ui.component.TextBox
 import hr.ferit.filipcuric.conferencio.ui.component.UploadProfilePictureCard
 import hr.ferit.filipcuric.conferencio.ui.theme.Blue
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun RegisterScreen(
     viewModel: RegisterViewModel,
     onBackClick: () -> Unit,
     onRegisterClick: () -> Unit,
 ) {
+    val emailHasError = viewModel.emailHasError.collectAsState()
+    val isEmailValid = viewModel.isEmailValid.collectAsState()
+    val passwordHasError = viewModel.passwordHasError.collectAsState()
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -40,7 +46,7 @@ fun RegisterScreen(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start
     ) {
-        item {
+        stickyHeader {
             BackButton(
                 onClick = {
                     onBackClick()
@@ -101,6 +107,20 @@ fun RegisterScreen(
                         viewModel.onEmailChange(it)
                     }
                 )
+                if (emailHasError.value) {
+                    Text(
+                        text = "This email is not available.",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                    )
+                }
+                if (!isEmailValid.value) {
+                    Text(
+                        text = "This is not a valid email address.",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                    )
+                }
                 TextBox(
                     label = "Password",
                     value = viewModel.password,
@@ -110,7 +130,15 @@ fun RegisterScreen(
                     visualTransformation = PasswordVisualTransformation(),
                     onValueChange = {
                         viewModel.onPasswordChange(it)
-                    })
+                    }
+                )
+                if (passwordHasError.value) {
+                    Text(
+                        text = "Password must be at least 6 characters long.",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                    )
+                }
                 BlueButton(text = "Register", enabled = !viewModel.registrationHasErrors(), onClick = { viewModel.onRegisterClick(onRegisterClick) })
             }
         }

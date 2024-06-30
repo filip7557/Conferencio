@@ -34,10 +34,13 @@ class UserRepositoryImpl : UserRepository {
         db.collection("users").document(document.id).set(user).await()
     }
 
-    override suspend fun login(email: String, password: String) {
-        auth.signInWithEmailAndPassword(email, password).await()
-        auth.currentUser
-        //TODO: Don't crash on wrong password
+    override suspend fun login(email: String, password: String) : String {
+        try {
+            auth.signInWithEmailAndPassword(email, password).await()
+        } catch (e: Exception) {
+            return "There are no accounts matching your email and/or password."
+        }
+        return ""
     }
 
     override suspend fun getCurrentUser() : User? {

@@ -28,11 +28,6 @@ class ProfileViewModel(
         getNumberOfOrganizedConferences()
     }
 
-    fun logout(onSignOutClick: () -> Unit) {
-        onSignOutClick()
-        userRepository.logout()
-    }
-
     fun getCurrentUser() {
         viewModelScope.launch(Dispatchers.IO) {
             user = if(userRepository.getCurrentUser() != null) {
@@ -44,17 +39,21 @@ class ProfileViewModel(
     }
 
     private fun getNumberOfOrganizedConferences() {
-        viewModelScope.launch(Dispatchers.IO) {
-            conferenceRepository.getOrganizingConferences().collect {
-                organized = it.size
+        if (organized == 0) {
+            viewModelScope.launch(Dispatchers.IO) {
+                conferenceRepository.getOrganizingConferences().collect {
+                    organized = it.size
+                }
             }
         }
     }
 
     private fun getNumberOfAttendingConferences() {
-        viewModelScope.launch(Dispatchers.IO) {
-            conferenceRepository.getAttendingConferences().collect {
-                attended = it.size
+        if (attended == 0) {
+            viewModelScope.launch(Dispatchers.IO) {
+                conferenceRepository.getAttendingConferences().collect {
+                    attended = it.size
+                }
             }
         }
     }

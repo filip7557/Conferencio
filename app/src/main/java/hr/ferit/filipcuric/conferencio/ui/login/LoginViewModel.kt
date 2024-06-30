@@ -18,6 +18,8 @@ class LoginViewModel(
     var password by mutableStateOf("")
         private set
 
+    var error by mutableStateOf("")
+
     fun onEmailChange(value: String) {
         email = value
     }
@@ -27,10 +29,10 @@ class LoginViewModel(
     }
 
     fun login(onLoginClick: () -> Unit) {
-        //TODO: Add error checks.
-        viewModelScope.launch(Dispatchers.IO) {
-            userRepository.login(email, password)
+        viewModelScope.launch() {
+            error = userRepository.login(email, password)
         }
-        onLoginClick()
+        if (error == "")
+            onLoginClick()
     }
 }
