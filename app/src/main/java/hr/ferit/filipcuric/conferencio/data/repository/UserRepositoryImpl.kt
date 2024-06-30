@@ -3,7 +3,6 @@ package hr.ferit.filipcuric.conferencio.data.repository
 import android.net.Uri
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.firestore.toObject
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import hr.ferit.filipcuric.conferencio.model.User
@@ -63,8 +62,8 @@ class UserRepositoryImpl : UserRepository {
             val documents = db.collection("users").get().await()
             for (document in documents) {
                 val user = document.toObject(User::class.java)
-                user.id = document.id
-                users.add(user)
+                if (user.email.startsWith(email))
+                    users.add(user)
             }
         }
         return users
