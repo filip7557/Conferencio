@@ -63,7 +63,9 @@ import hr.ferit.filipcuric.conferencio.navigation.CreateEventDestination
 import hr.ferit.filipcuric.conferencio.navigation.EVENT_ID_KEY
 import hr.ferit.filipcuric.conferencio.navigation.EventDestination
 import hr.ferit.filipcuric.conferencio.navigation.MODIFY_CONFERENCE_ID_KEY
+import hr.ferit.filipcuric.conferencio.navigation.MODIFY_EVENT_ID_KEY
 import hr.ferit.filipcuric.conferencio.navigation.ModifyConferenceDestination
+import hr.ferit.filipcuric.conferencio.navigation.ModifyEventDestination
 import hr.ferit.filipcuric.conferencio.navigation.NavigationItem
 import hr.ferit.filipcuric.conferencio.ui.browse.BrowseScreen
 import hr.ferit.filipcuric.conferencio.ui.browse.BrowseViewModel
@@ -83,6 +85,8 @@ import hr.ferit.filipcuric.conferencio.ui.login.LoginScreen
 import hr.ferit.filipcuric.conferencio.ui.login.LoginViewModel
 import hr.ferit.filipcuric.conferencio.ui.modifyconference.ModifyConferenceScreen
 import hr.ferit.filipcuric.conferencio.ui.modifyconference.ModifyConferenceViewModel
+import hr.ferit.filipcuric.conferencio.ui.modifyevent.ModifyEventScreen
+import hr.ferit.filipcuric.conferencio.ui.modifyevent.ModifyEventViewModel
 import hr.ferit.filipcuric.conferencio.ui.profile.ProfileScreen
 import hr.ferit.filipcuric.conferencio.ui.profile.ProfileViewModel
 import hr.ferit.filipcuric.conferencio.ui.register.RegisterScreen
@@ -367,8 +371,8 @@ fun MainScreen() {
                     EventScreen(
                         viewModel = viewModel,
                         onBackClick = { navController.popBackStack() },
-                        onManageClick = {
-                            //TODO: Create navigation
+                        onManageClick = { route ->
+                            navController.navigate(route)
                         }
                     )
                 }
@@ -383,6 +387,25 @@ fun MainScreen() {
                         onBackClick = { navController.popBackStack() },
                         onCreateClick = { eventId ->
                             navController.navigate(EventDestination.createNavigation(eventId))  {
+                                popUpTo(EventDestination.route) {
+                                    inclusive = true
+                                }
+                            }
+                        }
+                    )
+                }
+                composable(
+                    route = ModifyEventDestination.route,
+                    arguments = listOf(navArgument(MODIFY_EVENT_ID_KEY) { type = NavType.StringType })
+                ) {
+                    val eventId = it.arguments?.getString(MODIFY_EVENT_ID_KEY)
+                    val viewModel = koinViewModel<ModifyEventViewModel>(parameters = { parametersOf(eventId) })
+                    viewModel.setValues()
+                    ModifyEventScreen(
+                        viewModel = viewModel,
+                        onBackClick = { navController.popBackStack() },
+                        onSaveClick = { id ->
+                            navController.navigate(EventDestination.createNavigation(id)) {
                                 popUpTo(EventDestination.route) {
                                     inclusive = true
                                 }

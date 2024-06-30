@@ -73,6 +73,10 @@ class EventViewModel(
         return state
     }
 
+    fun isUserHost() : Boolean {
+        return conferenceRepository.isUserHost(event.value.hostId)
+    }
+
     private fun getHostUser() {
         viewModelScope.launch(Dispatchers.IO) {
             val user = userRepository.getUserById(event.value.hostId)

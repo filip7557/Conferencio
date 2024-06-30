@@ -33,7 +33,7 @@ import hr.ferit.filipcuric.conferencio.R
 import hr.ferit.filipcuric.conferencio.model.Event
 import hr.ferit.filipcuric.conferencio.model.File
 import hr.ferit.filipcuric.conferencio.model.User
-import hr.ferit.filipcuric.conferencio.navigation.ModifyConferenceDestination
+import hr.ferit.filipcuric.conferencio.navigation.ModifyEventDestination
 import hr.ferit.filipcuric.conferencio.ui.component.BackButton
 import hr.ferit.filipcuric.conferencio.ui.component.BlueButton
 import hr.ferit.filipcuric.conferencio.ui.component.EventCard
@@ -70,13 +70,11 @@ fun EventScreen(
                     .padding(start = 10.dp, end = 10.dp, bottom = 20.dp, top = 10.dp)
             ) {
                 BackButton(onClick = onBackClick)
-                if (viewModel.isUserManager()) {
+                if (viewModel.isUserManager() || viewModel.isUserHost()) {
                     ManageButton(
                         onClick = {
                             onManageClick(
-                                ModifyConferenceDestination.createNavigation( //TODO: Change to proper navigation once screen is made
-                                event.value.id!!
-                                )
+                                ModifyEventDestination.createNavigation(event.value.id!!)
                             )
                         }
                     )
