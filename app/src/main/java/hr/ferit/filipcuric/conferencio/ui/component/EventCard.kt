@@ -42,6 +42,7 @@ fun EventCard(
             contentColor = Color.Black,
         ),
         modifier = Modifier
+            .padding(bottom = if (isOnEventScreen) 0.dp else 10.dp)
             .fillMaxWidth()
             .clickable { onClick(event.id!!) }
     ) {
