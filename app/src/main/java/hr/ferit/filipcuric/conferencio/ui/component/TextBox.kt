@@ -20,14 +20,16 @@ import hr.ferit.filipcuric.conferencio.ui.theme.DarkTertiaryColor
 
 @Composable
 fun TextBox(
+    modifier: Modifier = Modifier,
     label: String,
     value: String,
+    singleLine: Boolean = true,
+    trailingIcon: @Composable () -> Unit = {},
     keyboardOptions: KeyboardOptions =  KeyboardOptions(
         keyboardType = KeyboardType.Text
     ),
     visualTransformation: VisualTransformation = VisualTransformation.None,
     readOnly: Boolean = false,
-    modifier: Modifier = Modifier,
     onValueChange: (String) -> Unit,
 ) {
     if(isSystemInDarkTheme()) {
@@ -37,7 +39,8 @@ fun TextBox(
             label = {
                 Text(text = label)
             },
-            singleLine = true,
+            singleLine = singleLine,
+            trailingIcon = trailingIcon,
             keyboardOptions = keyboardOptions,
             visualTransformation = visualTransformation,
             shape = RoundedCornerShape(8.dp),
