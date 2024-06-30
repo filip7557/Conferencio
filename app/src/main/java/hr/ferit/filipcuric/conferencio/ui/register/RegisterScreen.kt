@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -112,6 +113,8 @@ fun RegisterScreen(
                         text = "This email is not available.",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium,
+                        color = Color.Red,
+                        modifier = Modifier.padding(bottom = 15.dp)
                     )
                 }
                 if (!isEmailValid.value) {
@@ -119,6 +122,8 @@ fun RegisterScreen(
                         text = "This is not a valid email address.",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium,
+                        color = Color.Red,
+                        modifier = Modifier.padding(bottom = 15.dp)
                     )
                 }
                 TextBox(
@@ -137,6 +142,8 @@ fun RegisterScreen(
                         text = "Password must be at least 6 characters long.",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium,
+                        color = Color.Red,
+                        modifier = Modifier.padding(bottom = 15.dp)
                     )
                 }
                 BlueButton(text = "Register", enabled = !viewModel.registrationHasErrors(), onClick = { viewModel.onRegisterClick(onRegisterClick) })

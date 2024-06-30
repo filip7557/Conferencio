@@ -45,7 +45,12 @@ class RegisterViewModel(
     @OptIn(ExperimentalCoroutinesApi::class)
     val emailHasError: StateFlow<Boolean> =
         snapshotFlow { email }
-            .mapLatest { userRepository.isEmailAvailable(it) }
+            .mapLatest {
+                if (it.length > 3)
+                    !userRepository.isEmailAvailable(it)
+                else
+                    false
+            }
             .stateIn(
                 scope = CoroutineScope(Dispatchers.IO),
                 started = SharingStarted.WhileSubscribed(5_000),
