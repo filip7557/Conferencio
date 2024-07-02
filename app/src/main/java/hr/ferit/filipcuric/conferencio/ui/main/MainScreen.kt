@@ -140,6 +140,11 @@ fun MainScreen() {
         window.navigationBarColor = Color.Transparent.toArgb()
     }
 
+    if (navBackStackEntry?.destination?.route != NavigationItem.LoginDestination.route || navBackStackEntry?.destination?.route != NavigationItem.RegisterDestination.route) {
+        if (auth.currentUser == null)
+            navController.navigate(NavigationItem.LoginDestination.route)
+    }
+
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
@@ -243,7 +248,11 @@ fun MainScreen() {
                     LoginScreen(
                         viewModel = loginViewModel,
                         onLoginClick = {
-                            navController.navigate(NavigationItem.HomeDestination.route)
+                            navController.navigate(NavigationItem.HomeDestination.route) {
+                                popUpTo(NavigationItem.HomeDestination.route) {
+                                    inclusive = true
+                                }
+                            }
                         },
                         onRegisterClick = {
                             navController.navigate(NavigationItem.RegisterDestination.route)
@@ -257,7 +266,11 @@ fun MainScreen() {
                             navController.popBackStack()
                         },
                         onRegisterClick = {
-                            navController.navigate(NavigationItem.HomeDestination.route)
+                            navController.navigate(NavigationItem.HomeDestination.route) {
+                                popUpTo(NavigationItem.HomeDestination.route) {
+                                    inclusive = true
+                                }
+                            }
                         }
                     )
                 }
