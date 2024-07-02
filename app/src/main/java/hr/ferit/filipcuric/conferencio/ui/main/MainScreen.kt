@@ -140,21 +140,14 @@ fun MainScreen() {
         window.navigationBarColor = Color.Transparent.toArgb()
     }
 
-    if (navBackStackEntry?.destination?.route != NavigationItem.LoginDestination.route || navBackStackEntry?.destination?.route != NavigationItem.RegisterDestination.route) {
-        if (auth.currentUser == null)
-            navController.navigate(NavigationItem.LoginDestination.route)
-    }
-
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
 
     val loginViewModel = koinViewModel<LoginViewModel>()
     val registerViewModel = koinViewModel<RegisterViewModel>()
-    val homeViewModel = koinViewModel<HomeViewModel>()
     val browseViewModel = koinViewModel<BrowseViewModel>()
     val searchViewModel = koinViewModel<SearchViewModel>()
-    val profileViewModel = koinViewModel<ProfileViewModel>()
     val editProfileViewModel = koinViewModel<EditProfileViewModel>()
     val createConferenceViewModel = koinViewModel<CreateConferenceViewModel>()
 
@@ -275,12 +268,14 @@ fun MainScreen() {
                     )
                 }
                 composable(NavigationItem.ProfileDestination.route) {
+                    val profileViewModel = koinViewModel<ProfileViewModel>()
                     profileViewModel.getCurrentUser()
                     ProfileScreen(
                         viewModel = profileViewModel,
                     )
                 }
                 composable(NavigationItem.HomeDestination.route) {
+                    val homeViewModel = koinViewModel<HomeViewModel>()
                     homeViewModel.onActiveClick()
                     HomeScreen(
                         viewModel = homeViewModel,
