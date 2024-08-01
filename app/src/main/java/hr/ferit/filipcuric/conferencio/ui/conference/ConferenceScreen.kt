@@ -10,13 +10,17 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -33,6 +37,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -115,104 +120,55 @@ fun ConferenceScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             stickyHeader {
-                Box(
-                    contentAlignment = Alignment.TopStart,
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(200.dp)
-                        .clip(RoundedCornerShape(bottomStart = 8.dp, bottomEnd = 8.dp))
                 ) {
                     AsyncImage(
                         model = conference.value.imageUrl,
                         contentDescription = "conference banner",
                         modifier = Modifier
-                            .fillMaxWidth(),
+                            .fillMaxWidth()
+                            .height(200.dp)
+                            .clip(RoundedCornerShape(bottomStart = 8.dp, bottomEnd = 8.dp)),
                         contentScale = ContentScale.Crop,
                     )
-                }
-            }
-            item {
-                Title(title = conference.value.title)
-            }
-            if (conference.value.endDateTime >= Instant.now()
-                    .toEpochMilli()
-            ) { // If conference hasn't ended yet, show timer.
-                item {
-                    Timer(conference.value.startDateTime, duration.value)
-                }
-            }
-            item {
-                AttendingCounter(peopleAttending = viewModel.attendingCount)
-            }
-            item {
-                Attendance(
-                    onClick = { viewModel.toggleAttendance() },
-                    isAttending = viewModel.isAttending
-                )
-            }
-            item {
-                Column(
-                    verticalArrangement = Arrangement.Top,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .padding(top = 20.dp, bottom = 20.dp)
-                        .fillMaxWidth()
-                        .background(
-                            if (isSystemInDarkTheme()) DarkTertiaryColor else TertiaryColor,
-                            RoundedCornerShape(8.dp)
-                        )
-                ) {
                     Row(
                         horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable(
-                                onClick = {
-                                    viewModel.toggleShowEvents()
-                                }
-                            )
+                            .padding(top = 10.dp, start = 5.dp, end = 5.dp)
                     ) {
-                        Text(text = "")
-                        Text(
-                            text = "Events",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Medium,
-                            modifier = Modifier.padding(top = 5.dp, bottom = 2.5.dp)
-                        )
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_expand),
-                            contentDescription = "expand",
-                            tint = if (isSystemInDarkTheme()) Color.White else Color.Black,
-                            modifier = Modifier
-                                .rotate(if (viewModel.showEvents) 0f else 180f)
-                                .padding(top = 2.dp, end = 5.dp)
-                        )
-                    }
-                    if (viewModel.showEvents) {
-                        if (events.value.isEmpty()) {
-                            Text(
-                                text = "There are no events planned in this conference.",
-                                fontWeight = FontWeight.Light,
+                        ConferenceScreenState.entries.forEach {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
                                 modifier = Modifier
-                                    .padding(top = 30.dp, bottom = 10.dp)
-                            )
-                        } else {
-                            LazyColumn(
-                                modifier = Modifier
-                                    .height(if (events.value.isEmpty()) 0.dp else if (events.value.size < 2) 100.dp else if (events.value.size < 3) 200.dp else if (events.value.size < 4) 300.dp else 400.dp)
-                                    .padding(10.dp)
+                                    .width(100.dp)
                             ) {
-                                items(
-                                    items = events.value,
-                                    key = { event -> event.id!! }
-                                ) {
-                                    EventCard(
-                                        event = it,
-                                        onClick = { eventId ->
-                                            onEventClick(EventDestination.createNavigation(eventId))
-                                        },
-                                        isOnEventScreen = false
+                                Text(
+                                    text = it.name.lowercase().replaceFirstChar { char ->
+                                        if (char.isLowerCase()) char.titlecase() else char.toString()
+                                    },
+                                    fontSize = 18.sp,
+                                    fontWeight = if (it == viewModel.screenState) FontWeight.SemiBold else FontWeight.Light,
+                                    color = if (it == viewModel.screenState) Blue else if (isSystemInDarkTheme()) Color.White else Color.Black,
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier
+                                        .padding(5.dp)
+                                        .clickable {
+                                            viewModel.onScreenStateClick(it)
+                                        }
+                                )
+                                if (it == viewModel.screenState) {
+                                    Spacer(
+                                        modifier = Modifier
+                                            .size(6.dp)
+                                    )
+                                    Divider(
+                                        color = Blue,
+                                        thickness = 4.dp,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
                                     )
                                 }
                             }
@@ -220,67 +176,171 @@ fun ConferenceScreen(
                     }
                 }
             }
-            item {
-                BlueButton(
-                    text = "Add an event",
-                    onClick = { onAddEventClick(viewModel.conference.value.id!!) }
-                )
-            }
-            item {
-                Box(
-                    modifier = Modifier
-                        .padding(top = 20.dp)
-                        .fillMaxWidth()
-                        .background(
-                            if (isSystemInDarkTheme()) DarkTertiaryColor else TertiaryColor,
-                            RoundedCornerShape(8.dp)
-                        ),
-                    contentAlignment = Alignment.TopCenter
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        Row {
-                            Text(
-                                text = "Chat ",
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Medium,
-                                modifier = Modifier.padding(top = 5.dp, bottom = 2.5.dp)
-                            )
-                            Text(
-                                text = messages.value.size.toString(),
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.ExtraLight,
-                                modifier = Modifier.padding(top = 5.dp, bottom = 2.5.dp)
-                            )
+            when (viewModel.screenState) {
+                ConferenceScreenState.OVERVIEW -> {
+                    item {
+                        Title(title = conference.value.title)
+                    }
+                    if (conference.value.endDateTime >= Instant.now()
+                            .toEpochMilli()
+                    ) { // If conference hasn't ended yet, show timer.
+                        item {
+                            Timer(conference.value.startDateTime, duration.value)
                         }
-                        LazyColumn(
+                    }
+                    item {
+                        AttendingCounter(peopleAttending = viewModel.attendingCount)
+                    }
+                    item {
+                        Attendance(
+                            onClick = { viewModel.toggleAttendance() },
+                            isAttending = viewModel.isAttending
+                        )
+                    }
+                }
+                ConferenceScreenState.EVENTS -> {
+                    item {
+                        Column(
+                            verticalArrangement = Arrangement.Top,
                             horizontalAlignment = Alignment.CenterHorizontally,
-                            reverseLayout = true,
                             modifier = Modifier
-                                .height(if (messages.value.isEmpty()) 0.dp else if (messages.value.size < 2) 110.dp else 220.dp)
-                                .padding(bottom = 10.dp)
+                                .padding(top = 20.dp, bottom = 20.dp)
                                 .fillMaxWidth()
+                                .background(
+                                    if (isSystemInDarkTheme()) DarkTertiaryColor else TertiaryColor,
+                                    RoundedCornerShape(8.dp)
+                                )
                         ) {
-                            items(
-                                items = messages.value,
-                                key = { message -> messages.value.indexOf(message) }
+                            Row(
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable(
+                                        onClick = {
+                                            viewModel.toggleShowEvents()
+                                        }
+                                    )
                             ) {
-                                Message(
-                                    message = it,
-                                    user = authors.value[messages.value.indexOf(it)],
-                                    conferenceOwnerId = conference.value.ownerId
+                                Text(text = "")
+                                Text(
+                                    text = "Events",
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    modifier = Modifier.padding(top = 5.dp, bottom = 2.5.dp)
+                                )
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_expand),
+                                    contentDescription = "expand",
+                                    tint = if (isSystemInDarkTheme()) Color.White else Color.Black,
+                                    modifier = Modifier
+                                        .rotate(if (viewModel.showEvents) 0f else 180f)
+                                        .padding(top = 2.dp, end = 5.dp)
+                                )
+                            }
+                            if (viewModel.showEvents) {
+                                if (events.value.isEmpty()) {
+                                    Text(
+                                        text = "There are no events planned in this conference.",
+                                        fontWeight = FontWeight.Light,
+                                        modifier = Modifier
+                                            .padding(top = 30.dp, bottom = 10.dp)
+                                    )
+                                } else {
+                                    LazyColumn(
+                                        modifier = Modifier
+                                            .height(if (events.value.isEmpty()) 0.dp else if (events.value.size < 2) 100.dp else if (events.value.size < 3) 200.dp else if (events.value.size < 4) 300.dp else 400.dp)
+                                            .padding(10.dp)
+                                    ) {
+                                        items(
+                                            items = events.value,
+                                            key = { event -> event.id!! }
+                                        ) {
+                                            EventCard(
+                                                event = it,
+                                                onClick = { eventId ->
+                                                    onEventClick(
+                                                        EventDestination.createNavigation(
+                                                            eventId
+                                                        )
+                                                    )
+                                                },
+                                                isOnEventScreen = false
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    item {
+                        BlueButton(
+                            text = "Add an event",
+                            onClick = { onAddEventClick(viewModel.conference.value.id!!) }
+                        )
+                    }
+                }
+                ConferenceScreenState.GALLERY -> {
+                    //TODO: Implement gallery
+                }
+                ConferenceScreenState.CHAT -> {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .padding(top = 20.dp)
+                                .fillMaxWidth()
+                                .background(
+                                    if (isSystemInDarkTheme()) DarkTertiaryColor else TertiaryColor,
+                                    RoundedCornerShape(8.dp)
+                                ),
+                            contentAlignment = Alignment.TopCenter
+                        ) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                            ) {
+                                Row {
+                                    Text(
+                                        text = "Chat ",
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.Medium,
+                                        modifier = Modifier.padding(top = 5.dp, bottom = 2.5.dp)
+                                    )
+                                    Text(
+                                        text = messages.value.size.toString(),
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.ExtraLight,
+                                        modifier = Modifier.padding(top = 5.dp, bottom = 2.5.dp)
+                                    )
+                                }
+                                LazyColumn(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    reverseLayout = true,
+                                    modifier = Modifier
+                                        .height(if (messages.value.isEmpty()) 0.dp else if (messages.value.size < 2) 110.dp else 220.dp)
+                                        .padding(bottom = 10.dp)
+                                        .fillMaxWidth()
+                                ) {
+                                    items(
+                                        items = messages.value,
+                                        key = { message -> messages.value.indexOf(message) }
+                                    ) {
+                                        Message(
+                                            message = it,
+                                            user = authors.value[messages.value.indexOf(it)],
+                                            conferenceOwnerId = conference.value.ownerId
+                                        )
+                                    }
+                                }
+                                SendMessageCard(
+                                    textValue = viewModel.newMessage,
+                                    onTextChange = { viewModel.onNewMessageChange(it) },
+                                    onSendClick = {
+                                        viewModel.sendMessage()
+                                        viewModel.newMessage = ""
+                                    },
                                 )
                             }
                         }
-                        SendMessageCard(
-                            textValue = viewModel.newMessage,
-                            onTextChange = { viewModel.onNewMessageChange(it) },
-                            onSendClick = {
-                                viewModel.sendMessage()
-                                viewModel.newMessage = ""
-                            },
-                        )
                     }
                 }
             }
@@ -294,8 +354,9 @@ fun Title(title: String) {
         text = title,
         fontSize = 24.sp,
         fontWeight = FontWeight.Medium,
+        textAlign = TextAlign.Center,
         modifier = Modifier
-            .padding(top = 20.dp)
+            .padding(top = 20.dp, start = 10.dp, end = 10.dp)
     )
 }
 

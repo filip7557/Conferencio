@@ -45,6 +45,9 @@ class ConferenceViewModel(
     var showEvents by mutableStateOf(true)
         private set
 
+    var screenState by mutableStateOf(ConferenceScreenState.OVERVIEW)
+        private set
+
     val messageAuthors = MutableStateFlow(listOf<User>())
 
     val conference: StateFlow<Conference> = conferenceRepository.getConferenceFromId(conferenceId).stateIn(
@@ -128,5 +131,9 @@ class ConferenceViewModel(
 
     fun sendMessage() {
         conferenceRepository.sendMessage(conferenceId, newMessage)
+    }
+
+    fun onScreenStateClick(newScreenState: ConferenceScreenState) {
+        screenState = newScreenState
     }
 }
