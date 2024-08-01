@@ -1,5 +1,7 @@
 package hr.ferit.filipcuric.conferencio.ui.component
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -28,6 +30,7 @@ import hr.ferit.filipcuric.conferencio.ui.theme.TertiaryColor
 import java.time.Instant
 import java.time.ZoneId
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ConferenceCard(
     conference: Conference,
@@ -67,7 +70,10 @@ fun ConferenceCard(
                 Text(
                     text = conference.title,
                     fontSize = 13.sp,
-                    fontWeight = FontWeight.Medium
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier
+                        .fillMaxWidth(0.6f)
+                        .basicMarquee()
                 )
                 val datetime = Instant.ofEpochMilli(conference.startDateTime).atZone(ZoneId.systemDefault())
                 Row {
