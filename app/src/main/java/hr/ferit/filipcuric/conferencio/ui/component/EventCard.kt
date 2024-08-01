@@ -1,5 +1,7 @@
 package hr.ferit.filipcuric.conferencio.ui.component
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -24,6 +26,7 @@ import hr.ferit.filipcuric.conferencio.model.Event
 import java.time.Instant
 import java.time.ZoneId
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun EventCard(
     event: Event,
@@ -55,6 +58,8 @@ fun EventCard(
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth(0.7f)
             ) {
                 Icon(
                     painter = painterResource(
@@ -76,7 +81,9 @@ fun EventCard(
                         text = event.title,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium,
-                        color = Color.Black
+                        color = Color.Black,
+                        modifier = Modifier
+                            .basicMarquee()
                     )
                     Text(
                         text = event.type,
@@ -88,7 +95,7 @@ fun EventCard(
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
-                    .fillMaxWidth(0.8f)
+                    .fillMaxWidth()
             ) {
                 if (!isOnEventScreen) {
                     val datetime =
