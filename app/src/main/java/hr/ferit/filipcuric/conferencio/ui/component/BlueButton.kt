@@ -12,6 +12,7 @@ import hr.ferit.filipcuric.conferencio.ui.theme.Blue
 
 @Composable
 fun BlueButton(
+    modifier: Modifier = Modifier,
     text: String,
     enabled: Boolean = true,
     onClick: () -> Unit,
@@ -23,7 +24,7 @@ fun BlueButton(
             containerColor = Blue,
             contentColor = Color.White,
         ),
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
     ) {
         Text(
