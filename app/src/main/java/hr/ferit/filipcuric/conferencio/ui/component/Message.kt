@@ -26,6 +26,7 @@ fun Message(
     message: ChatMessage,
     user: User,
     conferenceOwnerId: String,
+    isUserAuthor: Boolean = false,
     isEvent: Boolean = false,
 ) {
     Column(
@@ -34,7 +35,7 @@ fun Message(
             .fillMaxWidth()
             .background(
                 if (isSystemInDarkTheme()) Color(40, 40, 41) else Color(107, 107, 107),
-                RoundedCornerShape(8.dp)
+                if (isUserAuthor) RoundedCornerShape(topStart = 20.dp, bottomStart = 20.dp, topEnd = 0.dp, bottomEnd = 20.dp) else RoundedCornerShape(topStart = 0.dp, bottomStart = 20.dp, topEnd = 20.dp, bottomEnd = 20.dp)
             )
     ) {
         Row(

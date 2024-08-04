@@ -7,10 +7,10 @@ import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -241,7 +241,7 @@ fun ConferenceScreen(
             }
 
             ConferenceScreenState.CHAT -> {
-                item {
+                /*item {
                     Box(
                         modifier = Modifier
                             .padding(top = 20.dp)
@@ -297,6 +297,43 @@ fun ConferenceScreen(
                                 },
                             )
                         }
+                    }
+                }*/
+                item {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(vertical = 10.dp)
+                    ) {
+                        LazyColumn(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            reverseLayout = true,
+                            modifier = Modifier
+                                .height(380.dp)
+                                .padding(bottom = 10.dp)
+                                .fillMaxWidth()
+                        ) {
+                            items(
+                                items = messages.value,
+                                key = { message -> messages.value.indexOf(message) }
+                            ) {
+                                Message(
+                                    message = it,
+                                    user = authors.value[messages.value.indexOf(it)],
+                                    isUserAuthor = authors.value[messages.value.indexOf(it)] == viewModel.user,
+                                    conferenceOwnerId = conference.value.ownerId
+                                )
+                            }
+                        }
+                        SendMessageCard(
+                            textValue = viewModel.newMessage,
+                            onTextChange = { viewModel.onNewMessageChange(it) },
+                            onSendClick = {
+                                viewModel.sendMessage()
+                                viewModel.newMessage = ""
+                            }
+                        )
                     }
                 }
             }

@@ -56,6 +56,8 @@ class ConferenceViewModel(
             initialValue = Conference()
         )
 
+    var user by mutableStateOf(User())
+
     @OptIn(ExperimentalCoroutinesApi::class)
     val events: StateFlow<List<Event>> =
         conference.flatMapLatest {
@@ -67,8 +69,8 @@ class ConferenceViewModel(
     )
 
     init {
+        getCurrentUser()
         changeDuration()
-        getMessages()
         viewModelScope.launch(Dispatchers.IO) {
             isAttending = conferenceRepository.getAttendanceFromConferenceId(conferenceId)
         }
@@ -113,15 +115,17 @@ class ConferenceViewModel(
     }
 
     private fun getMessages() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val newMessages = conferenceRepository.getConferenceChatById(conferenceId)
-            val authors = mutableListOf<User>()
-            for (message in newMessages) {
-                authors.add(userRepository.getUserById(message.userId)!!)
+        if (screenState == ConferenceScreenState.CHAT) {
+            viewModelScope.launch(Dispatchers.IO) {
+                val newMessages = conferenceRepository.getConferenceChatById(conferenceId)
+                val authors = mutableListOf<User>()
+                for (message in newMessages) {
+                    authors.add(userRepository.getUserById(message.userId)!!)
+                }
+                messageAuthors.emit(authors)
+                messages.emit(newMessages)
+                getMessages()
             }
-            messageAuthors.emit(authors)
-            messages.emit(newMessages)
-            getMessages()
         }
     }
 
@@ -135,5 +139,17 @@ class ConferenceViewModel(
 
     fun onScreenStateClick(newScreenState: ConferenceScreenState) {
         screenState = newScreenState
+        if (screenState == ConferenceScreenState.CHAT)
+            getMessages()
+    }
+
+    private fun getCurrentUser() {
+        viewModelScope.launch(Dispatchers.IO) {
+            user = if(userRepository.getCurrentUser() != null) {
+                userRepository.getCurrentUser()!!
+            } else {
+                User()
+            }
+        }
     }
 }
