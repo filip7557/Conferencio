@@ -42,9 +42,6 @@ class ConferenceViewModel(
 
     var newMessage by mutableStateOf("")
 
-    var showEvents by mutableStateOf(true)
-        private set
-
     var screenState by mutableStateOf(ConferenceScreenState.OVERVIEW)
         private set
 
@@ -79,10 +76,6 @@ class ConferenceViewModel(
 
     fun onNewMessageChange(value: String) {
         newMessage = value
-    }
-
-    fun toggleShowEvents() {
-        showEvents = !showEvents
     }
 
     private fun changeDuration() {
