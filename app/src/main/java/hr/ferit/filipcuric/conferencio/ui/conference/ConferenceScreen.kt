@@ -10,11 +10,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -68,170 +71,172 @@ fun ConferenceScreen(
     val messages = viewModel.messages.collectAsState()
     val authors = viewModel.messageAuthors.collectAsState()
 
-    LazyColumn(
-        verticalArrangement = Arrangement.Top,
+    Column(
         horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top,
+        modifier = Modifier
+            .fillMaxSize()
     ) {
-        stickyHeader {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                TopAppBar(
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = Blue,
-                        navigationIconContentColor = Color.White,
-                        actionIconContentColor = Color.White,
-                        titleContentColor = Color.White
-                    ),
-                    title = {
-                        Text(
-                            text = conference.value.title,
+        TopAppBar(
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = Blue,
+                navigationIconContentColor = Color.White,
+                actionIconContentColor = Color.White,
+                titleContentColor = Color.White
+            ),
+            title = {
+                Text(
+                    text = conference.value.title,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .basicMarquee(iterations = Int.MAX_VALUE)
+                )
+            },
+            navigationIcon = {
+                IconButton(onClick = onBackClick) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.baseline_arrow_back_ios_new_24),
+                        contentDescription = "back icon",
+                        modifier = Modifier
+                            .padding(top = 5.dp)
+                    )
+                }
+            },
+            actions = {
+                if (viewModel.isUserManager()) {
+                    IconButton(
+                        onClick = {
+                            onManageClick(
+                                ModifyConferenceDestination.createNavigation(
+                                    conference.value.id!!
+                                )
+                            )
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_gear),
+                            contentDescription = "gear icon"
+                        )
+                    }
+                }
+            },
+            windowInsets = WindowInsets.statusBars
+        )
+        AsyncImage(
+            model = conference.value.imageUrl,
+            contentDescription = "conference banner",
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+                .clip(RoundedCornerShape(bottomStart = 8.dp, bottomEnd = 8.dp)),
+            contentScale = ContentScale.Crop,
+        )
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 10.dp, start = 5.dp, end = 5.dp)
+        ) {
+            ConferenceScreenState.entries.forEach {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .width(90.dp)
+                ) {
+                    Text(
+                        text = it.name.lowercase().replaceFirstChar { char ->
+                            if (char.isLowerCase()) char.titlecase() else char.toString()
+                        },
+                        fontSize = 18.sp,
+                        fontWeight = if (it == viewModel.screenState) FontWeight.SemiBold else FontWeight.Light,
+                        color = if (it == viewModel.screenState) Blue else if (isSystemInDarkTheme()) Color.White else Color.Black,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .padding(5.dp)
+                            .clickable {
+                                viewModel.onScreenStateClick(it)
+                            }
+                    )
+                    if (it == viewModel.screenState) {
+                        Spacer(
+                            modifier = Modifier
+                                .size(6.dp)
+                        )
+                        Divider(
+                            color = Blue,
+                            thickness = 4.dp,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .basicMarquee(iterations = Int.MAX_VALUE)
                         )
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = onBackClick) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.baseline_arrow_back_ios_new_24),
-                                contentDescription = "back icon",
-                                modifier = Modifier
-                                    .padding(top = 5.dp)
-                            )
-                        }
-                    },
-                    actions = {
-                        if (viewModel.isUserManager()) {
-                            IconButton(
-                                onClick = {
-                                    onManageClick(
-                                        ModifyConferenceDestination.createNavigation(
-                                            conference.value.id!!
-                                        )
-                                    )
-                                }
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_gear),
-                                    contentDescription = "gear icon"
-                                )
-                            }
-                        }
-                    }
-                )
-                AsyncImage(
-                    model = conference.value.imageUrl,
-                    contentDescription = "conference banner",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp)
-                        .clip(RoundedCornerShape(bottomStart = 8.dp, bottomEnd = 8.dp)),
-                    contentScale = ContentScale.Crop,
-                )
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 10.dp, start = 5.dp, end = 5.dp)
-                ) {
-                    ConferenceScreenState.entries.forEach {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier
-                                .width(90.dp)
-                        ) {
-                            Text(
-                                text = it.name.lowercase().replaceFirstChar { char ->
-                                    if (char.isLowerCase()) char.titlecase() else char.toString()
-                                },
-                                fontSize = 18.sp,
-                                fontWeight = if (it == viewModel.screenState) FontWeight.SemiBold else FontWeight.Light,
-                                color = if (it == viewModel.screenState) Blue else if (isSystemInDarkTheme()) Color.White else Color.Black,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier
-                                    .padding(5.dp)
-                                    .clickable {
-                                        viewModel.onScreenStateClick(it)
-                                    }
-                            )
-                            if (it == viewModel.screenState) {
-                                Spacer(
-                                    modifier = Modifier
-                                        .size(6.dp)
-                                )
-                                Divider(
-                                    color = Blue,
-                                    thickness = 4.dp,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                )
-                            }
-                        }
                     }
                 }
             }
         }
         when (viewModel.screenState) {
             ConferenceScreenState.OVERVIEW -> {
-                item {
-                    Title(title = conference.value.title)
-                }
-                if (conference.value.endDateTime >= Instant.now()
-                        .toEpochMilli()
-                ) { // If conference hasn't ended yet, show timer.
+                LazyColumn(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
                     item {
-                        Timer(conference.value.startDateTime, duration.value)
+                        Title(title = conference.value.title)
                     }
-                }
-                item {
-                    AttendingCounter(peopleAttending = viewModel.attendingCount)
-                }
-                item {
-                    Attendance(
-                        onClick = { viewModel.toggleAttendance() },
-                        isAttending = viewModel.isAttending
-                    )
+                    if (conference.value.endDateTime >= Instant.now()
+                            .toEpochMilli()
+                    ) { // If conference hasn't ended yet, show timer.
+                        item {
+                            Timer(conference.value.startDateTime, duration.value)
+                        }
+                    }
+                    item {
+                        AttendingCounter(peopleAttending = viewModel.attendingCount)
+                    }
+                    item {
+                        Attendance(
+                            onClick = { viewModel.toggleAttendance() },
+                            isAttending = viewModel.isAttending
+                        )
+                    }
                 }
             }
 
             ConferenceScreenState.EVENTS -> {
-                if (viewModel.isUserManager()) {
-                    item {
-                        BlueButton(
-                            modifier = Modifier
-                                .padding(vertical = 20.dp),
-                            text = "Add an event",
-                            onClick = { onAddEventClick(viewModel.conference.value.id!!) }
-                        )
+                LazyColumn {
+                    if (viewModel.isUserManager()) {
+                        item {
+                            BlueButton(
+                                modifier = Modifier
+                                    .padding(vertical = 20.dp),
+                                text = "Add an event",
+                                onClick = { onAddEventClick(viewModel.conference.value.id!!) }
+                            )
+                        }
                     }
-                }
-                if (events.value.isEmpty()) {
-                    item {
-                        Text(
-                            text = "There are no events planned in this conference.",
-                            fontWeight = FontWeight.Light,
-                            modifier = Modifier
-                                .padding(top = 30.dp, bottom = 10.dp)
-                        )
-                    }
-                } else {
-                    items(
-                        items = events.value,
-                        key = { event -> event.id!! }
-                    ) {
-                        EventCard(
-                            event = it,
-                            onClick = { eventId ->
-                                onEventClick(
-                                    EventDestination.createNavigation(
-                                        eventId
+                    if (events.value.isEmpty()) {
+                        item {
+                            Text(
+                                text = "There are no events planned in this conference.",
+                                fontWeight = FontWeight.Light,
+                                modifier = Modifier
+                                    .padding(top = 30.dp, bottom = 10.dp)
+                            )
+                        }
+                    } else {
+                        items(
+                            items = events.value,
+                            key = { event -> event.id!! }
+                        ) {
+                            EventCard(
+                                event = it,
+                                onClick = { eventId ->
+                                    onEventClick(
+                                        EventDestination.createNavigation(
+                                            eventId
+                                        )
                                     )
-                                )
-                            },
-                            isOnEventScreen = false
-                        )
+                                },
+                                isOnEventScreen = false
+                            )
+                        }
                     }
                 }
             }
@@ -241,101 +246,34 @@ fun ConferenceScreen(
             }
 
             ConferenceScreenState.CHAT -> {
-                /*item {
-                    Box(
-                        modifier = Modifier
-                            .padding(top = 20.dp)
-                            .fillMaxWidth()
-                            .background(
-                                if (isSystemInDarkTheme()) DarkTertiaryColor else TertiaryColor,
-                                RoundedCornerShape(8.dp)
-                            ),
-                        contentAlignment = Alignment.TopCenter
+                LazyColumn(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    reverseLayout = true,
+                    modifier = Modifier
+                        .padding(vertical = 10.dp)
+                        .fillMaxWidth()
+                        .fillMaxHeight(0.85f)
+                ) {
+                    items(
+                        items = messages.value,
+                        key = { message -> messages.value.indexOf(message) }
                     ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                        ) {
-                            Row {
-                                Text(
-                                    text = "Chat ",
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.Medium,
-                                    modifier = Modifier.padding(top = 5.dp, bottom = 2.5.dp)
-                                )
-                                Text(
-                                    text = messages.value.size.toString(),
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.ExtraLight,
-                                    modifier = Modifier.padding(top = 5.dp, bottom = 2.5.dp)
-                                )
-                            }
-                            LazyColumn(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                reverseLayout = true,
-                                modifier = Modifier
-                                    .height(if (messages.value.isEmpty()) 0.dp else if (messages.value.size < 2) 110.dp else 220.dp)
-                                    .padding(bottom = 10.dp)
-                                    .fillMaxWidth()
-                            ) {
-                                items(
-                                    items = messages.value,
-                                    key = { message -> messages.value.indexOf(message) }
-                                ) {
-                                    Message(
-                                        message = it,
-                                        user = authors.value[messages.value.indexOf(it)],
-                                        conferenceOwnerId = conference.value.ownerId
-                                    )
-                                }
-                            }
-                            SendMessageCard(
-                                textValue = viewModel.newMessage,
-                                onTextChange = { viewModel.onNewMessageChange(it) },
-                                onSendClick = {
-                                    viewModel.sendMessage()
-                                    viewModel.newMessage = ""
-                                },
-                            )
-                        }
-                    }
-                }*/
-                item {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(vertical = 10.dp)
-                    ) {
-                        LazyColumn(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            reverseLayout = true,
-                            modifier = Modifier
-                                .height(380.dp)
-                                .padding(bottom = 10.dp)
-                                .fillMaxWidth()
-                        ) {
-                            items(
-                                items = messages.value,
-                                key = { message -> messages.value.indexOf(message) }
-                            ) {
-                                Message(
-                                    message = it,
-                                    user = authors.value[messages.value.indexOf(it)],
-                                    isUserAuthor = authors.value[messages.value.indexOf(it)] == viewModel.user,
-                                    conferenceOwnerId = conference.value.ownerId
-                                )
-                            }
-                        }
-                        SendMessageCard(
-                            textValue = viewModel.newMessage,
-                            onTextChange = { viewModel.onNewMessageChange(it) },
-                            onSendClick = {
-                                viewModel.sendMessage()
-                                viewModel.newMessage = ""
-                            }
+                        Message(
+                            message = it,
+                            user = authors.value[messages.value.indexOf(it)],
+                            isUserAuthor = authors.value[messages.value.indexOf(it)] == viewModel.user,
+                            conferenceOwnerId = conference.value.ownerId
                         )
                     }
                 }
+                SendMessageCard(
+                    textValue = viewModel.newMessage,
+                    onTextChange = { viewModel.onNewMessageChange(it) },
+                    onSendClick = {
+                        viewModel.sendMessage()
+                        viewModel.newMessage = ""
+                    }
+                )
             }
         }
     }

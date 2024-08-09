@@ -1,5 +1,6 @@
 package hr.ferit.filipcuric.conferencio.ui.conference
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -144,5 +145,9 @@ class ConferenceViewModel(
                 User()
             }
         }
+    }
+
+    fun setTopBar(topBar: @Composable () -> Unit): @Composable () -> Unit {
+        return topBar
     }
 }

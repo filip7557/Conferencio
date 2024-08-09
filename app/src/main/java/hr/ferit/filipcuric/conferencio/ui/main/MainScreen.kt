@@ -5,7 +5,7 @@ import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.captionBar
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredWidth
@@ -107,6 +107,9 @@ fun MainScreen() {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState() //current screen
 
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+
     val showBottomBar by remember {
         derivedStateOf {
             navBackStackEntry?.destination?.route == NavigationItem.BrowseDestination.route ||
@@ -132,17 +135,13 @@ fun MainScreen() {
     }
 
     val view = LocalView.current
-    val color = /*if (showTopBar) DarkBlue.toArgb() else */Color.Transparent.toArgb()
+    val color = Color.Transparent.toArgb()
     SideEffect {
         val window = (view.context as Activity).window
         window.statusBarColor = color
         window.isStatusBarContrastEnforced = true
         window.navigationBarColor = Color.Transparent.toArgb()
     }
-
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val scope = rememberCoroutineScope()
-
 
     val loginViewModel = koinViewModel<LoginViewModel>()
     val registerViewModel = koinViewModel<RegisterViewModel>()
@@ -218,7 +217,7 @@ fun MainScreen() {
                     FloatingActionButton { navController.navigate(NavigationItem.CreateConferenceDestination.route) }
             },
             topBar = {
-                if (showTopBar)
+                if (showTopBar) {
                     TopBar(currentDestination = navBackStackEntry?.destination, onNavIconClick = {
                         scope.launch {
                             Log.d("DRAWER", drawerState.currentValue.toString())
@@ -229,8 +228,9 @@ fun MainScreen() {
                             }
                         }
                     })
+                }
             },
-            contentWindowInsets = WindowInsets.ime,
+            contentWindowInsets = WindowInsets.captionBar
         ) { padding ->
             NavHost(
                 navController = navController,
