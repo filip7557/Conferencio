@@ -11,6 +11,7 @@ import hr.ferit.filipcuric.conferencio.model.ChatMessage
 import hr.ferit.filipcuric.conferencio.model.Conference
 import hr.ferit.filipcuric.conferencio.model.Event
 import hr.ferit.filipcuric.conferencio.model.File
+import hr.ferit.filipcuric.conferencio.model.Picture
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -165,6 +166,27 @@ class ConferenceRepositoryImpl : ConferenceRepository {
         }
         emit(files)
     }.flowOn(Dispatchers.IO)
+
+    override fun getPicturesFromConferenceId(conferenceId: String): Flow<List<Picture>> = flow {
+        val pictures = mutableListOf<Picture>()
+        val documents = db.collection("pictures").whereEqualTo("conferenceId", conferenceId).get().await()
+        for (document in documents) {
+            val picture = document.toObject(Picture::class.java)
+            pictures.add(picture)
+        }
+        emit(pictures)
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun uploadPicture(imageUri: Uri, conferenceId: String) {
+        val fileRef = storageRef.child("pictures/${imageUri.pathSegments.last()}")
+        fileRef.putFile(imageUri).await()
+        val link = fileRef.downloadUrl.await().toString()
+        val picture = Picture(
+            conferenceId = conferenceId,
+            imageUrl = link,
+        )
+        db.collection("pictures").add(picture).await()
+    }
 
     override suspend fun getAttendanceCount(conferenceId: String): Int {
         return db.collection("attendances").whereEqualTo("event", false).whereEqualTo("conferenceId", conferenceId).get().await().count()

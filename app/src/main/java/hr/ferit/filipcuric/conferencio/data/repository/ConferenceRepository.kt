@@ -5,6 +5,7 @@ import hr.ferit.filipcuric.conferencio.model.ChatMessage
 import hr.ferit.filipcuric.conferencio.model.Conference
 import hr.ferit.filipcuric.conferencio.model.Event
 import hr.ferit.filipcuric.conferencio.model.File
+import hr.ferit.filipcuric.conferencio.model.Picture
 import kotlinx.coroutines.flow.Flow
 
 interface ConferenceRepository {
@@ -33,4 +34,6 @@ interface ConferenceRepository {
     suspend fun createEvent(event: Event): String
     suspend fun updateEvent(event: Event)
     fun isUserHost(hostId: String): Boolean
+    fun getPicturesFromConferenceId(conferenceId: String): Flow<List<Picture>>
+    suspend fun uploadPicture(imageUri: Uri, conferenceId: String)
 }
