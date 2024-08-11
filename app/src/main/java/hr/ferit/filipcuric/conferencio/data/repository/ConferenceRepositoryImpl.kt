@@ -174,7 +174,7 @@ class ConferenceRepositoryImpl : ConferenceRepository {
             val picture = document.toObject(Picture::class.java)
             pictures.add(picture)
         }
-        emit(pictures)
+        emit(pictures.sortedBy { p -> p.timestamp })
     }.flowOn(Dispatchers.IO)
 
     override suspend fun uploadPicture(imageUri: Uri, conferenceId: String) {
@@ -184,6 +184,7 @@ class ConferenceRepositoryImpl : ConferenceRepository {
         val picture = Picture(
             conferenceId = conferenceId,
             imageUrl = link,
+            timestamp = Instant.now().toEpochMilli()
         )
         db.collection("pictures").add(picture).await()
     }
