@@ -3,6 +3,7 @@ package hr.ferit.filipcuric.conferencio.ui.component
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -22,7 +23,8 @@ fun Picture(
         contentDescription = "picture",
         contentScale = ContentScale.Crop,
         modifier = Modifier
-            .size(180.dp)
+            .padding(vertical = 5.dp, horizontal = 5.dp)
+            .size(200.dp)
             .clickable {
                 context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(picture.imageUrl)))
             }
