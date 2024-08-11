@@ -141,13 +141,11 @@ fun ConferenceScreen(
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
-                        .width(90.dp)
+                        .width(95.dp)
                 ) {
                     Text(
-                        text = it.name.lowercase().replaceFirstChar { char ->
-                            if (char.isLowerCase()) char.titlecase() else char.toString()
-                        },
-                        fontSize = 18.sp,
+                        text = it.name,
+                        fontSize = 16.sp,
                         fontWeight = if (it == viewModel.screenState) FontWeight.SemiBold else FontWeight.Light,
                         color = if (it == viewModel.screenState) Blue else if (isSystemInDarkTheme()) Color.White else Color.Black,
                         textAlign = TextAlign.Center,
