@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,6 +30,8 @@ import hr.ferit.filipcuric.conferencio.ui.theme.Blue
 fun ProfileScreen(
     viewModel: ProfileViewModel,
 ) {
+    val organized = viewModel.organized.collectAsState()
+    val attended = viewModel.attended.collectAsState()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -39,7 +42,7 @@ fun ProfileScreen(
         Picture(imageUrl = viewModel.user.imageUrl)
         Fullname(fullname = viewModel.user.fullname)
         CompanyAndPosition(company = viewModel.user.company, position = viewModel.user.position)
-        ConferencesInfo(organized = viewModel.organized, attended = viewModel.attended)
+        ConferencesInfo(organized = organized.value, attended = attended.value)
     }
 }
 
