@@ -1,12 +1,16 @@
 package hr.ferit.filipcuric.conferencio.ui.conference
 
+import android.net.Uri
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,12 +24,18 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -47,7 +57,9 @@ import hr.ferit.filipcuric.conferencio.navigation.EventDestination
 import hr.ferit.filipcuric.conferencio.navigation.ModifyConferenceDestination
 import hr.ferit.filipcuric.conferencio.ui.component.BlueButton
 import hr.ferit.filipcuric.conferencio.ui.component.EventCard
+import hr.ferit.filipcuric.conferencio.ui.component.LoadingAnimation
 import hr.ferit.filipcuric.conferencio.ui.component.Message
+import hr.ferit.filipcuric.conferencio.ui.component.Picture
 import hr.ferit.filipcuric.conferencio.ui.component.SendMessageCard
 import hr.ferit.filipcuric.conferencio.ui.theme.Blue
 import hr.ferit.filipcuric.conferencio.ui.theme.DarkTertiaryColor
@@ -240,7 +252,71 @@ fun ConferenceScreen(
             }
 
             ConferenceScreenState.GALLERY -> {
-                //TODO: Implement gallery
+                if (viewModel.loading) {
+                    LoadingAnimation()
+                } else {
+                    val pictures = viewModel.pictures.collectAsState()
+                    if (pictures.value.isEmpty()) {
+                        Text(
+                            text = "There are no pictures yet.",
+                            fontWeight = FontWeight.Light,
+                            modifier = Modifier
+                                .padding(top = 20.dp)
+                        )
+                    }
+                    Box(
+                        modifier = Modifier
+                            .padding(vertical = 5.dp, horizontal = 5.dp)
+                            .fillMaxSize()
+                    ) {
+                        LazyVerticalGrid(
+                            columns = GridCells.Fixed(2),
+                            verticalArrangement = Arrangement.Top,
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                        ) {
+                            items(
+                                items = pictures.value,
+                                key = { picture -> picture.imageUrl }
+                            ) {
+                                Picture(picture = it)
+                            }
+                        }
+                        val launcher = rememberLauncherForActivityResult(
+                            contract = ActivityResultContracts.GetContent(),
+                            onResult = { uri: Uri? -> uri?.let { viewModel.onPictureSelected(it) } }
+                        )
+                        Box(
+                            contentAlignment = Alignment.BottomEnd,
+                            modifier = Modifier
+                                .fillMaxSize()
+                        ) {
+                            SmallFloatingActionButton(
+                                onClick = {
+                                    launcher.launch("image/*")
+                                },
+                                modifier = Modifier
+                                    .padding(vertical = 15.dp, horizontal = 15.dp),
+                                shape = CircleShape,
+                                containerColor = Blue,
+                                contentColor = Color.White,
+                                elevation = FloatingActionButtonDefaults.elevation(
+                                    defaultElevation = 8.dp,
+                                    pressedElevation = 5.dp,
+                                    hoveredElevation = 2.dp,
+                                )
+                            ) {
+                                Icon(
+                                    painter = painterResource(
+                                        id = R.drawable.baseline_add_24
+                                    ),
+                                    contentDescription = "add icon"
+                                )
+                            }
+                        }
+                    }
+                }
             }
 
             ConferenceScreenState.CHAT -> {

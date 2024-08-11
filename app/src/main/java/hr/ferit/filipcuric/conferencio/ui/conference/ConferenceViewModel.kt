@@ -60,6 +60,9 @@ class ConferenceViewModel(
 
     var user by mutableStateOf(User())
 
+    var loading by mutableStateOf(false)
+        private set
+
     @OptIn(ExperimentalCoroutinesApi::class)
     val events: StateFlow<List<Event>> =
         conference.flatMapLatest {
@@ -162,9 +165,11 @@ class ConferenceViewModel(
 
     fun onPictureSelected(imageUri: Uri) {
         viewModelScope.launch {
+            loading = true
             conferenceRepository.uploadPicture(imageUri, conferenceId)
         }.invokeOnCompletion {
             getPictures()
+            loading = false
         }
     }
 
