@@ -43,8 +43,14 @@ class EventViewModel(
 
     val messageAuthors = MutableStateFlow(listOf<User>())
 
+    var screenState by mutableStateOf(EventScreenState.OVERVIEW)
+        private set
+
+    var user by mutableStateOf(User())
+
     init {
         getHostUser()
+        getCurrentUser()
         getMessages()
         getAttendanceCount()
         getFiles()
@@ -54,6 +60,16 @@ class EventViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             conferenceRepository.getFilesFromEventId(eventId).collectLatest {
                 files.emit(it)
+            }
+        }
+    }
+
+    private fun getCurrentUser() {
+        viewModelScope.launch(Dispatchers.IO) {
+            user = if(userRepository.getCurrentUser() != null) {
+                userRepository.getCurrentUser()!!
+            } else {
+                User()
             }
         }
     }
@@ -128,5 +144,9 @@ class EventViewModel(
         }.invokeOnCompletion {
             getFiles()
         }
+    }
+
+    fun onScreenStateClick(newState: EventScreenState) {
+        screenState = newState
     }
 }

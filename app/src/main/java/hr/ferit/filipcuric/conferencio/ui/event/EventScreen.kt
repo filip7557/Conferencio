@@ -4,29 +4,33 @@ import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import hr.ferit.filipcuric.conferencio.R
@@ -46,7 +50,6 @@ import hr.ferit.filipcuric.conferencio.ui.theme.TertiaryColor
 import java.time.Instant
 import java.time.ZoneId
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun EventScreen(
     viewModel: EventViewModel,
@@ -58,100 +61,122 @@ fun EventScreen(
     val messages = viewModel.messages.collectAsState()
     val authors = viewModel.messageAuthors.collectAsState()
 
-    LazyColumn(
+    Column(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        stickyHeader {
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 10.dp, end = 10.dp, bottom = 20.dp, top = 10.dp)
-            ) {
-                BackButton(onClick = onBackClick)
-                if (viewModel.isUserManager() || viewModel.isUserHost()) {
-                    ManageButton(
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 10.dp, end = 10.dp, bottom = 20.dp, top = 10.dp)
+        ) {
+            BackButton(onClick = onBackClick)
+            if (viewModel.isUserManager() || viewModel.isUserHost()) {
+                ManageButton(
+                    onClick = {
+                        onManageClick(
+                            ModifyEventDestination.createNavigation(event.value.id!!)
+                        )
+                    }
+                )
+            }
+        }
+        EventCard(event = event.value, onClick = { /*Do nothing*/ }, isOnEventScreen = true)
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 10.dp, start = 5.dp, end = 5.dp)
+        ) {
+            EventScreenState.entries.forEach {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .width(130.dp)
+                ) {
+                    Text(
+                        text = it.name.replace('_', ' '),
+                        fontSize = 16.sp,
+                        fontWeight = if (it == viewModel.screenState) FontWeight.SemiBold else FontWeight.Light,
+                        color = if (it == viewModel.screenState) Blue else if (isSystemInDarkTheme()) Color.White else Color.Black,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .padding(5.dp)
+                            .clickable {
+                                viewModel.onScreenStateClick(it)
+                            }
+                    )
+                    if (it == viewModel.screenState) {
+                        Spacer(
+                            modifier = Modifier
+                                .size(6.dp)
+                        )
+                        Divider(
+                            color = Blue,
+                            thickness = 4.dp,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                        )
+                    }
+                }
+            }
+        }
+        when (viewModel.screenState) {
+
+            EventScreenState.OVERVIEW -> {
+                Info(event = event.value, host = viewModel.host)
+                AttendingCounter(peopleAttending = viewModel.attendingCount)
+                Attendance(
+                    onClick = { viewModel.toggleAttendance() },
+                    isAttending = viewModel.isAttending
+                )
+            }
+
+            EventScreenState.SHARED_FILES -> {
+                if (viewModel.isUserManager()) {
+                    val launcher = rememberLauncherForActivityResult(
+                        contract = ActivityResultContracts.GetContent(),
+                        onResult = { uri: Uri? -> uri?.let { viewModel.onFileSelected(it) } }
+                    )
+                    BlueButton(
+                        modifier = Modifier
+                            .padding(horizontal = 10.dp, vertical = 10.dp),
+                        text = "Add files",
                         onClick = {
-                            onManageClick(
-                                ModifyEventDestination.createNavigation(event.value.id!!)
-                            )
+                            launcher.launch("application/pdf")
                         }
                     )
                 }
-            }
-        }
-        item {
-            EventCard(event = event.value, onClick = { /*Do nothing*/ }, isOnEventScreen = true)
-        }
-        item {
-            Info(event = event.value, host = viewModel.host)
-        }
-        item { 
-            AttendingCounter(peopleAttending = viewModel.attendingCount)
-        }
-        item {
-            Attendance(onClick = { viewModel.toggleAttendance() }, isAttending = viewModel.isAttending)
-        }
-        item {
-            val context = LocalContext.current
-            SharedFiles(
-                files = files.value,
-                onFileClick = {
-                    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it)))
-                }
-            )
-        }
-        if (viewModel.isUserManager()) {
-            item {
-                val launcher = rememberLauncherForActivityResult(
-                    contract = ActivityResultContracts.GetContent(),
-                    onResult = { uri: Uri? -> uri?.let { viewModel.onFileSelected(it) } }
-                )
-                BlueButton(
-                    text = "Add files",
-                    onClick = {
-                        launcher.launch("application/pdf")
+                val context = LocalContext.current
+                SharedFiles(
+                    files = files.value,
+                    onFileClick = {
+                        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it)))
                     }
                 )
             }
-        }
-        item {
-            Box(
-                modifier = Modifier
-                    .padding(top = 20.dp)
-                    .fillMaxWidth()
-                    .background(
-                        if (isSystemInDarkTheme()) DarkTertiaryColor else TertiaryColor,
-                        RoundedCornerShape(8.dp)
-                    ),
-                contentAlignment = Alignment.TopCenter
-            ) {
-                Column(
+
+            EventScreenState.CHAT -> {
+                LazyColumn(
                     horizontalAlignment = Alignment.CenterHorizontally,
+                    reverseLayout = true,
+                    modifier = Modifier
+                        .padding(vertical = 10.dp)
+                        .fillMaxWidth()
+                        .fillMaxHeight(0.85f)
                 ) {
-                    Row {
-                        Text(
-                            text = "Chat ",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Medium,
-                            modifier = Modifier.padding(top = 5.dp, bottom = 2.5.dp)
-                        )
-                        Text(
-                            text = messages.value.size.toString(),
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.ExtraLight,
-                            modifier = Modifier.padding(top = 5.dp, bottom = 2.5.dp)
-                        )
-                    }
-                    LazyColumn(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        reverseLayout = true,
-                        modifier = Modifier
-                            .height(if (messages.value.isEmpty()) 0.dp else if (messages.value.size < 2) 110.dp else 220.dp)
-                            .padding(bottom = 10.dp)
-                            .fillMaxWidth()
-                    ) {
+                    if (messages.value.isEmpty()) {
+                        item {
+                            Text(
+                                text = "There are no messages in this chat.\nStart the conversation now.",
+                                fontWeight = FontWeight.Light,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .padding(top = 10.dp, bottom = 10.dp)
+                            )
+                        }
+                    } else {
                         items(
                             items = messages.value,
                             key = { message -> messages.value.indexOf(message) }
@@ -159,19 +184,20 @@ fun EventScreen(
                             Message(
                                 message = it,
                                 user = authors.value[messages.value.indexOf(it)],
+                                isUserAuthor = authors.value[messages.value.indexOf(it)] == viewModel.user,
                                 conferenceOwnerId = event.value.hostId
                             )
                         }
                     }
-                    SendMessageCard(
-                        textValue = viewModel.newMessage,
-                        onTextChange = { viewModel.onNewMessageChange(it) },
-                        onSendClick = {
-                            viewModel.sendMessage()
-                            viewModel.newMessage = ""
-                        },
-                    )
                 }
+                SendMessageCard(
+                    textValue = viewModel.newMessage,
+                    onTextChange = { viewModel.onNewMessageChange(it) },
+                    onSendClick = {
+                        viewModel.sendMessage()
+                        viewModel.newMessage = ""
+                    }
+                )
             }
         }
     }
@@ -186,11 +212,11 @@ fun Info(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
-            .padding(bottom = 20.dp)
+            .padding(bottom = 20.dp, top = 10.dp)
             .fillMaxWidth()
             .background(
                 if (isSystemInDarkTheme()) DarkTertiaryColor else TertiaryColor,
-                RoundedCornerShape(bottomEnd = 8.dp, bottomStart = 8.dp)
+                RoundedCornerShape(8.dp)
             )
     ) {
         Text(
@@ -328,14 +354,13 @@ fun SharedFiles(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top,
         modifier = Modifier
-            .padding(vertical = 10.dp)
+            .padding(vertical = 10.dp, horizontal = 10.dp)
             .fillMaxWidth()
             .background(
                 if (isSystemInDarkTheme()) DarkTertiaryColor else TertiaryColor,
                 RoundedCornerShape(8.dp)
             )
     ) {
-        //TODO: Add "add files" for host.
         Text(
             text = "Shared files",
             fontSize = 16.sp,
@@ -349,15 +374,24 @@ fun SharedFiles(
                 .padding(horizontal = 10.dp)
                 .fillMaxWidth()
         ) {
-            for (file in files) {
+            if (files.isEmpty()) {
                 Text(
-                    text = file.name,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.ExtraLight,
+                    text = "The host hasn't shared any files yet.",
+                    fontWeight = FontWeight.Light,
                     modifier = Modifier
-                        .padding(bottom = 10.dp)
-                        .clickable { onFileClick(file.link) }
+                        .padding(top = 10.dp, bottom = 10.dp)
                 )
+            } else {
+                for (file in files) {
+                    Text(
+                        text = file.name,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.ExtraLight,
+                        modifier = Modifier
+                            .padding(bottom = 10.dp)
+                            .clickable { onFileClick(file.link) }
+                    )
+                }
             }
         }
     }
