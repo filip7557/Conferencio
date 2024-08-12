@@ -34,7 +34,7 @@ fun EventCard(
     isOnEventScreen: Boolean = false,
 ) {
     Card(
-        shape = if (isOnEventScreen) RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp) else RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(
             containerColor = when (event.type) {
                 "Lecture" -> Color(151, 252, 134).copy(alpha = 0.58f)
