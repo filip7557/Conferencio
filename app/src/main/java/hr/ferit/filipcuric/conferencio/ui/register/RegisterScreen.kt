@@ -18,7 +18,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -83,6 +82,10 @@ fun RegisterScreen(
                     value = viewModel.fullname,
                     onValueChange = {
                         viewModel.onFullnameChange(it)
+                    },
+                    isError = viewModel.fullname.isEmpty(),
+                    supportingText = {
+                        Text(text = "Full name field cannot be empty.")
                     }
                 )
                 TextBox(
@@ -108,26 +111,17 @@ fun RegisterScreen(
                     ),
                     onValueChange = {
                         viewModel.onEmailChange(it)
+                    },
+                    isError = emailHasError.value || !isEmailValid.value,
+                    supportingText = {
+                        if (emailHasError.value) {
+                            Text(text = "This email address is not available.")
+                        }
+                        if (!isEmailValid.value) {
+                            Text(text = "This is not a valid email address.")
+                        }
                     }
                 )
-                if (emailHasError.value) {
-                    Text(
-                        text = "This email is not available.",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = Color.Red,
-                        modifier = Modifier.padding(bottom = 15.dp)
-                    )
-                }
-                if (!isEmailValid.value) {
-                    Text(
-                        text = "This is not a valid email address.",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = Color.Red,
-                        modifier = Modifier.padding(bottom = 15.dp)
-                    )
-                }
                 TextBox(
                     label = "Password",
                     value = viewModel.password,
@@ -138,17 +132,14 @@ fun RegisterScreen(
                     visualTransformation = PasswordVisualTransformation(),
                     onValueChange = {
                         viewModel.onPasswordChange(it)
+                    },
+                    isError = passwordHasError.value,
+                    supportingText = {
+                        if (passwordHasError.value) {
+                            Text(text = "Password must be at least 6 characters long.")
+                        }
                     }
                 )
-                if (passwordHasError.value) {
-                    Text(
-                        text = "Password must be at least 6 characters long.",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = Color.Red,
-                        modifier = Modifier.padding(bottom = 15.dp)
-                    )
-                }
                 BlueButton(text = "Register", enabled = !viewModel.registrationHasErrors(), onClick = { viewModel.onRegisterClick(onRegisterClick) })
             }
         }

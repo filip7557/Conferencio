@@ -25,6 +25,8 @@ fun TextBox(
     label: String,
     value: String,
     singleLine: Boolean = true,
+    isError: Boolean = false,
+    supportingText:  @Composable() (() -> Unit)? = null,
     trailingIcon: @Composable () -> Unit = {},
     keyboardOptions: KeyboardOptions =  KeyboardOptions(
         keyboardType = KeyboardType.Text,
@@ -55,6 +57,8 @@ fun TextBox(
                 focusedTextColor = DarkOnTertiaryColor,
                 unfocusedTextColor = DarkOnTertiaryColor,
             ),
+            isError = isError,
+            supportingText = supportingText,
             readOnly = readOnly,
             modifier = modifier
                 .fillMaxWidth()
