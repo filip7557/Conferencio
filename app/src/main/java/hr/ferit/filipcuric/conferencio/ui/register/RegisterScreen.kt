@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
@@ -102,7 +103,8 @@ fun RegisterScreen(
                     label = "Email",
                     value = viewModel.email,
                     keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Email
+                        keyboardType = KeyboardType.Email,
+                        capitalization = KeyboardCapitalization.None
                     ),
                     onValueChange = {
                         viewModel.onEmailChange(it)
@@ -130,7 +132,8 @@ fun RegisterScreen(
                     label = "Password",
                     value = viewModel.password,
                     keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Password
+                        keyboardType = KeyboardType.Password,
+                        capitalization = KeyboardCapitalization.None
                     ),
                     visualTransformation = PasswordVisualTransformation(),
                     onValueChange = {
