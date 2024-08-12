@@ -328,16 +328,28 @@ fun ConferenceScreen(
                         .fillMaxWidth()
                         .fillMaxHeight(0.85f)
                 ) {
-                    items(
-                        items = messages.value,
-                        key = { message -> messages.value.indexOf(message) }
-                    ) {
-                        Message(
-                            message = it,
-                            user = authors.value[messages.value.indexOf(it)],
-                            isUserAuthor = authors.value[messages.value.indexOf(it)] == viewModel.user,
-                            conferenceOwnerId = conference.value.ownerId
-                        )
+                    if (messages.value.isEmpty()) {
+                        item {
+                            Text(
+                                text = "There are no messages in this chat.\nStart the conversation now.",
+                                fontWeight = FontWeight.Light,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .padding(top = 10.dp, bottom = 10.dp)
+                            )
+                        }
+                    } else {
+                        items(
+                            items = messages.value,
+                            key = { message -> messages.value.indexOf(message) }
+                        ) {
+                            Message(
+                                message = it,
+                                user = authors.value[messages.value.indexOf(it)],
+                                isUserAuthor = authors.value[messages.value.indexOf(it)] == viewModel.user,
+                                conferenceOwnerId = conference.value.ownerId
+                            )
+                        }
                     }
                 }
                 SendMessageCard(
