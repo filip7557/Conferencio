@@ -34,7 +34,7 @@ fun Message(
             .padding(horizontal = 10.dp, vertical = 5.dp)
             .fillMaxWidth()
             .background(
-                if (isSystemInDarkTheme()) Color(40, 40, 41) else Color(107, 107, 107),
+                if (isSystemInDarkTheme()) Color(40, 40, 41) else Color(166, 166, 166),
                 if (isUserAuthor) RoundedCornerShape(topStart = 20.dp, bottomStart = 20.dp, topEnd = 0.dp, bottomEnd = 20.dp) else RoundedCornerShape(topStart = 0.dp, bottomStart = 20.dp, topEnd = 20.dp, bottomEnd = 20.dp)
             )
     ) {

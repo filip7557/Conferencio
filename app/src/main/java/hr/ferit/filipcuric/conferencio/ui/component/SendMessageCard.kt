@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -32,7 +34,7 @@ fun SendMessageCard(
             .padding(start = 10.dp, end = 10.dp, bottom = 10.dp)
             .fillMaxWidth()
             .background(
-                if (isSystemInDarkTheme()) Color(40, 40, 41) else Color(107, 107, 107),
+                if (isSystemInDarkTheme()) Color(40, 40, 41) else Color(166, 166, 166),
                 RoundedCornerShape(8.dp)
             )
     ) {
@@ -44,21 +46,29 @@ fun SendMessageCard(
             maxLines = 5,
             shape = RoundedCornerShape(8.dp),
             colors = TextFieldDefaults.colors(
-                focusedContainerColor = if (isSystemInDarkTheme()) Color(40, 40, 41) else Color(107, 107, 107),
-                unfocusedContainerColor = if (isSystemInDarkTheme()) Color(40, 40, 41) else Color(107, 107, 107),
+                focusedContainerColor = if (isSystemInDarkTheme()) Color(40, 40, 41) else Color(166, 166, 166),
+                unfocusedContainerColor = if (isSystemInDarkTheme()) Color(40, 40, 41) else Color(166, 166, 166),
                 cursorColor = Blue,
                 focusedLabelColor = Blue,
             ),
             modifier = Modifier
                 .fillMaxWidth(0.85f)
         )
-        Icon(
-            painter = painterResource(id = R.drawable.ic_send),
-            contentDescription = "send icon",
-            tint = Blue,
+        IconButton(
+            onClick = onSendClick,
             modifier = Modifier
                 .clickable(onClick = onSendClick)
-                .fillMaxWidth()
-        )
+                .fillMaxWidth(),
+            enabled = textValue.isNotEmpty(),
+            colors = IconButtonDefaults.iconButtonColors(
+                contentColor = Blue,
+                disabledContentColor = Color.Gray
+            )
+        ) {
+            Icon(
+            painter = painterResource(id = R.drawable.ic_send),
+            contentDescription = "send icon"
+            )
+        }
     }
 }
