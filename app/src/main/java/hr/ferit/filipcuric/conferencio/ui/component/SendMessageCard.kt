@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -18,6 +19,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import hr.ferit.filipcuric.conferencio.R
 import hr.ferit.filipcuric.conferencio.ui.theme.Blue
@@ -44,6 +47,10 @@ fun SendMessageCard(
             label = { Text(text = "Chat...") },
             singleLine = false,
             maxLines = 5,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Text,
+                capitalization = KeyboardCapitalization.Sentences,
+            ),
             shape = RoundedCornerShape(8.dp),
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = if (isSystemInDarkTheme()) Color(40, 40, 41) else Color(166, 166, 166),
