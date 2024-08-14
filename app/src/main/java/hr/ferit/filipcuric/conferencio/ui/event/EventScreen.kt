@@ -55,6 +55,7 @@ fun EventScreen(
     viewModel: EventViewModel,
     onBackClick: () -> Unit,
     onManageClick: (String) -> Unit,
+    onAddFileClick: (String) -> Unit,
 ) {
     val event = viewModel.event.collectAsState()
     val files = viewModel.files.collectAsState()
@@ -135,16 +136,12 @@ fun EventScreen(
 
             EventScreenState.SHARED_FILES -> {
                 if (viewModel.isUserManager()) {
-                    val launcher = rememberLauncherForActivityResult(
-                        contract = ActivityResultContracts.GetContent(),
-                        onResult = { uri: Uri? -> uri?.let { viewModel.onFileSelected(it) } }
-                    )
                     BlueButton(
                         modifier = Modifier
                             .padding(horizontal = 10.dp, vertical = 10.dp),
-                        text = "Add files",
+                        text = "Add file",
                         onClick = {
-                            launcher.launch("application/pdf")
+                            onAddFileClick(event.value.id!!)
                         }
                     )
                 }

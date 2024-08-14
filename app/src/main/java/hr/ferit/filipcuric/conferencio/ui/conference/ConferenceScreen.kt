@@ -242,7 +242,8 @@ fun ConferenceScreen(
                                 onClick = { eventId ->
                                     onEventClick(
                                         EventDestination.createNavigation(
-                                            eventId
+                                            eventId,
+                                            "overview"
                                         )
                                     )
                                 },

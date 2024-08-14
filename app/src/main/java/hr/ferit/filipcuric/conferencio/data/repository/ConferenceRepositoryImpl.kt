@@ -1,7 +1,6 @@
 package hr.ferit.filipcuric.conferencio.data.repository
 
 import android.net.Uri
-import android.os.Environment
 import android.util.Log
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
@@ -48,14 +47,14 @@ class ConferenceRepositoryImpl : ConferenceRepository {
         )
     }
 
-    override suspend fun uploadFile(fileUri: Uri, eventId: String) {
+    override suspend fun uploadFile(fileUri: Uri, eventId: String, fileName: String) {
         Log.d("EVENT REPO", fileUri.toString())
-        val fileRef = storageRef.child("files/${fileUri.pathSegments.last()}")
+        val fileRef = storageRef.child("files/${fileName}")
         fileRef.putFile(fileUri).await()
         val link = fileRef.downloadUrl.await().toString()
         val file = File(
             eventId = eventId,
-            name = fileUri.lastPathSegment!!,
+            name = "$fileName.pdf",
             link = link
         )
         db.collection("files").add(file).await()

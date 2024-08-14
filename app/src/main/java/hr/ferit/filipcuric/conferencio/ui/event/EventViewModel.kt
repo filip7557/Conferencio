@@ -1,6 +1,5 @@
 package hr.ferit.filipcuric.conferencio.ui.event
 
-import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -27,6 +26,7 @@ class EventViewModel(
     private val conferenceRepository: ConferenceRepository,
     private val userRepository: UserRepository,
     private val eventId: String,
+    private val startingScreenState: EventScreenState,
 ) : ViewModel() {
 
     val event: StateFlow<Event> = conferenceRepository.getEventFromId(eventId).stateIn(
@@ -43,7 +43,7 @@ class EventViewModel(
 
     val messageAuthors = MutableStateFlow(listOf<User>())
 
-    var screenState by mutableStateOf(EventScreenState.OVERVIEW)
+    var screenState by mutableStateOf(startingScreenState)
         private set
 
     var user by mutableStateOf(User())
@@ -136,14 +136,6 @@ class EventViewModel(
 
     fun onNewMessageChange(value: String) {
         newMessage = value
-    }
-
-    fun onFileSelected(it: Uri) {
-        viewModelScope.launch {
-            conferenceRepository.uploadFile(it, eventId)
-        }.invokeOnCompletion {
-            getFiles()
-        }
     }
 
     fun onScreenStateClick(newState: EventScreenState) {

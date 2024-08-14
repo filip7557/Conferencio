@@ -18,7 +18,8 @@ const val MODIFY_CONFERENCE_ID_KEY = "conferenceId"
 const val MODIFY_CONFERENCE_ROUTE_WITH_PARAMS = "$MODIFY_CONFERENCE_ROUTE/{$MODIFY_CONFERENCE_ID_KEY}"
 const val EVENT_ROUTE = "Event"
 const val EVENT_ID_KEY = "eventId"
-const val EVENT_ROUTE_WITH_PARAMS = "$EVENT_ROUTE/{$EVENT_ID_KEY}"
+const val SCREEN_STATE_KEY = "screenState"
+const val EVENT_ROUTE_WITH_PARAMS = "$EVENT_ROUTE/{$EVENT_ID_KEY}&{$SCREEN_STATE_KEY}"
 const val CREATE_EVENT_ROUTE = "Create event"
 const val CREATE_EVENT_ID_KEY = "conferenceId"
 const val CREATE_EVENT_ROUTE_WITH_PARAMS = "$CREATE_EVENT_ROUTE/{$CREATE_EVENT_ID_KEY}"
@@ -28,6 +29,9 @@ const val MODIFY_EVENT_ROUTE_WITH_PARAMS = "$MODIFY_EVENT_ROUTE/{$MODIFY_EVENT_I
 const val PICTURE_ROUTE = "Picture"
 const val PICTURE_ID_KEY = "pictureUrl"
 const val PICTURE_ROUTE_WITH_PARAMS = "$PICTURE_ROUTE/{$PICTURE_ID_KEY}"
+const val ADD_FILE_ROUTE = "Add file"
+const val ADD_FILE_ID_KEY = "eventId"
+const val ADD_FILE_ROUTE_WITH_PARAMS = "$ADD_FILE_ROUTE/{$ADD_FILE_ID_KEY}"
 
 sealed class ConferencioDestination(
     open val route: String,
@@ -91,7 +95,7 @@ data object ModifyConferenceDestination : ConferencioDestination(MODIFY_CONFEREN
 }
 
 data object EventDestination : ConferencioDestination(EVENT_ROUTE_WITH_PARAMS, 0, 0) {
-    fun createNavigation(eventId: String): String = "$EVENT_ROUTE/${eventId}"
+    fun createNavigation(eventId: String, startingScreenState: String): String = "$EVENT_ROUTE/${eventId}&${startingScreenState}"
 }
 
 data object CreateEventDestination : ConferencioDestination(CREATE_EVENT_ROUTE_WITH_PARAMS, 0 ,0) {
@@ -104,4 +108,8 @@ data object ModifyEventDestination : ConferencioDestination(MODIFY_EVENT_ROUTE_W
 
 data object PictureDestination : ConferencioDestination(PICTURE_ROUTE_WITH_PARAMS, 0, 0) {
     fun createNavigation(pictureUrl: String): String = "$PICTURE_ROUTE/${pictureUrl}"
+}
+
+data object AddFileDestination : ConferencioDestination(ADD_FILE_ROUTE_WITH_PARAMS, 0, 0) {
+    fun createNavigation(eventId: String): String = "$ADD_FILE_ROUTE/${eventId}"
 }

@@ -56,6 +56,8 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import hr.ferit.filipcuric.conferencio.R
+import hr.ferit.filipcuric.conferencio.navigation.ADD_FILE_ID_KEY
+import hr.ferit.filipcuric.conferencio.navigation.AddFileDestination
 import hr.ferit.filipcuric.conferencio.navigation.CONFERENCE_ID_KEY
 import hr.ferit.filipcuric.conferencio.navigation.CREATE_EVENT_ID_KEY
 import hr.ferit.filipcuric.conferencio.navigation.ConferenceDestination
@@ -69,6 +71,9 @@ import hr.ferit.filipcuric.conferencio.navigation.ModifyEventDestination
 import hr.ferit.filipcuric.conferencio.navigation.NavigationItem
 import hr.ferit.filipcuric.conferencio.navigation.PICTURE_ID_KEY
 import hr.ferit.filipcuric.conferencio.navigation.PictureDestination
+import hr.ferit.filipcuric.conferencio.navigation.SCREEN_STATE_KEY
+import hr.ferit.filipcuric.conferencio.ui.addfile.AddFileScreen
+import hr.ferit.filipcuric.conferencio.ui.addfile.AddFileViewModel
 import hr.ferit.filipcuric.conferencio.ui.browse.BrowseScreen
 import hr.ferit.filipcuric.conferencio.ui.browse.BrowseViewModel
 import hr.ferit.filipcuric.conferencio.ui.conference.ConferenceScreen
@@ -80,6 +85,7 @@ import hr.ferit.filipcuric.conferencio.ui.createvent.CreateEventViewModel
 import hr.ferit.filipcuric.conferencio.ui.editprofile.EditProfileScreen
 import hr.ferit.filipcuric.conferencio.ui.editprofile.EditProfileViewModel
 import hr.ferit.filipcuric.conferencio.ui.event.EventScreen
+import hr.ferit.filipcuric.conferencio.ui.event.EventScreenState
 import hr.ferit.filipcuric.conferencio.ui.event.EventViewModel
 import hr.ferit.filipcuric.conferencio.ui.home.HomeScreen
 import hr.ferit.filipcuric.conferencio.ui.home.HomeViewModel
@@ -332,10 +338,13 @@ fun MainScreen() {
                 }
                 composable(
                     route = ConferenceDestination.route,
-                    arguments = listOf(navArgument(CONFERENCE_ID_KEY) { type = NavType.StringType }),
+                    arguments = listOf(navArgument(CONFERENCE_ID_KEY) {
+                        type = NavType.StringType
+                    }),
                 ) {
                     val conferenceId = it.arguments?.getString(CONFERENCE_ID_KEY)
-                    val viewModel = koinViewModel<ConferenceViewModel>(parameters = { parametersOf(conferenceId) })
+                    val viewModel =
+                        koinViewModel<ConferenceViewModel>(parameters = { parametersOf(conferenceId) })
                     ConferenceScreen(
                         viewModel = viewModel,
                         onBackClick = {
@@ -357,10 +366,14 @@ fun MainScreen() {
                 }
                 composable(
                     route = ModifyConferenceDestination.route,
-                    arguments = listOf(navArgument(MODIFY_CONFERENCE_ID_KEY) { type = NavType.StringType })
+                    arguments = listOf(navArgument(MODIFY_CONFERENCE_ID_KEY) {
+                        type = NavType.StringType
+                    })
                 ) {
                     val conferenceId = it.arguments?.getString(MODIFY_CONFERENCE_ID_KEY)
-                    val viewModel = koinViewModel<ModifyConferenceViewModel>(parameters = { parametersOf(conferenceId) })
+                    val viewModel = koinViewModel<ModifyConferenceViewModel>(parameters = {
+                        parametersOf(conferenceId)
+                    })
                     Log.d("MAIN SCREEN", "Navigated to modify conference screen.")
                     viewModel.setValues()
                     ModifyConferenceScreen(
@@ -379,29 +392,38 @@ fun MainScreen() {
                 }
                 composable(
                     route = EventDestination.route,
-                    arguments = listOf(navArgument(EVENT_ID_KEY) { type = NavType.StringType })
+                    arguments = listOf(navArgument(EVENT_ID_KEY) { type = NavType.StringType }, navArgument(SCREEN_STATE_KEY) { type = NavType.StringType })
                 ) {
                     val eventId = it.arguments?.getString(EVENT_ID_KEY)
-                    val viewModel = koinViewModel<EventViewModel>(parameters = { parametersOf(eventId) })
+                    val startingScreenState = it.arguments?.getString(SCREEN_STATE_KEY)
+                    val screenState = if (startingScreenState == "files") EventScreenState.SHARED_FILES else EventScreenState.OVERVIEW
+                    val viewModel =
+                        koinViewModel<EventViewModel>(parameters = { parametersOf(eventId, screenState) })
                     EventScreen(
                         viewModel = viewModel,
                         onBackClick = { navController.popBackStack() },
                         onManageClick = { route ->
                             navController.navigate(route)
+                        },
+                        onAddFileClick = { id ->
+                            navController.navigate(AddFileDestination.createNavigation(id))
                         }
                     )
                 }
                 composable(
                     route = CreateEventDestination.route,
-                    arguments = listOf(navArgument(CREATE_EVENT_ID_KEY) { type = NavType.StringType })
+                    arguments = listOf(navArgument(CREATE_EVENT_ID_KEY) {
+                        type = NavType.StringType
+                    })
                 ) {
                     val conferenceId = it.arguments?.getString(CREATE_EVENT_ID_KEY)
-                    val viewModel = koinViewModel<CreateEventViewModel>(parameters = { parametersOf(conferenceId) })
+                    val viewModel =
+                        koinViewModel<CreateEventViewModel>(parameters = { parametersOf(conferenceId) })
                     CreateEventScreen(
                         viewModel = viewModel,
                         onBackClick = { navController.popBackStack() },
                         onCreateClick = { eventId ->
-                            navController.navigate(EventDestination.createNavigation(eventId))  {
+                            navController.navigate(EventDestination.createNavigation(eventId, "overview")) {
                                 popUpTo(EventDestination.route) {
                                     inclusive = true
                                 }
@@ -411,16 +433,19 @@ fun MainScreen() {
                 }
                 composable(
                     route = ModifyEventDestination.route,
-                    arguments = listOf(navArgument(MODIFY_EVENT_ID_KEY) { type = NavType.StringType })
+                    arguments = listOf(navArgument(MODIFY_EVENT_ID_KEY) {
+                        type = NavType.StringType
+                    })
                 ) {
                     val eventId = it.arguments?.getString(MODIFY_EVENT_ID_KEY)
-                    val viewModel = koinViewModel<ModifyEventViewModel>(parameters = { parametersOf(eventId) })
+                    val viewModel =
+                        koinViewModel<ModifyEventViewModel>(parameters = { parametersOf(eventId) })
                     viewModel.setValues()
                     ModifyEventScreen(
                         viewModel = viewModel,
                         onBackClick = { navController.popBackStack() },
                         onSaveClick = { id ->
-                            navController.navigate(EventDestination.createNavigation(id)) {
+                            navController.navigate(EventDestination.createNavigation(id, "overview")) {
                                 popUpTo(EventDestination.route) {
                                     inclusive = true
                                 }
@@ -433,14 +458,33 @@ fun MainScreen() {
                     arguments = listOf(navArgument(PICTURE_ID_KEY) { type = NavType.StringType })
                 ) {
                     val pictureId = it.arguments?.getString(PICTURE_ID_KEY)
-                    val viewModel = koinViewModel<PictureViewModel>(parameters = { parametersOf(pictureId) })
+                    val viewModel =
+                        koinViewModel<PictureViewModel>(parameters = { parametersOf(pictureId) })
                     PictureScreen(
                         onBackClick = { navController.popBackStack() },
                         viewModel = viewModel
                     )
                 }
+                composable(
+                    route = AddFileDestination.route,
+                    arguments = listOf(navArgument(ADD_FILE_ID_KEY) { type = NavType.StringType })
+                ) {
+                    val eventId = it.arguments?.getString(ADD_FILE_ID_KEY)
+                    val viewModel =
+                        koinViewModel<AddFileViewModel>(parameters = { parametersOf(eventId) })
+                    AddFileScreen(
+                        viewModel = viewModel,
+                        onBackClick = { navController.popBackStack() },
+                        onUploadClick = { eventRoute ->
+                            navController.navigate(eventRoute) {
+                                popUpTo(EventDestination.route) {
+                                    inclusive = true
+                                }
+                            }
+                        }
+                    )
+                }
             }
-
         }
     }
 }

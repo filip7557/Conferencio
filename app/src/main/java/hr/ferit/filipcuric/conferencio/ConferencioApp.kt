@@ -2,6 +2,7 @@ package hr.ferit.filipcuric.conferencio
 
 import android.app.Application
 import hr.ferit.filipcuric.conferencio.data.di.dataModule
+import hr.ferit.filipcuric.conferencio.ui.addfile.di.addFileModule
 import hr.ferit.filipcuric.conferencio.ui.browse.di.browseModule
 import hr.ferit.filipcuric.conferencio.ui.conference.di.conferenceModule
 import hr.ferit.filipcuric.conferencio.ui.createconference.di.createConferenceModule
@@ -40,6 +41,7 @@ class ConferencioApp : Application() {
                 createEventModule,
                 modifyEventModule,
                 pictureModule,
+                addFileModule,
             )
         }
     }
