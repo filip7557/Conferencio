@@ -25,6 +25,9 @@ const val CREATE_EVENT_ROUTE_WITH_PARAMS = "$CREATE_EVENT_ROUTE/{$CREATE_EVENT_I
 const val MODIFY_EVENT_ROUTE = "Modify event"
 const val MODIFY_EVENT_ID_KEY = "eventId"
 const val MODIFY_EVENT_ROUTE_WITH_PARAMS = "$MODIFY_EVENT_ROUTE/{$MODIFY_EVENT_ID_KEY}"
+const val PICTURE_ROUTE = "Picture"
+const val PICTURE_ID_KEY = "pictureUrl"
+const val PICTURE_ROUTE_WITH_PARAMS = "$PICTURE_ROUTE/{$PICTURE_ID_KEY}"
 
 sealed class ConferencioDestination(
     open val route: String,
@@ -97,4 +100,8 @@ data object CreateEventDestination : ConferencioDestination(CREATE_EVENT_ROUTE_W
 
 data object ModifyEventDestination : ConferencioDestination(MODIFY_EVENT_ROUTE_WITH_PARAMS, 0 ,0) {
     fun createNavigation(eventId: String): String = "$MODIFY_EVENT_ROUTE/${eventId}"
+}
+
+data object PictureDestination : ConferencioDestination(PICTURE_ROUTE_WITH_PARAMS, 0, 0) {
+    fun createNavigation(pictureUrl: String): String = "$PICTURE_ROUTE/${pictureUrl}"
 }

@@ -67,6 +67,8 @@ import hr.ferit.filipcuric.conferencio.navigation.MODIFY_EVENT_ID_KEY
 import hr.ferit.filipcuric.conferencio.navigation.ModifyConferenceDestination
 import hr.ferit.filipcuric.conferencio.navigation.ModifyEventDestination
 import hr.ferit.filipcuric.conferencio.navigation.NavigationItem
+import hr.ferit.filipcuric.conferencio.navigation.PICTURE_ID_KEY
+import hr.ferit.filipcuric.conferencio.navigation.PictureDestination
 import hr.ferit.filipcuric.conferencio.ui.browse.BrowseScreen
 import hr.ferit.filipcuric.conferencio.ui.browse.BrowseViewModel
 import hr.ferit.filipcuric.conferencio.ui.conference.ConferenceScreen
@@ -87,6 +89,8 @@ import hr.ferit.filipcuric.conferencio.ui.modifyconference.ModifyConferenceScree
 import hr.ferit.filipcuric.conferencio.ui.modifyconference.ModifyConferenceViewModel
 import hr.ferit.filipcuric.conferencio.ui.modifyevent.ModifyEventScreen
 import hr.ferit.filipcuric.conferencio.ui.modifyevent.ModifyEventViewModel
+import hr.ferit.filipcuric.conferencio.ui.picture.PictureScreen
+import hr.ferit.filipcuric.conferencio.ui.picture.PictureViewModel
 import hr.ferit.filipcuric.conferencio.ui.profile.ProfileScreen
 import hr.ferit.filipcuric.conferencio.ui.profile.ProfileViewModel
 import hr.ferit.filipcuric.conferencio.ui.register.RegisterScreen
@@ -345,6 +349,9 @@ fun MainScreen() {
                         },
                         onAddEventClick = { id ->
                             navController.navigate(CreateEventDestination.createNavigation(id))
+                        },
+                        onPictureClick = { route ->
+                            navController.navigate(route)
                         }
                     )
                 }
@@ -419,6 +426,17 @@ fun MainScreen() {
                                 }
                             }
                         }
+                    )
+                }
+                composable(
+                    route = PictureDestination.route,
+                    arguments = listOf(navArgument(PICTURE_ID_KEY) { type = NavType.StringType })
+                ) {
+                    val pictureId = it.arguments?.getString(PICTURE_ID_KEY)
+                    val viewModel = koinViewModel<PictureViewModel>(parameters = { parametersOf(pictureId) })
+                    PictureScreen(
+                        onBackClick = { navController.popBackStack() },
+                        viewModel = viewModel
                     )
                 }
             }

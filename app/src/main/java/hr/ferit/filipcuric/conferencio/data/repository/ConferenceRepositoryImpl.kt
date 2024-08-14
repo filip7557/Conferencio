@@ -1,6 +1,7 @@
 package hr.ferit.filipcuric.conferencio.data.repository
 
 import android.net.Uri
+import android.os.Environment
 import android.util.Log
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
@@ -22,6 +23,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.tasks.await
 import java.time.Instant
+
 
 class ConferenceRepositoryImpl : ConferenceRepository {
 
@@ -172,9 +174,16 @@ class ConferenceRepositoryImpl : ConferenceRepository {
         val documents = db.collection("pictures").whereEqualTo("conferenceId", conferenceId).get().await()
         for (document in documents) {
             val picture = document.toObject(Picture::class.java)
+            picture.id = document.id
             pictures.add(picture)
         }
         emit(pictures.sortedBy { p -> -p.timestamp })
+    }.flowOn(Dispatchers.IO)
+
+    override fun getPictureFromPictureId(pictureId: String): Flow<Picture> = flow {
+        val picture = db.collection("pictures").document(pictureId).get().await().toObject(Picture::class.java)!!
+        picture.id = pictureId
+        emit(picture)
     }.flowOn(Dispatchers.IO)
 
     override suspend fun uploadPicture(imageUri: Uri, conferenceId: String) {

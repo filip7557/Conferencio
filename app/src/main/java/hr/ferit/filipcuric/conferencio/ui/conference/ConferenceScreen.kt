@@ -55,6 +55,7 @@ import coil.compose.AsyncImage
 import hr.ferit.filipcuric.conferencio.R
 import hr.ferit.filipcuric.conferencio.navigation.EventDestination
 import hr.ferit.filipcuric.conferencio.navigation.ModifyConferenceDestination
+import hr.ferit.filipcuric.conferencio.navigation.PictureDestination
 import hr.ferit.filipcuric.conferencio.ui.component.BlueButton
 import hr.ferit.filipcuric.conferencio.ui.component.EventCard
 import hr.ferit.filipcuric.conferencio.ui.component.LoadingAnimation
@@ -75,6 +76,7 @@ fun ConferenceScreen(
     onManageClick: (String) -> Unit,
     onEventClick: (String) -> Unit,
     onAddEventClick: (String) -> Unit,
+    onPictureClick: (String) -> Unit,
 ) {
     val conference = viewModel.conference.collectAsState()
     val duration = viewModel.duration.collectAsState()
@@ -280,7 +282,12 @@ fun ConferenceScreen(
                                 items = pictures.value,
                                 key = { picture -> picture.imageUrl }
                             ) {
-                                Picture(picture = it)
+                                Picture(
+                                    picture = it,
+                                    onPictureClick = { pictureUrl ->
+                                        onPictureClick(PictureDestination.createNavigation(pictureUrl))
+                                    }
+                                )
                             }
                         }
                         val launcher = rememberLauncherForActivityResult(

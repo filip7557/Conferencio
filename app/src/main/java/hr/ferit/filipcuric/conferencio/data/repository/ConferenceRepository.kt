@@ -36,4 +36,5 @@ interface ConferenceRepository {
     fun isUserHost(hostId: String): Boolean
     fun getPicturesFromConferenceId(conferenceId: String): Flow<List<Picture>>
     suspend fun uploadPicture(imageUri: Uri, conferenceId: String)
+    fun getPictureFromPictureId(pictureId: String): Flow<Picture>
 }
