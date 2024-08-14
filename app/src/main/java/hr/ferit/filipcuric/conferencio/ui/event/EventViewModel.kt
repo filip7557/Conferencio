@@ -141,4 +141,12 @@ class EventViewModel(
     fun onScreenStateClick(newState: EventScreenState) {
         screenState = newState
     }
+
+    fun deleteFile(fileId: String) {
+        viewModelScope.launch {
+            conferenceRepository.deleteFile(fileId)
+        }.invokeOnCompletion {
+            getFiles()
+        }
+    }
 }

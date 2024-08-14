@@ -37,4 +37,5 @@ interface ConferenceRepository {
     fun getPicturesFromConferenceId(conferenceId: String): Flow<List<Picture>>
     suspend fun uploadPicture(imageUri: Uri, conferenceId: String)
     fun getPictureFromPictureId(pictureId: String): Flow<Picture>
+    suspend fun deleteFile(fileId: String)
 }

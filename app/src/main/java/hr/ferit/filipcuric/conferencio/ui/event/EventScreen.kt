@@ -2,8 +2,6 @@ package hr.ferit.filipcuric.conferencio.ui.event
 
 import android.content.Intent
 import android.net.Uri
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -21,6 +19,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -150,6 +149,21 @@ fun EventScreen(
                     files = files.value,
                     onFileClick = {
                         context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it)))
+                    },
+                    removeFile = { fileId ->
+                        if (viewModel.isUserManager() || viewModel.isUserHost()) {
+                            IconButton(
+                                onClick = {
+                                    viewModel.deleteFile(fileId)
+                                }
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.baseline_cancel_24),
+                                    contentDescription = "remove icon",
+                                    tint = Color.Red
+                                )
+                            }
+                        }
                     }
                 )
             }
@@ -346,6 +360,7 @@ fun Attendance(
 fun SharedFiles(
     files: List<File>,
     onFileClick: (String) -> Unit,
+    removeFile: @Composable ((String) -> Unit)? = null,
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -380,14 +395,22 @@ fun SharedFiles(
                 )
             } else {
                 for (file in files) {
-                    Text(
-                        text = file.name,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.ExtraLight,
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
                             .padding(bottom = 10.dp)
-                            .clickable { onFileClick(file.link) }
-                    )
+                    ) {
+                        Text(
+                            text = file.name,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.ExtraLight,
+                            modifier = Modifier
+                                .clickable { onFileClick(file.link) }
+                        )
+                        if (removeFile != null) {
+                            removeFile(file.id)
+                        }
+                    }
                 }
             }
         }

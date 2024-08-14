@@ -60,6 +60,13 @@ class ConferenceRepositoryImpl : ConferenceRepository {
         db.collection("files").add(file).await()
     }
 
+    override suspend fun deleteFile(fileId: String) {
+        val file = db.collection("files").document(fileId).get().await().toObject(File::class.java)
+        val httpsReference = Firebase.storage.getReferenceFromUrl(file?.link!!)
+        httpsReference.delete().await()
+        db.collection("files").document(fileId).delete().await()
+    }
+
     override suspend fun createEvent(event: Event): String {
         lateinit var eventId: String
         val document = db.collection("events").add(event.copy(conferenceOwnerId = auth.currentUser?.uid!!)).await()
@@ -163,6 +170,7 @@ class ConferenceRepositoryImpl : ConferenceRepository {
         val documents = db.collection("files").whereEqualTo("eventId", eventId).get().await()
         for (document in documents) {
             val file = document.toObject(File::class.java)
+            file.id = document.id
             files.add(file)
         }
         emit(files)
