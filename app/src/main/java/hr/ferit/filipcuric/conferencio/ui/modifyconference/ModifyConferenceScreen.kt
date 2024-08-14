@@ -69,6 +69,12 @@ fun ModifyConferenceScreen(
             TextBox(
                 label = "Title",
                 value = viewModel.title,
+                isError = viewModel.title.isEmpty(),
+                supportingText = {
+                    if (viewModel.title.isEmpty()) {
+                        Text(text = "Title field cannot be empty.")
+                    }
+                },
                 onValueChange = {
                     viewModel.onTitleChange(it)
                 }
@@ -163,6 +169,7 @@ fun ModifyConferenceScreen(
         item {
             BlueButton(
                 text = "Save",
+                enabled = viewModel.title.isNotEmpty(),
                 onClick = {
                     viewModel.onSaveClick(onSaveClick)
                 }

@@ -91,7 +91,7 @@ class ModifyConferenceViewModel(
 
     fun setValues() {
         Log.d("MODIFY CONF VM", "Setting values to current")
-        if (title == "") {
+        if (imageUri == Uri.EMPTY) {
             val conference = conference.value
             onImageSelected(Uri.parse(conference.imageUrl))
             onTitleChange(conference.title)

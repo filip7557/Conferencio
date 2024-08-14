@@ -68,6 +68,12 @@ fun CreateConferenceScreen(
             TextBox(
                 label = "Title",
                 value = viewModel.title,
+                isError = viewModel.title.isEmpty(),
+                supportingText = {
+                    if (viewModel.title.isEmpty()) {
+                        Text(text = "Title field cannot be empty.")
+                    }
+                },
                 onValueChange = {
                     viewModel.onTitleChange(it)
                 }
@@ -162,6 +168,7 @@ fun CreateConferenceScreen(
         item {
             BlueButton(
                 text = "Create",
+                enabled = viewModel.title.isNotEmpty() && viewModel.startDateTextValue != "Choose date" && viewModel.endDateTextValue != "Choose date",
                 onClick = {
                     viewModel.onCreateClick(onCreateClick)
                 }

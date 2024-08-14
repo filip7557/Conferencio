@@ -48,7 +48,6 @@ class EditProfileViewModel(
     private var currentUser: User = User()
 
     fun onSaveClick(onSaveClick: () -> Unit) {
-        //TODO: Add error checks
         auth = Firebase.auth
         val user = User(
             fullname = fullname,
@@ -65,7 +64,7 @@ class EditProfileViewModel(
     }
 
     fun getCurrentUserData() {
-        if (fullname == "") {
+        if (imageUri == Uri.EMPTY) {
             viewModelScope.launch(Dispatchers.IO) {
                 currentUser = userRepository.getCurrentUser()!!
                 fullname = currentUser.fullname

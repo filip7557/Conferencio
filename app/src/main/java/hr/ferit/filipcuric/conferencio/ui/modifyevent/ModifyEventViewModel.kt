@@ -132,7 +132,7 @@ class ModifyEventViewModel(
     fun setValues() {
         viewModelScope.launch {
             Log.d("MODIFY EVENT VM", "Setting values to current")
-            if (title == "") {
+            if (hostId == "") {
                 val event = event.value
                 val datetime = Instant.ofEpochMilli(event.dateTime).atZone(ZoneId.systemDefault())
                 val host = userRepository.getUserById(event.hostId)

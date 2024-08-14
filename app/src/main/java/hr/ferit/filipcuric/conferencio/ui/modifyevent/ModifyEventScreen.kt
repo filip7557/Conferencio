@@ -66,14 +66,32 @@ fun ModifyEventScreen(
         item {
             TextBox(
                 label = "Title",
+                isError = viewModel.title.isEmpty(),
+                supportingText = {
+                    if (viewModel.title.isEmpty()) {
+                        Text(text = "Title field cannot be empty.")
+                    }
+                },
                 value = viewModel.title,
                 onValueChange = { viewModel.onTitleChange(it) })
             TextBox(
                 label = "Location",
+                isError = viewModel.location.isEmpty(),
+                supportingText = {
+                    if (viewModel.location.isEmpty()) {
+                        Text(text = "Location field cannot be empty.")
+                    }
+                },
                 value = viewModel.location,
                 onValueChange = { viewModel.onLocationChange(it) })
             TextBox(
                 label = "Duration (minutes)",
+                isError = viewModel.duration.isEmpty(),
+                supportingText = {
+                    if (viewModel.duration.isEmpty()) {
+                        Text(text = "Duration field cannot be empty.")
+                    }
+                },
                 value = viewModel.duration,
                 onValueChange = { viewModel.onDurationChange(it) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
@@ -81,6 +99,12 @@ fun ModifyEventScreen(
             if (viewModel.isUserManager()) {
                 TextBox(
                     label = "Host",
+                    isError = viewModel.host.isEmpty(),
+                    supportingText = {
+                        if (viewModel.host.isEmpty()) {
+                            Text(text = "Host field cannot be empty.")
+                        }
+                    },
                     value = viewModel.host,
                     onValueChange = {
                         viewModel.onHostChange(it)
@@ -263,6 +287,7 @@ fun ModifyEventScreen(
         item {
             BlueButton(
                 text = "Save",
+                enabled = viewModel.title.isNotEmpty() && viewModel.duration.isNotEmpty() && viewModel.location.isNotEmpty() && viewModel.type.isNotEmpty() && viewModel.hostId.isNotEmpty(),
                 onClick = {
                     viewModel.onSaveClick(onSaveClick)
                 }

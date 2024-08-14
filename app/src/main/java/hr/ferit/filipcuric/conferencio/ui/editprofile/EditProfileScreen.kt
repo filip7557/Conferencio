@@ -69,6 +69,12 @@ fun EditProfileScreen(
                 Spacer(modifier = Modifier.padding(vertical = 10.dp))
                 TextBox(
                     label = "Full name",
+                    isError = viewModel.fullname.isEmpty(),
+                    supportingText = {
+                        if (viewModel.fullname.isEmpty()) {
+                            Text(text = "Full name field cannot be empty.")
+                        }
+                    },
                     value = viewModel.fullname,
                     onValueChange = {
                         viewModel.onFullnameChange(it)
@@ -88,7 +94,11 @@ fun EditProfileScreen(
                         viewModel.onPositionChange(it)
                     }
                 )
-                BlueButton(text = "Save", onClick = { viewModel.onSaveClick(onSaveClick) })
+                BlueButton(
+                    text = "Save",
+                    enabled = viewModel.fullname.isNotEmpty(),
+                    onClick = { viewModel.onSaveClick(onSaveClick) }
+                )
             }
         }
     }
