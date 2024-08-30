@@ -93,10 +93,10 @@ class ModifyConferenceViewModel(
         Log.d("MODIFY CONF VM", "Setting values to current")
         if (imageUri == Uri.EMPTY) {
             val conference = conference.value
-            onImageSelected(Uri.parse(conference.imageUrl))
             onTitleChange(conference.title)
             onStartDateTextValueChange(Instant.ofEpochMilli(conference.startDateTime))
             onEndDateTextValueChange(Instant.ofEpochMilli(conference.endDateTime))
+            onImageSelected(Uri.parse(conference.imageUrl))
         }
     }
 }
