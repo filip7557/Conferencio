@@ -85,7 +85,9 @@ fun RegisterScreen(
                     },
                     isError = viewModel.fullname.isEmpty(),
                     supportingText = {
-                        Text(text = "Full name field cannot be empty.")
+                        if (viewModel.fullname.isEmpty()) {
+                            Text(text = "Full name field cannot be empty.")
+                        }
                     }
                 )
                 TextBox(
@@ -114,11 +116,11 @@ fun RegisterScreen(
                     },
                     isError = emailHasError.value || !isEmailValid.value,
                     supportingText = {
-                        if (emailHasError.value) {
-                            Text(text = "This email address is not available.")
-                        }
                         if (!isEmailValid.value) {
                             Text(text = "This is not a valid email address.")
+                        }
+                        else if (emailHasError.value) {
+                            Text(text = "This email address is not available.")
                         }
                     }
                 )
