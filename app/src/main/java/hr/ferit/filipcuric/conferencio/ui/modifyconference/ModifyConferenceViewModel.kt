@@ -48,7 +48,6 @@ class ModifyConferenceViewModel(
     var showStartDatePicker by mutableStateOf(false)
     var showEndDatePicker by mutableStateOf(false)
 
-
     fun onStartDateTextValueChange(value: Instant) {
         startDate = value
         val date = value.atZone(ZoneId.systemDefault())
@@ -92,11 +91,14 @@ class ModifyConferenceViewModel(
     fun setValues() {
         Log.d("MODIFY CONF VM", "Setting values to current")
         if (imageUri == Uri.EMPTY) {
-            val conference = conference.value
-            onTitleChange(conference.title)
-            onStartDateTextValueChange(Instant.ofEpochMilli(conference.startDateTime))
-            onEndDateTextValueChange(Instant.ofEpochMilli(conference.endDateTime))
-            onImageSelected(Uri.parse(conference.imageUrl))
+            viewModelScope.launch {
+                val conference = conference.value
+                onTitleChange(conference.title)
+                onStartDateTextValueChange(Instant.ofEpochMilli(conference.startDateTime))
+                onEndDateTextValueChange(Instant.ofEpochMilli(conference.endDateTime))
+                onImageSelected(Uri.parse(conference.imageUrl))
+                setValues()
+            }
         }
     }
 }
