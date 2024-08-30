@@ -26,7 +26,7 @@ fun TextBox(
     value: String,
     singleLine: Boolean = true,
     isError: Boolean = false,
-    supportingText:  @Composable() (() -> Unit)? = null,
+    supportingText:  @Composable () -> Unit = {},
     trailingIcon: @Composable () -> Unit = {},
     keyboardOptions: KeyboardOptions =  KeyboardOptions(
         keyboardType = KeyboardType.Text,
@@ -84,6 +84,8 @@ fun TextBox(
                 focusedTextColor = Color(28, 28, 28),
                 unfocusedTextColor = Color(28, 28, 28),
             ),
+            isError = isError,
+            supportingText = supportingText,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 15.dp)
