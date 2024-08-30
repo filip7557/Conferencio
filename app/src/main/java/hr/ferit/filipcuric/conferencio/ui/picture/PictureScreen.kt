@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -19,6 +20,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -64,17 +66,22 @@ fun PictureScreen(
             windowInsets = WindowInsets.statusBars
         )
         Column(
+            modifier = Modifier
+                .fillMaxSize(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             AsyncImage(
+                modifier = Modifier
+                    .height(400.dp),
                 model = picture.value.imageUrl,
-                contentDescription = "picture"
+                contentDescription = "picture",
+                contentScale = ContentScale.Inside
             )
             val context = LocalContext.current
             BlueButton(
                 modifier = Modifier
-                    .padding(top = 10.dp),
+                    .padding(vertical = 10.dp, horizontal = 10.dp),
                 text = "Download",
                 onClick = {
                     context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(picture.value.imageUrl)))
