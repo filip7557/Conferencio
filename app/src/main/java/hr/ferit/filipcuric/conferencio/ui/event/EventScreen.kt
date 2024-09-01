@@ -84,7 +84,7 @@ fun EventScreen(
         }
         EventCard(event = event.value, onClick = { /*Do nothing*/ }, isOnEventScreen = true)
         Row(
-            horizontalArrangement = Arrangement.SpaceEvenly,
+            horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 10.dp, start = 5.dp, end = 5.dp, bottom = 10.dp)
@@ -93,7 +93,7 @@ fun EventScreen(
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
-                        .width(115.dp)
+                        .width(120.dp)
                 ) {
                     Text(
                         text = it.name.replace('_', ' '),
