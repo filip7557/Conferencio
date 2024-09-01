@@ -5,7 +5,7 @@ import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.captionBar
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredWidth
@@ -152,7 +152,6 @@ fun MainScreen() {
         val window = (view.context as Activity).window
         window.statusBarColor = color
         window.isStatusBarContrastEnforced = true
-        window.navigationBarColor = Color.Transparent.toArgb()
     }
 
     val loginViewModel = koinViewModel<LoginViewModel>()
@@ -242,7 +241,7 @@ fun MainScreen() {
                     })
                 }
             },
-            contentWindowInsets = WindowInsets.captionBar
+            contentWindowInsets = WindowInsets.navigationBars
         ) { padding ->
             NavHost(
                 navController = navController,

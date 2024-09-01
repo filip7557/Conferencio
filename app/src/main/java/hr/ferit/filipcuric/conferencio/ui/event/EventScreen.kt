@@ -84,20 +84,20 @@ fun EventScreen(
         }
         EventCard(event = event.value, onClick = { /*Do nothing*/ }, isOnEventScreen = true)
         Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
+            horizontalArrangement = Arrangement.SpaceEvenly,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 10.dp, start = 5.dp, end = 5.dp)
+                .padding(top = 10.dp, start = 5.dp, end = 5.dp, bottom = 10.dp)
         ) {
             EventScreenState.entries.forEach {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
-                        .width(130.dp)
+                        .width(115.dp)
                 ) {
                     Text(
                         text = it.name.replace('_', ' '),
-                        fontSize = 16.sp,
+                        fontSize = 14.sp,
                         fontWeight = if (it == viewModel.screenState) FontWeight.SemiBold else FontWeight.Light,
                         color = if (it == viewModel.screenState) Blue else if (isSystemInDarkTheme()) Color.White else Color.Black,
                         textAlign = TextAlign.Center,

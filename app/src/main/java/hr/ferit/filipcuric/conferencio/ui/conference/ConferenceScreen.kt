@@ -1,5 +1,6 @@
 package hr.ferit.filipcuric.conferencio.ui.conference
 
+import android.app.Activity
 import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -14,14 +15,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -40,17 +39,20 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.view.WindowCompat
 import coil.compose.AsyncImage
 import hr.ferit.filipcuric.conferencio.R
 import hr.ferit.filipcuric.conferencio.navigation.EventDestination
@@ -84,6 +86,12 @@ fun ConferenceScreen(
     Log.d("EVENTS SCREEN", "Got events: ${events.value}")
     val messages = viewModel.messages.collectAsState()
     val authors = viewModel.messageAuthors.collectAsState()
+
+    val view = LocalView.current
+    val window = (view.context as Activity).window
+    LaunchedEffect(true) {
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+    }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -134,7 +142,6 @@ fun ConferenceScreen(
                     }
                 }
             },
-            windowInsets = WindowInsets.statusBars
         )
         AsyncImage(
             model = conference.value.imageUrl,
@@ -149,17 +156,17 @@ fun ConferenceScreen(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 10.dp, start = 5.dp, end = 5.dp)
+                .padding(top = 10.dp, start = 5.dp, end = 5.dp, bottom = 10.dp)
         ) {
             ConferenceScreenState.entries.forEach {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
-                        .width(95.dp)
+                        .width(85.dp)
                 ) {
                     Text(
                         text = it.name,
-                        fontSize = 16.sp,
+                        fontSize = 14.sp,
                         fontWeight = if (it == viewModel.screenState) FontWeight.SemiBold else FontWeight.Light,
                         color = if (it == viewModel.screenState) Blue else if (isSystemInDarkTheme()) Color.White else Color.Black,
                         textAlign = TextAlign.Center,
