@@ -38,4 +38,6 @@ interface ConferenceRepository {
     suspend fun uploadPicture(imageUri: Uri, conferenceId: String)
     fun getPictureFromPictureId(pictureId: String): Flow<Picture>
     suspend fun deleteFile(fileId: String)
+    suspend fun deleteConference(conferenceId: String)
+    suspend fun deleteEvent(eventId: String)
 }

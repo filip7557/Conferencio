@@ -154,13 +154,6 @@ fun MainScreen() {
         window.isStatusBarContrastEnforced = true
     }
 
-    val loginViewModel = koinViewModel<LoginViewModel>()
-    val registerViewModel = koinViewModel<RegisterViewModel>()
-    val browseViewModel = koinViewModel<BrowseViewModel>()
-    val searchViewModel = koinViewModel<SearchViewModel>()
-    val editProfileViewModel = koinViewModel<EditProfileViewModel>()
-    val createConferenceViewModel = koinViewModel<CreateConferenceViewModel>()
-
     ModalNavigationDrawer(
         drawerContent = {
             ModalDrawerSheet(
@@ -249,8 +242,9 @@ fun MainScreen() {
                 modifier = Modifier.padding(padding)
             ) {
                 composable(NavigationItem.LoginDestination.route) {
+                    val viewModel = koinViewModel<LoginViewModel>()
                     LoginScreen(
-                        viewModel = loginViewModel,
+                        viewModel = viewModel,
                         onLoginClick = {
                             navController.navigate(NavigationItem.HomeDestination.route) {
                                 popUpTo(NavigationItem.HomeDestination.route) {
@@ -264,8 +258,9 @@ fun MainScreen() {
                     )
                 }
                 composable(NavigationItem.RegisterDestination.route) {
+                    val viewModel = koinViewModel<RegisterViewModel>()
                     RegisterScreen(
-                        viewModel = registerViewModel,
+                        viewModel = viewModel,
                         onBackClick = {
                             navController.popBackStack()
                         },
@@ -296,25 +291,28 @@ fun MainScreen() {
                     )
                 }
                 composable(NavigationItem.SearchDestination.route) {
+                    val viewModel = koinViewModel<SearchViewModel>()
                     SearchScreen(
-                        viewModel = searchViewModel,
+                        viewModel = viewModel,
                         onConferenceClick = {
                             navController.navigate(it)
                         }
                     )
                 }
                 composable(NavigationItem.BrowseDestination.route) {
+                    val viewModel = koinViewModel<BrowseViewModel>()
                     BrowseScreen(
-                        viewModel = browseViewModel,
+                        viewModel = viewModel,
                         onConferenceClick = {
                             navController.navigate(it)
                         }
                     )
                 }
                 composable(NavigationItem.EditProfileDestination.route) {
-                    editProfileViewModel.getCurrentUserData()
+                    val viewModel = koinViewModel<EditProfileViewModel>()
+                    viewModel.getCurrentUserData()
                     EditProfileScreen(
-                        viewModel = editProfileViewModel,
+                        viewModel = viewModel,
                         onBackClick = {
                             navController.popBackStack()
                         },
@@ -324,9 +322,9 @@ fun MainScreen() {
                     )
                 }
                 composable(NavigationItem.CreateConferenceDestination.route) {
-                    createConferenceViewModel.clearViewModel()
+                    val viewModel = koinViewModel<CreateConferenceViewModel>()
                     CreateConferenceScreen(
-                        viewModel = createConferenceViewModel,
+                        viewModel = viewModel,
                         onBackClick = { navController.popBackStack() },
                         onCreateClick = {
                             navController.navigate(ConferenceDestination.createNavigation(it)) {
@@ -385,6 +383,13 @@ fun MainScreen() {
                         onSaveClick = { id ->
                             navController.navigate(ConferenceDestination.createNavigation(id)) {
                                 popUpTo(ConferenceDestination.route) {
+                                    inclusive = true
+                                }
+                            }
+                        },
+                        onDeleteClick = {
+                            navController.navigate(NavigationItem.HomeDestination.route) {
+                                popUpTo(NavigationItem.HomeDestination.route) {
                                     inclusive = true
                                 }
                             }
@@ -450,6 +455,11 @@ fun MainScreen() {
                                 popUpTo(EventDestination.route) {
                                     inclusive = true
                                 }
+                            }
+                        },
+                        onDeleteClick = { confId ->
+                            navController.navigate(ConferenceDestination.createNavigation(confId, "events")) {
+                                popUpTo(NavigationItem.HomeDestination.route)
                             }
                         }
                     )

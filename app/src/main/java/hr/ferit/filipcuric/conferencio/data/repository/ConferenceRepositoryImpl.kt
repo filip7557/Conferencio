@@ -291,6 +291,14 @@ class ConferenceRepositoryImpl : ConferenceRepository {
         return conferenceId
     }
 
+    override suspend fun deleteConference(conferenceId: String) {
+        db.collection("conferences").document(conferenceId).delete().await()
+    }
+
+    override suspend fun deleteEvent(eventId: String) {
+        db.collection("events").document(eventId).delete().await()
+    }
+
     override suspend fun getConferenceChatById(conferenceId: String) : List<ChatMessage> {
         val messages = mutableListOf<ChatMessage>()
         val documents = db.collection("messages").whereEqualTo("eventChat", false)

@@ -58,13 +58,6 @@ class CreateConferenceViewModel(
         imageUri = uri
     }
 
-    fun clearViewModel() {
-        imageUri = Uri.EMPTY
-        title = ""
-        startDateTextValue = "Choose date"
-        endDateTextValue = "Choose date"
-    }
-
     fun onCreateClick(onCreateClick: (String) -> Unit) {
         var conferenceId = ""
         viewModelScope.launch {

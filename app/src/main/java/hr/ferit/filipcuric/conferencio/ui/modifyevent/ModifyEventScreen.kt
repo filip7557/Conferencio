@@ -44,6 +44,7 @@ fun ModifyEventScreen(
     viewModel: ModifyEventViewModel,
     onBackClick: () -> Unit,
     onSaveClick: (String) -> Unit,
+    onDeleteClick: (String) -> Unit,
 ) {
     viewModel.event.collectAsState()
     val timePickerState = rememberTimePickerState()
@@ -292,6 +293,24 @@ fun ModifyEventScreen(
                     viewModel.onSaveClick(onSaveClick)
                 }
             )
+        }
+        item {
+            Button(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                onClick = {
+                    viewModel.deleteEvent(onDeleteClick)
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Red,
+                    contentColor = Color.White
+                )
+            ) {
+                Text(
+                    text = "Delete",
+                    fontSize = 14.sp
+                )
+            }
         }
     }
 }

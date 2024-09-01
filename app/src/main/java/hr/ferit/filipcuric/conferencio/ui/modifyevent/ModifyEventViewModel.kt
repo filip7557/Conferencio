@@ -153,4 +153,12 @@ class ModifyEventViewModel(
     fun isUserManager() : Boolean {
         return conferenceRepository.isUserManager(event.value.conferenceOwnerId)
     }
+
+    fun deleteEvent(onDeleteClick: (String) -> Unit) {
+        viewModelScope.launch {
+            conferenceRepository.deleteEvent(eventId)
+        }.invokeOnCompletion {
+            onDeleteClick(event.value.conferenceId)
+        }
+    }
 }
