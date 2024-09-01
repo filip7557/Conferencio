@@ -329,9 +329,7 @@ fun MainScreen() {
                         onBackClick = { navController.popBackStack() },
                         onCreateClick = {
                             navController.navigate(ConferenceDestination.createNavigation(it)) {
-                                popUpTo(ConferenceDestination.route) {
-                                    inclusive = true
-                                }
+                                popUpTo(NavigationItem.HomeDestination.route)
                             }
                         }
                     )
