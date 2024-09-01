@@ -399,7 +399,9 @@ fun MainScreen() {
                         koinViewModel<EventViewModel>(parameters = { parametersOf(eventId, screenState) })
                     EventScreen(
                         viewModel = viewModel,
-                        onBackClick = { navController.popBackStack() },
+                        onBackClick = { navController.navigate(ConferenceDestination.createNavigation(viewModel.event.value.conferenceId)) {
+                            popUpTo(NavigationItem.HomeDestination.route)
+                        } },
                         onManageClick = { route ->
                             navController.navigate(route)
                         },
@@ -422,9 +424,7 @@ fun MainScreen() {
                         onBackClick = { navController.popBackStack() },
                         onCreateClick = { eventId ->
                             navController.navigate(EventDestination.createNavigation(eventId, "overview")) {
-                                popUpTo(EventDestination.route) {
-                                    inclusive = true
-                                }
+                                popUpTo(ConferenceDestination.route)
                             }
                         }
                     )
