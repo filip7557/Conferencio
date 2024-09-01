@@ -103,38 +103,29 @@ class ConferenceRepositoryImpl : ConferenceRepository {
         )
     }
 
-    override suspend fun getConferencesFromSearch(searchValue: String): Flow<List<Conference>> {
+    override fun getConferencesFromSearch(searchValue: String): Flow<List<Conference>> = flow<List<Conference>> {
         val conferences = mutableListOf<Conference>()
-        db.collection("conferences").get().addOnSuccessListener { documents ->
-            for (document in documents) {
-                val conference = document.toObject(Conference::class.java)
-                if (conference.title.lowercase().contains(searchValue.lowercase())) {
-                    conference.id = document.id
-                    conferences.add(conference)
-                }
-            }
-        }.await()
-        return flowOf(conferences).shareIn(
-            scope = CoroutineScope(Dispatchers.IO),
-            started = SharingStarted.WhileSubscribed(1000L),
-            replay = 1
-        )
-    }
-    override fun getActiveConferences() : Flow<List<Conference>> {
-        val conferences = mutableListOf<Conference>()
-        db.collection("conferences").whereGreaterThanOrEqualTo("endDateTime", Instant.now().toEpochMilli()).get().addOnSuccessListener {documents ->
-            for (document in documents) {
-                val conference = document.toObject(Conference::class.java)
+        val documents = db.collection("conferences").get().await()
+        for (document in documents) {
+            val conference = document.toObject(Conference::class.java)
+            if (conference.title.lowercase().contains(searchValue.lowercase())) {
                 conference.id = document.id
                 conferences.add(conference)
+                emit(conferences)
             }
         }
-        return flowOf(conferences).shareIn(
-            scope = CoroutineScope(Dispatchers.IO),
-            started = SharingStarted.WhileSubscribed(1000L),
-            replay = 1
-        )
-    }
+    }.flowOn(Dispatchers.IO)
+
+    override fun getActiveConferences() : Flow<List<Conference>>  = flow<List<Conference>> {
+        val conferences = mutableListOf<Conference>()
+        val documents = db.collection("conferences").whereGreaterThanOrEqualTo("endDateTime", Instant.now().toEpochMilli()).get().await()
+        for (document in documents) {
+            val conference = document.toObject(Conference::class.java)
+            conference.id = document.id
+            conferences.add(conference)
+            emit(conferences)
+        }
+    }.flowOn(Dispatchers.IO)
 
     override fun getConferenceFromId(conferenceId: String) : Flow<Conference> = flow {
         val conference = db.collection("conferences").document(conferenceId).get().await().toObject(Conference::class.java)
