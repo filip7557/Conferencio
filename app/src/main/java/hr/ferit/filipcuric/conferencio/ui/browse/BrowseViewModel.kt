@@ -1,6 +1,7 @@
 package hr.ferit.filipcuric.conferencio.ui.browse
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import hr.ferit.filipcuric.conferencio.data.repository.ConferenceRepository
 import hr.ferit.filipcuric.conferencio.data.repository.UserRepository
 import hr.ferit.filipcuric.conferencio.model.Conference
@@ -12,6 +13,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 class BrowseViewModel(
     conferenceRepository: ConferenceRepository,
@@ -21,13 +23,7 @@ class BrowseViewModel(
     val conferences: StateFlow<List<Conference>> =
         conferenceRepository.getActiveConferences()
             .map {
-                val users = mutableListOf<User>()
                 it.sortedBy { conference -> conference.startDateTime }
-                    .map { conference ->
-                    users.add(userRepository.getUserById(conference.ownerId)!!)
-                    owners.emit(users)
-                    it
-                }.first()
             }
             .stateIn(
                 CoroutineScope(Dispatchers.IO),
@@ -36,4 +32,14 @@ class BrowseViewModel(
             )
 
     var owners = MutableStateFlow(listOf<User>())
+
+    fun getOwners() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val users = mutableListOf<User>()
+            for (conference in conferences.value) {
+                users.add(userRepository.getUserById(conference.ownerId)!!)
+            }
+            owners.emit(users)
+        }
+    }
 }

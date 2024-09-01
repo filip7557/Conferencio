@@ -26,6 +26,7 @@ fun BrowseScreen(
 ) {
     val conferences = viewModel.conferences.collectAsState()
     val owners = viewModel.owners.collectAsState()
+    viewModel.getOwners()
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
