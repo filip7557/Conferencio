@@ -90,7 +90,7 @@ class ModifyConferenceViewModel(
 
     fun setValues() {
         Log.d("MODIFY CONF VM", "Setting values to current")
-        if (imageUri == Uri.EMPTY) {
+        if (startDateTextValue == "Choose date" || startDateTextValue == "01/01/1970") {
             viewModelScope.launch {
                 val conference = conference.value
                 onTitleChange(conference.title)
@@ -99,6 +99,14 @@ class ModifyConferenceViewModel(
                 onImageSelected(Uri.parse(conference.imageUrl))
                 setValues()
             }
+        }
+    }
+
+    fun deleteConference(onDeleteClick: () -> Unit) {
+        viewModelScope.launch {
+            conferenceRepository.deleteConference(conferenceId)
+        }.invokeOnCompletion {
+            onDeleteClick()
         }
     }
 }

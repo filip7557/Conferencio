@@ -34,6 +34,7 @@ fun ModifyConferenceScreen(
     viewModel: ModifyConferenceViewModel,
     onBackClick: () -> Unit,
     onSaveClick: (String) -> Unit,
+    onDeleteClick: () -> Unit
 ) {
     viewModel.conference.collectAsState()
     LazyColumn(
@@ -176,6 +177,24 @@ fun ModifyConferenceScreen(
                     viewModel.onSaveClick(onSaveClick)
                 }
             )
+        }
+        item { 
+            Button(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                onClick = {
+                    viewModel.deleteConference(onDeleteClick)
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Red,
+                    contentColor = Color.White
+                )
+            ) {
+                Text(
+                    text = "Delete",
+                    fontSize = 14.sp
+                )
+            }
         }
     }
 }
