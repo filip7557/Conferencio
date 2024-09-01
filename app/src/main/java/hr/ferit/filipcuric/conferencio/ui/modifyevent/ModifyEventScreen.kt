@@ -47,6 +47,7 @@ fun ModifyEventScreen(
     onDeleteClick: (String) -> Unit,
 ) {
     viewModel.event.collectAsState()
+    val conference = viewModel.conference.collectAsState()
     val timePickerState = rememberTimePickerState()
     LazyColumn(
         verticalArrangement = Arrangement.Center,
@@ -99,7 +100,7 @@ fun ModifyEventScreen(
             )
             if (viewModel.isUserManager()) {
                 TextBox(
-                    label = "Host",
+                    label = "Host (Search by Email address)",
                     isError = viewModel.host.isEmpty(),
                     supportingText = {
                         if (viewModel.host.isEmpty()) {
@@ -166,7 +167,11 @@ fun ModifyEventScreen(
                 if (viewModel.showStartDatePicker) {
                     ConferenceDatePickerDialog(
                         onDateSelected = { viewModel.onStartDateTextValueChange(it) },
-                        onDismiss = { viewModel.showStartDatePicker = false }
+                        onDismiss = { viewModel.showStartDatePicker = false },
+                        dateValidator = {
+                            it >= conference.value.startDateTime && it <= conference.value.endDateTime
+                        }
+
                     )
                 }
             }

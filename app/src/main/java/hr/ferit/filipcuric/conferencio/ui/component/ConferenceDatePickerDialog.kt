@@ -20,6 +20,7 @@ import java.time.Instant
 fun ConferenceDatePickerDialog(
     onDateSelected: (Instant) -> Unit,
     onDismiss: () -> Unit,
+    dateValidator: (Long) -> Boolean,
 ) {
     val dateState = rememberDatePickerState()
 
@@ -64,7 +65,7 @@ fun ConferenceDatePickerDialog(
                     todayContentColor = Blue,
                 ),
                 dateValidator = {
-                    it >= Instant.now().toEpochMilli()
+                    dateValidator(it)
                 }
             )
         }

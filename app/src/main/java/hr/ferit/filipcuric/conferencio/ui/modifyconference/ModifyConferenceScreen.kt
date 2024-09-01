@@ -28,6 +28,7 @@ import hr.ferit.filipcuric.conferencio.ui.component.ConferenceDatePickerDialog
 import hr.ferit.filipcuric.conferencio.ui.component.TextBox
 import hr.ferit.filipcuric.conferencio.ui.component.UploadBannerCard
 import hr.ferit.filipcuric.conferencio.ui.theme.Blue
+import java.time.Instant
 
 @Composable
 fun ModifyConferenceScreen(
@@ -36,7 +37,7 @@ fun ModifyConferenceScreen(
     onSaveClick: (String) -> Unit,
     onDeleteClick: () -> Unit
 ) {
-    viewModel.conference.collectAsState()
+    val conference = viewModel.conference.collectAsState()
     LazyColumn(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.Start,
@@ -121,7 +122,10 @@ fun ModifyConferenceScreen(
                 if (viewModel.showStartDatePicker) {
                     ConferenceDatePickerDialog(
                         onDateSelected = { viewModel.onStartDateTextValueChange(it) },
-                        onDismiss = { viewModel.showStartDatePicker = false }
+                        onDismiss = { viewModel.showStartDatePicker = false },
+                        dateValidator = {
+                            it >= Instant.now().toEpochMilli() && it <= conference.value.endDateTime
+                        }
                     )
                 }
             }
@@ -164,7 +168,10 @@ fun ModifyConferenceScreen(
                 if (viewModel.showEndDatePicker) {
                     ConferenceDatePickerDialog(
                         onDateSelected = { viewModel.onEndDateTextValueChange(it) },
-                        onDismiss = { viewModel.showEndDatePicker = false }
+                        onDismiss = { viewModel.showEndDatePicker = false },
+                        dateValidator = {
+                            it >= conference.value.startDateTime
+                        }
                     )
                 }
             }

@@ -44,6 +44,7 @@ fun CreateEventScreen(
     onBackClick: () -> Unit,
     onCreateClick: (String) -> Unit,
 ) {
+    val conference = viewModel.conference.collectAsState()
     val timePickerState = rememberTimePickerState()
     LazyColumn(
         verticalArrangement = Arrangement.Center,
@@ -95,7 +96,7 @@ fun CreateEventScreen(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
             TextBox(
-                label = "Host",
+                label = "Host (Search by Email address)",
                 isError = viewModel.host.isEmpty(),
                 supportingText = {
                     if (viewModel.host.isEmpty()) {
@@ -161,7 +162,10 @@ fun CreateEventScreen(
                 if (viewModel.showStartDatePicker) {
                     ConferenceDatePickerDialog(
                         onDateSelected = { viewModel.onStartDateTextValueChange(it) },
-                        onDismiss = { viewModel.showStartDatePicker = false }
+                        onDismiss = { viewModel.showStartDatePicker = false },
+                        dateValidator = {
+                            it >= conference.value.startDateTime && it <= conference.value.endDateTime
+                        }
                     )
                 }
             }

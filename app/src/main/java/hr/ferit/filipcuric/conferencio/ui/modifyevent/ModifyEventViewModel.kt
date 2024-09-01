@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import hr.ferit.filipcuric.conferencio.data.repository.ConferenceRepository
 import hr.ferit.filipcuric.conferencio.data.repository.UserRepository
+import hr.ferit.filipcuric.conferencio.model.Conference
 import hr.ferit.filipcuric.conferencio.model.Event
 import hr.ferit.filipcuric.conferencio.model.User
 import kotlinx.coroutines.CoroutineScope
@@ -33,6 +34,12 @@ class ModifyEventViewModel(
         scope = CoroutineScope(Dispatchers.IO),
         started = SharingStarted.Eagerly,
         initialValue = Event()
+    )
+
+    val conference: StateFlow<Conference> = conferenceRepository.getConferenceFromId(event.value.conferenceId).stateIn(
+        scope = CoroutineScope(Dispatchers.IO),
+        started = SharingStarted.Eagerly,
+        initialValue = Conference()
     )
 
     var title by mutableStateOf("")

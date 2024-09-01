@@ -22,7 +22,7 @@ class CreateConferenceViewModel(
     var title by mutableStateOf("")
         private set
 
-    private var startDate: Instant by mutableStateOf(Instant.now())
+    var startDate: Instant by mutableStateOf(Instant.now())
 
     private var endDate: Instant by mutableStateOf(Instant.now())
 

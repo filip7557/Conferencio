@@ -28,6 +28,7 @@ import hr.ferit.filipcuric.conferencio.ui.component.LoadingAnimation
 import hr.ferit.filipcuric.conferencio.ui.component.TextBox
 import hr.ferit.filipcuric.conferencio.ui.component.UploadBannerCard
 import hr.ferit.filipcuric.conferencio.ui.theme.Blue
+import java.time.Instant
 
 @Composable
 fun CreateConferenceScreen(
@@ -121,7 +122,10 @@ fun CreateConferenceScreen(
                     if (viewModel.showStartDatePicker) {
                         ConferenceDatePickerDialog(
                             onDateSelected = { viewModel.onStartDateTextValueChange(it) },
-                            onDismiss = { viewModel.showStartDatePicker = false }
+                            onDismiss = { viewModel.showStartDatePicker = false },
+                            dateValidator = {
+                                it >= Instant.now().toEpochMilli()
+                            }
                         )
                     }
                 }
@@ -164,7 +168,10 @@ fun CreateConferenceScreen(
                     if (viewModel.showEndDatePicker) {
                         ConferenceDatePickerDialog(
                             onDateSelected = { viewModel.onEndDateTextValueChange(it) },
-                            onDismiss = { viewModel.showEndDatePicker = false }
+                            onDismiss = { viewModel.showEndDatePicker = false },
+                            dateValidator = {
+                                it >= Instant.now().toEpochMilli() && it >= viewModel.startDate.toEpochMilli()
+                            }
                         )
                     }
                 }
