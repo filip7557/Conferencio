@@ -31,6 +31,7 @@ class ConferenceViewModel(
     private val conferenceRepository: ConferenceRepository,
     private val userRepository: UserRepository,
     private val conferenceId: String,
+    startingScreenState: ConferenceScreenState,
 ) : ViewModel() {
 
     var isAttending by mutableStateOf(false)
@@ -45,7 +46,7 @@ class ConferenceViewModel(
 
     var newMessage by mutableStateOf("")
 
-    var screenState by mutableStateOf(ConferenceScreenState.OVERVIEW)
+    var screenState by mutableStateOf(startingScreenState)
         private set
 
     val messageAuthors = MutableStateFlow(listOf<User>())

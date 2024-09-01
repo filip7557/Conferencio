@@ -12,7 +12,8 @@ const val EDIT_PROFILE_ROUTE = "Edit profile"
 const val CREATE_CONFERENCE_ROUTE = "Create conference"
 const val CONFERENCE_ROUTE = "Conference"
 const val CONFERENCE_ID_KEY = "conferenceId"
-const val CONFERENCE_ROUTE_WITH_PARAMS = "$CONFERENCE_ROUTE/{$CONFERENCE_ID_KEY}"
+const val CONFERENCE_SCREEN_STATE_KEY = "screenState"
+const val CONFERENCE_ROUTE_WITH_PARAMS = "$CONFERENCE_ROUTE/{$CONFERENCE_ID_KEY}&{$CONFERENCE_SCREEN_STATE_KEY}"
 const val MODIFY_CONFERENCE_ROUTE = "Modify conference"
 const val MODIFY_CONFERENCE_ID_KEY = "conferenceId"
 const val MODIFY_CONFERENCE_ROUTE_WITH_PARAMS = "$MODIFY_CONFERENCE_ROUTE/{$MODIFY_CONFERENCE_ID_KEY}"
@@ -87,7 +88,7 @@ sealed class NavigationItem(
 }
 
 data object ConferenceDestination : ConferencioDestination(CONFERENCE_ROUTE_WITH_PARAMS, 0 ,0) {
-    fun createNavigation(conferenceId: String): String = "$CONFERENCE_ROUTE/${conferenceId}"
+    fun createNavigation(conferenceId: String, startingScreenState: String = "overview"): String = "$CONFERENCE_ROUTE/${conferenceId}&${startingScreenState}"
 }
 
 data object ModifyConferenceDestination : ConferencioDestination(MODIFY_CONFERENCE_ROUTE_WITH_PARAMS, 0, 0) {

@@ -26,7 +26,7 @@ class EventViewModel(
     private val conferenceRepository: ConferenceRepository,
     private val userRepository: UserRepository,
     private val eventId: String,
-    private val startingScreenState: EventScreenState,
+    startingScreenState: EventScreenState,
 ) : ViewModel() {
 
     val event: StateFlow<Event> = conferenceRepository.getEventFromId(eventId).stateIn(

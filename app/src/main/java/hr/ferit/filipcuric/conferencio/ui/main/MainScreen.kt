@@ -59,6 +59,7 @@ import hr.ferit.filipcuric.conferencio.R
 import hr.ferit.filipcuric.conferencio.navigation.ADD_FILE_ID_KEY
 import hr.ferit.filipcuric.conferencio.navigation.AddFileDestination
 import hr.ferit.filipcuric.conferencio.navigation.CONFERENCE_ID_KEY
+import hr.ferit.filipcuric.conferencio.navigation.CONFERENCE_SCREEN_STATE_KEY
 import hr.ferit.filipcuric.conferencio.navigation.CREATE_EVENT_ID_KEY
 import hr.ferit.filipcuric.conferencio.navigation.ConferenceDestination
 import hr.ferit.filipcuric.conferencio.navigation.CreateEventDestination
@@ -77,6 +78,7 @@ import hr.ferit.filipcuric.conferencio.ui.addfile.AddFileViewModel
 import hr.ferit.filipcuric.conferencio.ui.browse.BrowseScreen
 import hr.ferit.filipcuric.conferencio.ui.browse.BrowseViewModel
 import hr.ferit.filipcuric.conferencio.ui.conference.ConferenceScreen
+import hr.ferit.filipcuric.conferencio.ui.conference.ConferenceScreenState
 import hr.ferit.filipcuric.conferencio.ui.conference.ConferenceViewModel
 import hr.ferit.filipcuric.conferencio.ui.createconference.CreateConferenceScreen
 import hr.ferit.filipcuric.conferencio.ui.createconference.CreateConferenceViewModel
@@ -341,8 +343,10 @@ fun MainScreen() {
                     }),
                 ) {
                     val conferenceId = it.arguments?.getString(CONFERENCE_ID_KEY)
+                    val startingScreenState = it.arguments?.getString(CONFERENCE_SCREEN_STATE_KEY)
+                    val screenState = if (startingScreenState == "events") ConferenceScreenState.EVENTS else ConferenceScreenState.OVERVIEW
                     val viewModel =
-                        koinViewModel<ConferenceViewModel>(parameters = { parametersOf(conferenceId) })
+                        koinViewModel<ConferenceViewModel>(parameters = { parametersOf(conferenceId, screenState) })
                     ConferenceScreen(
                         viewModel = viewModel,
                         onBackClick = {
@@ -399,7 +403,7 @@ fun MainScreen() {
                         koinViewModel<EventViewModel>(parameters = { parametersOf(eventId, screenState) })
                     EventScreen(
                         viewModel = viewModel,
-                        onBackClick = { navController.navigate(ConferenceDestination.createNavigation(viewModel.event.value.conferenceId)) {
+                        onBackClick = { navController.navigate(ConferenceDestination.createNavigation(viewModel.event.value.conferenceId, "events")) {
                             popUpTo(NavigationItem.HomeDestination.route)
                         } },
                         onManageClick = { route ->
