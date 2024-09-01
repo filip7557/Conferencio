@@ -8,7 +8,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import hr.ferit.filipcuric.conferencio.data.repository.ConferenceRepository
 import hr.ferit.filipcuric.conferencio.model.Conference
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.ZoneId
@@ -35,6 +34,9 @@ class CreateConferenceViewModel(
 
     var showStartDatePicker by mutableStateOf(false)
     var showEndDatePicker by mutableStateOf(false)
+
+    var loading by mutableStateOf(false)
+        private set
 
     fun onStartDateTextValueChange(value: Instant) {
         startDate = value
@@ -65,7 +67,8 @@ class CreateConferenceViewModel(
 
     fun onCreateClick(onCreateClick: (String) -> Unit) {
         var conferenceId = ""
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
+            loading = true
             val conference = Conference(
                 title = title,
                 startDateTime = startDate.toEpochMilli(),
@@ -74,6 +77,7 @@ class CreateConferenceViewModel(
             conferenceId = conferenceRepository.createConference(conference, imageUri)
         }.invokeOnCompletion {
             onCreateClick(conferenceId)
+            loading = false
         }
     }
 }

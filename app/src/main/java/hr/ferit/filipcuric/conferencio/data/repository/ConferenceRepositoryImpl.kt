@@ -278,7 +278,7 @@ class ConferenceRepositoryImpl : ConferenceRepository {
         var conferenceId = ""
         val newConference = auth.currentUser?.uid?.let {
             Conference(
-                imageUrl = uploadBanner(imageUri),
+                imageUrl = if (imageUri != Uri.EMPTY) uploadBanner(imageUri) else Conference().imageUrl,
                 title = conference.title,
                 startDateTime = conference.startDateTime,
                 endDateTime = conference.endDateTime,
