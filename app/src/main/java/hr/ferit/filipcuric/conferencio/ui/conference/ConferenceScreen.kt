@@ -427,9 +427,9 @@ fun Timer(
         }
         Row(
             verticalAlignment = Alignment.Top,
-            horizontalArrangement = Arrangement.SpaceBetween,
+            horizontalArrangement = Arrangement.SpaceEvenly,
             modifier = Modifier
-                .padding(bottom = 10.dp, start = 5.dp, end = 5.dp)
+                .padding(bottom = 20.dp, start = 5.dp, end = 5.dp)
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -437,7 +437,7 @@ fun Timer(
             ) {
                 Text(
                     text = "${if (duration.toDaysPart() < 10) "0" else ""}${duration.toDaysPart()}",
-                    fontSize = 50.sp,
+                    fontSize = 40.sp,
                     fontWeight = FontWeight.Medium,
                     color = Blue,
                 )
@@ -449,7 +449,7 @@ fun Timer(
             }
             Text(
                 text = " : ",
-                fontSize = 50.sp,
+                fontSize = 40.sp,
                 fontWeight = FontWeight.Medium,
             )
             Column(
@@ -458,7 +458,7 @@ fun Timer(
             ) {
                 Text(
                     text = "${if (duration.toHoursPart() < 10) "0" else ""}${duration.toHoursPart()}",
-                    fontSize = 50.sp,
+                    fontSize = 40.sp,
                     fontWeight = FontWeight.Medium,
                     color = Blue,
                 )
@@ -470,7 +470,7 @@ fun Timer(
             }
             Text(
                 text = " : ",
-                fontSize = 50.sp,
+                fontSize = 40.sp,
                 fontWeight = FontWeight.Medium,
             )
             Column(
@@ -479,7 +479,7 @@ fun Timer(
             ) {
                 Text(
                     text = "${if (duration.toMinutesPart() < 10) "0" else ""}${duration.toMinutesPart()}",
-                    fontSize = 50.sp,
+                    fontSize = 40.sp,
                     fontWeight = FontWeight.Medium,
                     color = Blue,
                 )
@@ -491,7 +491,7 @@ fun Timer(
             }
             Text(
                 text = " : ",
-                fontSize = 50.sp,
+                fontSize = 40.sp,
                 fontWeight = FontWeight.Medium,
             )
             Column(
@@ -500,7 +500,7 @@ fun Timer(
             ) {
                 Text(
                     text = "${if (duration.toSecondsPart() < 10) "0" else ""}${duration.toSecondsPart()}",
-                    fontSize = 50.sp,
+                    fontSize = 40.sp,
                     fontWeight = FontWeight.Medium,
                     color = Blue,
                 )
