@@ -466,11 +466,13 @@ fun MainScreen() {
                 }
                 composable(
                     route = PictureDestination.route,
-                    arguments = listOf(navArgument(PICTURE_ID_KEY) { type = NavType.StringType })
+                    arguments = listOf(
+                        navArgument(PICTURE_ID_KEY) { type = NavType.StringType }
+                    )
                 ) {
                     val pictureId = it.arguments?.getString(PICTURE_ID_KEY)
-                    val viewModel =
-                        koinViewModel<PictureViewModel>(parameters = { parametersOf(pictureId) })
+                    val viewModel = koinViewModel<PictureViewModel>(parameters = { parametersOf(pictureId) })
+                    viewModel.getPictures()
                     PictureScreen(
                         onBackClick = { navController.popBackStack() },
                         viewModel = viewModel

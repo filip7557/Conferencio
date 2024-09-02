@@ -30,6 +30,8 @@ class ConferenceRepositoryImpl : ConferenceRepository {
     private val auth = Firebase.auth
     private val storageRef = Firebase.storage.reference
 
+    private var cachedPictures = listOf<Picture>()
+
     override suspend fun getOrganizingConferences(): Flow<List<Conference>> {
         val conferences = mutableListOf<Conference>()
         db.collection("conferences").whereEqualTo("ownerId", auth.currentUser?.uid).get()
@@ -185,7 +187,10 @@ class ConferenceRepositoryImpl : ConferenceRepository {
             pictures.add(picture)
         }
         emit(pictures.sortedBy { p -> -p.timestamp })
+        cachedPictures = pictures.sortedBy { p -> -p.timestamp }
     }.flowOn(Dispatchers.IO)
+
+    override fun getCachedPictures() = cachedPictures
 
     override fun getPictureFromPictureId(pictureId: String): Flow<Picture> = flow {
         val picture = db.collection("pictures").document(pictureId).get().await().toObject(Picture::class.java)!!
