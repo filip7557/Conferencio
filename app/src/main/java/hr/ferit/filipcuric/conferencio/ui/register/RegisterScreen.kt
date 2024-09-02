@@ -3,7 +3,6 @@ package hr.ferit.filipcuric.conferencio.ui.register
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -30,7 +29,6 @@ import hr.ferit.filipcuric.conferencio.ui.component.TextBox
 import hr.ferit.filipcuric.conferencio.ui.component.UploadProfilePictureCard
 import hr.ferit.filipcuric.conferencio.ui.theme.Blue
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun RegisterScreen(
     viewModel: RegisterViewModel,
