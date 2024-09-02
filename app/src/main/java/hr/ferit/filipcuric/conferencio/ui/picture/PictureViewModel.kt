@@ -12,9 +12,20 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class PictureViewModel(
-    pictureId: String,
+    val pictureId: String,
     private val conferenceRepository: ConferenceRepository,
 ) : ViewModel() {
+
+    var pictureByteArray = ByteArray(0)
+    private fun getPictureByteArray() {
+        viewModelScope.launch {
+            pictureByteArray = conferenceRepository.downloadPicture(pictureId)
+        }
+    }
+
+    init {
+        getPictureByteArray()
+    }
 
     val picture: StateFlow<Picture> = conferenceRepository.getPictureFromPictureId(pictureId).stateIn(
         scope = CoroutineScope(Dispatchers.IO),

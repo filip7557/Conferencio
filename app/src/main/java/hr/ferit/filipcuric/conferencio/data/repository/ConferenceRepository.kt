@@ -40,4 +40,5 @@ interface ConferenceRepository {
     suspend fun deleteFile(fileId: String)
     suspend fun deleteConference(conferenceId: String)
     suspend fun deleteEvent(eventId: String)
+    suspend fun downloadPicture(pictureId: String): ByteArray
 }

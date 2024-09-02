@@ -116,6 +116,15 @@ class ConferenceRepositoryImpl : ConferenceRepository {
         }
     }.flowOn(Dispatchers.IO)
 
+    override suspend fun downloadPicture(pictureId: String): ByteArray {
+        var picture = Picture()
+        getPictureFromPictureId(pictureId).collect {
+            picture = it
+        }
+        val httpsReference = Firebase.storage.getReferenceFromUrl(picture.imageUrl)
+        return httpsReference.getBytes(Long.MAX_VALUE).await()
+    }
+
     override fun getActiveConferences() : Flow<List<Conference>>  = flow<List<Conference>> {
         val conferences = mutableListOf<Conference>()
         val documents = db.collection("conferences").whereGreaterThanOrEqualTo("endDateTime", Instant.now().toEpochMilli()).get().await()
