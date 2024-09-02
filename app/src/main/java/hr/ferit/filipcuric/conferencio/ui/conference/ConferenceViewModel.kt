@@ -30,7 +30,7 @@ import java.time.Instant
 class ConferenceViewModel(
     private val conferenceRepository: ConferenceRepository,
     private val userRepository: UserRepository,
-    private val conferenceId: String,
+    val conferenceId: String,
     startingScreenState: ConferenceScreenState,
 ) : ViewModel() {
 
