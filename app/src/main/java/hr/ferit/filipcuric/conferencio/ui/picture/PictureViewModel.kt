@@ -14,21 +14,19 @@ class PictureViewModel(
     private val conferenceRepository: ConferenceRepository,
 ) : ViewModel() {
 
-    var pictureByteArray = ByteArray(0)
+    var picturesByteArray = listOf(ByteArray(0))
 
     var pictures by mutableStateOf(listOf(Picture()))
         private set
-    fun getPictureByteArray(pictureId: String) {
-        viewModelScope.launch {
-            pictureByteArray = conferenceRepository.downloadPicture(pictureId)
-        }
-    }
-
-    init {
-        getPictureByteArray(pictureId)
-    }
 
     fun getPictures() {
         pictures = conferenceRepository.getCachedPictures()
+        val downloadedPictures = mutableListOf<ByteArray>()
+        viewModelScope.launch {
+            for (picture in pictures) {
+                downloadedPictures.add(conferenceRepository.downloadPicture(picture.id))
+            }
+            picturesByteArray = downloadedPictures
+        }
     }
 }

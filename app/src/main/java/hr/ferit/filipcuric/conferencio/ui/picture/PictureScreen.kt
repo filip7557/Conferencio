@@ -94,7 +94,6 @@ fun PictureScreen(
                 modifier = Modifier
                     .height(400.dp)
             ) { page ->
-                viewModel.getPictureByteArray(viewModel.pictures[page].id)
                 Card(
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier
@@ -148,8 +147,7 @@ fun PictureScreen(
                             withContext(Dispatchers.IO) {
                                 Log.d("SAVE PICTURE","outputStream: $outputStream")
 
-                                //outputStream.write("hey".toByteArray())
-                                outputStream.write(viewModel.pictureByteArray)
+                                outputStream.write(viewModel.picturesByteArray[pagerState.currentPage])
                                 outputStream.flush()
                                 outputStream.close()
                             }
