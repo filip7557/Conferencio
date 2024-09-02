@@ -40,29 +40,27 @@ fun RegisterScreen(
     val emailHasError = viewModel.emailHasError.collectAsState()
     val isEmailValid = viewModel.isEmailValid.collectAsState()
     val passwordHasError = viewModel.passwordHasError.collectAsState()
-    LazyColumn(
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(10.dp),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start
     ) {
-        stickyHeader {
-            BackButton(
-                onClick = {
-                    onBackClick()
-                }
-            )
-        }
-        item {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Title()
-                Subtitle()
+        BackButton(
+            onClick = {
+                onBackClick()
+            }
+        )
+        Title()
+        Subtitle()
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            item {
                 val launcher = rememberLauncherForActivityResult(
                     contract = ActivityResultContracts.GetContent(),
                     onResult = { uri: Uri? -> uri?.let { viewModel.onImageSelected(it) } }
@@ -76,6 +74,8 @@ fun RegisterScreen(
                         .height(250.dp)
                         .width(250.dp)
                 )
+            }
+            item {
                 Spacer(modifier = Modifier.padding(vertical = 10.dp))
                 TextBox(
                     label = "Full name",
@@ -118,8 +118,7 @@ fun RegisterScreen(
                     supportingText = {
                         if (!isEmailValid.value) {
                             Text(text = "This is not a valid email address.")
-                        }
-                        else if (emailHasError.value) {
+                        } else if (emailHasError.value) {
                             Text(text = "This email address is not available.")
                         }
                     }
@@ -142,7 +141,12 @@ fun RegisterScreen(
                         }
                     }
                 )
-                BlueButton(text = "Register", enabled = !viewModel.registrationHasErrors(), onClick = { viewModel.onRegisterClick(onRegisterClick) })
+            }
+            item {
+                BlueButton(
+                    text = "Register",
+                    enabled = !viewModel.registrationHasErrors(),
+                    onClick = { viewModel.onRegisterClick(onRegisterClick) })
             }
         }
     }
