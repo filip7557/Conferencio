@@ -31,9 +31,15 @@ class UserRepositoryImpl : UserRepository {
 
     override suspend fun updateUser(user: User, imageUri: Uri) {
         val document = db.collection("users").whereEqualTo("id", auth.currentUser?.uid).get().await().documents.first()
-        var imageUrl = uploadProfilePicture(imageUri)
+        var imageUrl: String
+        imageUrl = if (!imageUri.toString().startsWith("http")) {
+            Log.d("PIC UPLOAD", imageUri.toString())
+            uploadProfilePicture(imageUri)
+        } else {
+            imageUri.toString()
+        }
         if (imageUrl == "")
-            imageUrl = storageRef.storage.getReferenceFromUrl("gs://conferencio-57027.appspot.com/profile_pictures/default.profile.jpg").downloadUrl.await().toString()
+            imageUrl = storageRef.storage.getReferenceFromUrl("gs://conferencio-57027.appspot.com/profile_pictures/default_profile.jpg").downloadUrl.await().toString()
         user.imageUrl = imageUrl
         db.collection("users").document(document.id).set(user).await()
     }

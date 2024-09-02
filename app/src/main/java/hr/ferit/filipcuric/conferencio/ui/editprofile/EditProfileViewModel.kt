@@ -56,7 +56,7 @@ class EditProfileViewModel(
             email = currentUser.email,
             id = currentUser.id,
         )
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             userRepository.updateUser(user, imageUri!!)
         }.invokeOnCompletion {
             onSaveClick()
