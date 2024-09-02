@@ -139,8 +139,6 @@ fun RegisterScreen(
                         }
                     }
                 )
-            }
-            item {
                 BlueButton(
                     text = "Register",
                     enabled = !viewModel.registrationHasErrors(),

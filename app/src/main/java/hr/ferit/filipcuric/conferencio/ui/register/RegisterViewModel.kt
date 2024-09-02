@@ -92,17 +92,17 @@ class RegisterViewModel(
     }
 
     fun onRegisterClick(onRegisterClick: () -> Unit) {
-        //TODO: Add error checks
         val user = User(
             fullname = fullname,
             company = company,
             email = email,
             position = position,
         )
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             userRepository.createUser(user, password, imageUri!!)
+        }.invokeOnCompletion {
+            onRegisterClick()
         }
-        onRegisterClick()
     }
 
     fun registrationHasErrors() : Boolean {

@@ -18,11 +18,15 @@ class UserRepositoryImpl : UserRepository {
     override suspend fun createUser(user: User, password: String, imageUri: Uri) {
         auth.createUserWithEmailAndPassword(user.email, password).addOnSuccessListener { }.await()
         user.id = auth.currentUser?.uid
-        var imageUrl = uploadProfilePicture(imageUri)
+        var imageUrl = ""
+        if (imageUri != Uri.EMPTY) {
+            Log.d("PIC UPLOAD", imageUri.toString())
+            imageUrl = uploadProfilePicture(imageUri)
+        }
         if (imageUrl == "")
-            imageUrl = storageRef.storage.getReferenceFromUrl("gs://conferencio-57027.appspot.com/profile_pictures/default.profile.jpg").downloadUrl.await().toString()
+            imageUrl = storageRef.storage.getReferenceFromUrl("gs://conferencio-57027.appspot.com/profile_pictures/default_profile.jpg").downloadUrl.await().toString()
         user.imageUrl = imageUrl
-        db.collection("users").add(user).addOnSuccessListener {  }
+        db.collection("users").add(user).await()
     }
 
     override suspend fun updateUser(user: User, imageUri: Uri) {
