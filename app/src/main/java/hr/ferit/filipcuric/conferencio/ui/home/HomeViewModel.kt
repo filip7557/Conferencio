@@ -74,7 +74,7 @@ class HomeViewModel(
                             conference.endDateTime < Instant.now().toEpochMilli()
                         }
                     }.map { conference ->
-                        users.add(userRepository.getUserById(conference.ownerId)!!)
+                        users.add(userRepository.getUserById(conference.ownerId) ?: User())
                         attendingOwners.emit(users)
                         it
                     }.flatten()
@@ -111,7 +111,7 @@ class HomeViewModel(
 
     private fun getCurrentUser() {
         viewModelScope.launch(Dispatchers.IO) {
-            currentUser = if (userRepository.getCurrentUser() == null) User() else userRepository.getCurrentUser()!!
+            currentUser = userRepository.getCurrentUser() ?: User()
         }
     }
 }

@@ -193,7 +193,7 @@ class ConferenceRepositoryImpl : ConferenceRepository {
     override fun getCachedPictures() = cachedPictures
 
     override fun getPictureFromPictureId(pictureId: String): Flow<Picture> = flow {
-        val picture = db.collection("pictures").document(pictureId).get().await().toObject(Picture::class.java)!!
+        val picture = db.collection("pictures").document(pictureId).get().await().toObject(Picture::class.java) ?: Picture()
         picture.id = pictureId
         emit(picture)
     }.flowOn(Dispatchers.IO)

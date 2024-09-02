@@ -131,7 +131,7 @@ class ConferenceViewModel(
                 val newMessages = conferenceRepository.getConferenceChatById(conferenceId)
                 val authors = mutableListOf<User>()
                 for (message in newMessages) {
-                    authors.add(userRepository.getUserById(message.userId)!!)
+                    authors.add(userRepository.getUserById(message.userId) ?: User())
                 }
                 messageAuthors.emit(authors)
                 messages.emit(newMessages)
@@ -157,7 +157,7 @@ class ConferenceViewModel(
     private fun getCurrentUser() {
         viewModelScope.launch(Dispatchers.IO) {
             user = if(userRepository.getCurrentUser() != null) {
-                userRepository.getCurrentUser()!!
+                userRepository.getCurrentUser() ?: User()
             } else {
                 User()
             }

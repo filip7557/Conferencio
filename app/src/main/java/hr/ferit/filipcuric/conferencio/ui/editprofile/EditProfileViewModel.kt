@@ -66,7 +66,7 @@ class EditProfileViewModel(
     fun getCurrentUserData() {
         if (imageUri == Uri.EMPTY) {
             viewModelScope.launch(Dispatchers.IO) {
-                currentUser = userRepository.getCurrentUser()!!
+                currentUser = userRepository.getCurrentUser() ?: User()
                 fullname = currentUser.fullname
                 position = currentUser.position
                 company = currentUser.company

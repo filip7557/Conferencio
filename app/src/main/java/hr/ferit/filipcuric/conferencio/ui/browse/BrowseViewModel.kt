@@ -37,7 +37,7 @@ class BrowseViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             val users = mutableListOf<User>()
             for (conference in conferences.value) {
-                users.add(userRepository.getUserById(conference.ownerId)!!)
+                users.add(userRepository.getUserById(conference.ownerId) ?: User())
             }
             owners.emit(users)
         }
