@@ -6,9 +6,10 @@ import org.koin.dsl.module
 
 val modifyEventModule = module {
     viewModel {
-            (eventId : String) ->
+            (eventId : String, conferenceId : String) ->
         ModifyEventViewModel(
             eventId = eventId,
+            conferenceId = conferenceId,
             conferenceRepository = get(),
             userRepository = get(),
         )

@@ -76,7 +76,7 @@ fun EventScreen(
                 ManageButton(
                     onClick = {
                         onManageClick(
-                            ModifyEventDestination.createNavigation(event.value.id!!)
+                            ModifyEventDestination.createNavigation(event.value.id!!, event.value.conferenceId)
                         )
                     }
                 )

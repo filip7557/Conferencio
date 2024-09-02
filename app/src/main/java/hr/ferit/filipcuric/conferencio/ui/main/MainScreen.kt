@@ -66,6 +66,7 @@ import hr.ferit.filipcuric.conferencio.navigation.CreateEventDestination
 import hr.ferit.filipcuric.conferencio.navigation.EVENT_ID_KEY
 import hr.ferit.filipcuric.conferencio.navigation.EventDestination
 import hr.ferit.filipcuric.conferencio.navigation.MODIFY_CONFERENCE_ID_KEY
+import hr.ferit.filipcuric.conferencio.navigation.MODIFY_EVENT_CONFERENCE_ID_KEY
 import hr.ferit.filipcuric.conferencio.navigation.MODIFY_EVENT_ID_KEY
 import hr.ferit.filipcuric.conferencio.navigation.ModifyConferenceDestination
 import hr.ferit.filipcuric.conferencio.navigation.ModifyEventDestination
@@ -439,13 +440,15 @@ fun MainScreen() {
                 }
                 composable(
                     route = ModifyEventDestination.route,
-                    arguments = listOf(navArgument(MODIFY_EVENT_ID_KEY) {
-                        type = NavType.StringType
-                    })
+                    arguments = listOf(
+                        navArgument(MODIFY_EVENT_ID_KEY) { type = NavType.StringType },
+                        navArgument(MODIFY_EVENT_CONFERENCE_ID_KEY) { type = NavType.StringType }
+                    )
                 ) {
                     val eventId = it.arguments?.getString(MODIFY_EVENT_ID_KEY)
+                    val conferenceId = it.arguments?.getString(MODIFY_EVENT_CONFERENCE_ID_KEY)
                     val viewModel =
-                        koinViewModel<ModifyEventViewModel>(parameters = { parametersOf(eventId) })
+                        koinViewModel<ModifyEventViewModel>(parameters = { parametersOf(eventId, conferenceId) })
                     viewModel.setValues()
                     ModifyEventScreen(
                         viewModel = viewModel,

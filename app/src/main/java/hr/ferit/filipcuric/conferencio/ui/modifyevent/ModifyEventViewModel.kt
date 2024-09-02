@@ -28,6 +28,7 @@ class ModifyEventViewModel(
     private val userRepository: UserRepository,
     private val conferenceRepository: ConferenceRepository,
     private val eventId: String,
+    conferenceId: String,
 ) : ViewModel() {
 
     val event: StateFlow<Event> = conferenceRepository.getEventFromId(eventId).stateIn(
@@ -36,7 +37,7 @@ class ModifyEventViewModel(
         initialValue = Event()
     )
 
-    val conference: StateFlow<Conference> = conferenceRepository.getConferenceFromId(event.value.conferenceId).stateIn(
+    val conference: StateFlow<Conference> = conferenceRepository.getConferenceFromId(conferenceId).stateIn(
         scope = CoroutineScope(Dispatchers.IO),
         started = SharingStarted.Eagerly,
         initialValue = Conference()

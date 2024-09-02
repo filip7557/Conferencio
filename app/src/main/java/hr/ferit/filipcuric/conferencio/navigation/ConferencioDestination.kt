@@ -26,7 +26,8 @@ const val CREATE_EVENT_ID_KEY = "conferenceId"
 const val CREATE_EVENT_ROUTE_WITH_PARAMS = "$CREATE_EVENT_ROUTE/{$CREATE_EVENT_ID_KEY}"
 const val MODIFY_EVENT_ROUTE = "Modify event"
 const val MODIFY_EVENT_ID_KEY = "eventId"
-const val MODIFY_EVENT_ROUTE_WITH_PARAMS = "$MODIFY_EVENT_ROUTE/{$MODIFY_EVENT_ID_KEY}"
+const val MODIFY_EVENT_CONFERENCE_ID_KEY = "conferenceId"
+const val MODIFY_EVENT_ROUTE_WITH_PARAMS = "$MODIFY_EVENT_ROUTE/{$MODIFY_EVENT_ID_KEY}&{$MODIFY_EVENT_CONFERENCE_ID_KEY}"
 const val PICTURE_ROUTE = "Picture"
 const val PICTURE_ID_KEY = "pictureUrl"
 const val PICTURE_ROUTE_WITH_PARAMS = "$PICTURE_ROUTE/{$PICTURE_ID_KEY}"
@@ -104,7 +105,7 @@ data object CreateEventDestination : ConferencioDestination(CREATE_EVENT_ROUTE_W
 }
 
 data object ModifyEventDestination : ConferencioDestination(MODIFY_EVENT_ROUTE_WITH_PARAMS, 0 ,0) {
-    fun createNavigation(eventId: String): String = "$MODIFY_EVENT_ROUTE/${eventId}"
+    fun createNavigation(eventId: String, conferenceId: String): String = "$MODIFY_EVENT_ROUTE/${eventId}&${conferenceId}"
 }
 
 data object PictureDestination : ConferencioDestination(PICTURE_ROUTE_WITH_PARAMS, 0, 0) {

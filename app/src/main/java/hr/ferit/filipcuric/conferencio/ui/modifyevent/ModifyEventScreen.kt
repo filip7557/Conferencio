@@ -236,7 +236,6 @@ fun ModifyEventScreen(
                                 modifier = Modifier.padding(end = 10.dp),
                                 onClick = {
                                     viewModel.showTimePicker = false
-                                    viewModel.timeTextValue = "Choose time"
                                 },
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = Color.Transparent,
