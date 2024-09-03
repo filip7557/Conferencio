@@ -47,7 +47,7 @@ fun Message(
             Column {
 
                 Text(
-                    text = user.fullname,
+                    text = user.fullname.ifEmpty { "Deleted User" },
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium
                 )
