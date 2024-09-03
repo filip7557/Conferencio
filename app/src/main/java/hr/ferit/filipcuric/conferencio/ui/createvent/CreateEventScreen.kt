@@ -49,10 +49,7 @@ fun CreateEventScreen(
     val conference = viewModel.conference.collectAsState()
     val timePickerState = rememberTimePickerState()
     Column(
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.Start,
-        modifier = Modifier
-            .padding(10.dp)
+        horizontalAlignment = Alignment.Start
     ) {
         BackButton(
             onClick = {
@@ -60,7 +57,12 @@ fun CreateEventScreen(
             }
         )
         Title()
-        LazyColumn {
+        LazyColumn(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.Start,
+            modifier = Modifier
+                .padding(10.dp)
+        ) {
             item {
                 TextBox(
                     label = "Title",
@@ -310,6 +312,6 @@ fun Title() {
         fontWeight = FontWeight.Medium,
         color = Blue,
         modifier = Modifier
-            .padding(bottom = 20.dp, top = 20.dp)
+            .padding(bottom = 20.dp, top = 20.dp, start = 10.dp)
     )
 }

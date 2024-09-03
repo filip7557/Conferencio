@@ -38,169 +38,172 @@ fun ModifyConferenceScreen(
     onDeleteClick: () -> Unit
 ) {
     val conference = viewModel.conference.collectAsState()
-    LazyColumn(
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.Start,
-        modifier = Modifier
-            .padding(10.dp)
+    Column(
+        horizontalAlignment = Alignment.Start
     ) {
-        item {
-            BackButton(
-                onClick = {
-                    onBackClick()
-                    viewModel.clearViewModel()
-                }
-            )
-        }
-        item {
-            Title()
-        }
-        item {
-            val launcher = rememberLauncherForActivityResult(
-                contract = ActivityResultContracts.GetContent(),
-                onResult = { uri: Uri? -> uri?.let { viewModel.onImageSelected(it) } }
-            )
-            UploadBannerCard(
-                onClick = {
-                    launcher.launch("image/*")
-                },
-                imageUri = viewModel.imageUri,
-                modifier = Modifier
-                    .padding(bottom = 20.dp)
-            )
-        }
-        item {
-            TextBox(
-                label = "Title",
-                value = viewModel.title,
-                isError = viewModel.title.isEmpty(),
-                supportingText = {
-                    if (viewModel.title.isEmpty()) {
-                        Text(text = "Title field cannot be empty.")
-                    }
-                },
-                onValueChange = {
-                    viewModel.onTitleChange(it)
-                }
-            )
-        }
-        item {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 8.dp)
-            ) {
-                Text(
-                    text = "Starting date: ",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Medium,
+        BackButton(
+            onClick = {
+                onBackClick()
+                viewModel.clearViewModel()
+            }
+        )
+        LazyColumn(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.Start,
+            modifier = Modifier
+                .padding(10.dp)
+        ) {
+            item {
+                Title()
+            }
+            item {
+                val launcher = rememberLauncherForActivityResult(
+                    contract = ActivityResultContracts.GetContent(),
+                    onResult = { uri: Uri? -> uri?.let { viewModel.onImageSelected(it) } }
                 )
-                if (viewModel.startDateTextValue == "Choose date") {
-                    Button(
-                        onClick = {
-                            viewModel.showStartDatePicker = true
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Transparent,
-                        ),
-                        border = BorderStroke(2.dp, Blue),
-                    ) {
-                        Text(text = "Choose date", color = Blue)
+                UploadBannerCard(
+                    onClick = {
+                        launcher.launch("image/*")
+                    },
+                    imageUri = viewModel.imageUri,
+                    modifier = Modifier
+                        .padding(bottom = 20.dp)
+                )
+            }
+            item {
+                TextBox(
+                    label = "Title",
+                    value = viewModel.title,
+                    isError = viewModel.title.isEmpty(),
+                    supportingText = {
+                        if (viewModel.title.isEmpty()) {
+                            Text(text = "Title field cannot be empty.")
+                        }
+                    },
+                    onValueChange = {
+                        viewModel.onTitleChange(it)
                     }
-                } else {
+                )
+            }
+            item {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp)
+                ) {
                     Text(
-                        text = viewModel.startDateTextValue,
-                        fontSize = 18.sp,
-                        modifier = Modifier
-                            .clickable {
+                        text = "Starting date: ",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Medium,
+                    )
+                    if (viewModel.startDateTextValue == "Choose date") {
+                        Button(
+                            onClick = {
                                 viewModel.showStartDatePicker = true
-                            }
-                    )
-                }
-                if (viewModel.showStartDatePicker) {
-                    ConferenceDatePickerDialog(
-                        onDateSelected = { viewModel.onStartDateTextValueChange(it) },
-                        onDismiss = { viewModel.showStartDatePicker = false },
-                        dateValidator = {
-                            it >= Instant.now().toEpochMilli() && it <= conference.value.endDateTime
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Transparent,
+                            ),
+                            border = BorderStroke(2.dp, Blue),
+                        ) {
+                            Text(text = "Choose date", color = Blue)
                         }
-                    )
-                }
-            }
-        }
-        item {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 15.dp)
-            ) {
-                Text(
-                    text = "Ending date: ",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Medium,
-                )
-                if (viewModel.endDateTextValue == "Choose date") {
-                    Button(
-                        onClick = {
-                            viewModel.showEndDatePicker = true
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Transparent,
-                        ),
-                        border = BorderStroke(2.dp, Blue),
-                    ) {
-                        Text(text = "Choose date", color = Blue)
+                    } else {
+                        Text(
+                            text = viewModel.startDateTextValue,
+                            fontSize = 18.sp,
+                            modifier = Modifier
+                                .clickable {
+                                    viewModel.showStartDatePicker = true
+                                }
+                        )
                     }
-                } else {
-                    Text(
-                        text = viewModel.endDateTextValue,
-                        fontSize = 18.sp,
-                        modifier = Modifier
-                            .clickable {
-                                viewModel.showEndDatePicker = true
+                    if (viewModel.showStartDatePicker) {
+                        ConferenceDatePickerDialog(
+                            onDateSelected = { viewModel.onStartDateTextValueChange(it) },
+                            onDismiss = { viewModel.showStartDatePicker = false },
+                            dateValidator = {
+                                it >= Instant.now()
+                                    .toEpochMilli() && it <= conference.value.endDateTime
                             }
-                    )
-                }
-                if (viewModel.showEndDatePicker) {
-                    ConferenceDatePickerDialog(
-                        onDateSelected = { viewModel.onEndDateTextValueChange(it) },
-                        onDismiss = { viewModel.showEndDatePicker = false },
-                        dateValidator = {
-                            it >= conference.value.startDateTime
-                        }
-                    )
+                        )
+                    }
                 }
             }
-        }
-        item {
-            BlueButton(
-                text = "Save",
-                enabled = viewModel.title.isNotEmpty(),
-                onClick = {
-                    viewModel.onSaveClick(onSaveClick)
+            item {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 15.dp)
+                ) {
+                    Text(
+                        text = "Ending date: ",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Medium,
+                    )
+                    if (viewModel.endDateTextValue == "Choose date") {
+                        Button(
+                            onClick = {
+                                viewModel.showEndDatePicker = true
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Transparent,
+                            ),
+                            border = BorderStroke(2.dp, Blue),
+                        ) {
+                            Text(text = "Choose date", color = Blue)
+                        }
+                    } else {
+                        Text(
+                            text = viewModel.endDateTextValue,
+                            fontSize = 18.sp,
+                            modifier = Modifier
+                                .clickable {
+                                    viewModel.showEndDatePicker = true
+                                }
+                        )
+                    }
+                    if (viewModel.showEndDatePicker) {
+                        ConferenceDatePickerDialog(
+                            onDateSelected = { viewModel.onEndDateTextValueChange(it) },
+                            onDismiss = { viewModel.showEndDatePicker = false },
+                            dateValidator = {
+                                it >= conference.value.startDateTime
+                            }
+                        )
+                    }
                 }
-            )
-        }
-        item { 
-            Button(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                onClick = {
-                    viewModel.deleteConference(onDeleteClick)
-                },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Red,
-                    contentColor = Color.White
+            }
+            item {
+                BlueButton(
+                    text = "Save",
+                    enabled = viewModel.title.isNotEmpty(),
+                    onClick = {
+                        viewModel.onSaveClick(onSaveClick)
+                    }
                 )
-            ) {
-                Text(
-                    text = "Delete",
-                    fontSize = 14.sp
-                )
+            }
+            item {
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    onClick = {
+                        viewModel.deleteConference(onDeleteClick)
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Red,
+                        contentColor = Color.White
+                    )
+                ) {
+                    Text(
+                        text = "Delete",
+                        fontSize = 14.sp
+                    )
+                }
             }
         }
     }

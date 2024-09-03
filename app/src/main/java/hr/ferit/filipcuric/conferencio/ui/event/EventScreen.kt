@@ -69,7 +69,7 @@ fun EventScreen(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 10.dp, end = 10.dp, bottom = 20.dp, top = 10.dp)
+                .padding(bottom = 20.dp)
         ) {
             BackButton(onClick = onBackClick)
             if (viewModel.isUserManager() || viewModel.isUserHost()) {

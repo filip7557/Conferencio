@@ -38,11 +38,8 @@ fun RegisterScreen(
     val emailHasError = viewModel.emailHasError.collectAsState()
     val isEmailValid = viewModel.isEmailValid.collectAsState()
     val passwordHasError = viewModel.passwordHasError.collectAsState()
+
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(10.dp),
-        verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start
     ) {
         BackButton(
@@ -154,7 +151,9 @@ fun Title() {
         text = "Register",
         fontSize = 48.sp,
         color = Blue,
-        fontWeight = FontWeight.Medium
+        fontWeight = FontWeight.Medium,
+        modifier = Modifier
+            .padding(start = 10.dp)
     )
 }
 
@@ -165,6 +164,6 @@ fun Subtitle() {
         fontSize = 20.sp,
         fontWeight = FontWeight.Thin,
         modifier = Modifier
-            .padding(bottom = 20.dp)
+            .padding(bottom = 20.dp, start = 10.dp)
     )
 }

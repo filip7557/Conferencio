@@ -30,75 +30,77 @@ fun EditProfileScreen(
     onBackClick: () -> Unit,
     onSaveClick: () -> Unit
 ) {
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(10.dp),
-        verticalArrangement = Arrangement.Top,
+    Column(
         horizontalAlignment = Alignment.Start
     ) {
-        item {
-            BackButton(
-                onClick = {
-                    onBackClick()
-                }
-            )
-        }
-        item {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Title()
-                Subtitle()
-                val launcher = rememberLauncherForActivityResult(
-                    contract = ActivityResultContracts.GetContent(),
-                    onResult = { uri: Uri? -> uri?.let { viewModel.onImageSelected(it) } }
-                )
-                EditProfilePictureCard(
-                    onClick = {
-                        launcher.launch("image/*")
-                    },
-                    imageUri = viewModel.imageUri,
+        BackButton(
+            onClick = {
+                onBackClick()
+            }
+        )
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(10.dp),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.Start
+        ) {
+            item {
+                Column(
                     modifier = Modifier
-                        .height(250.dp)
-                        .width(250.dp)
-                )
-                Spacer(modifier = Modifier.padding(vertical = 10.dp))
-                TextBox(
-                    label = "Full name",
-                    isError = viewModel.fullname.isEmpty(),
-                    supportingText = {
-                        if (viewModel.fullname.isEmpty()) {
-                            Text(text = "Full name field cannot be empty.")
+                        .fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Title()
+                    Subtitle()
+                    val launcher = rememberLauncherForActivityResult(
+                        contract = ActivityResultContracts.GetContent(),
+                        onResult = { uri: Uri? -> uri?.let { viewModel.onImageSelected(it) } }
+                    )
+                    EditProfilePictureCard(
+                        onClick = {
+                            launcher.launch("image/*")
+                        },
+                        imageUri = viewModel.imageUri,
+                        modifier = Modifier
+                            .height(250.dp)
+                            .width(250.dp)
+                    )
+                    Spacer(modifier = Modifier.padding(vertical = 10.dp))
+                    TextBox(
+                        label = "Full name",
+                        isError = viewModel.fullname.isEmpty(),
+                        supportingText = {
+                            if (viewModel.fullname.isEmpty()) {
+                                Text(text = "Full name field cannot be empty.")
+                            }
+                        },
+                        value = viewModel.fullname,
+                        onValueChange = {
+                            viewModel.onFullnameChange(it)
                         }
-                    },
-                    value = viewModel.fullname,
-                    onValueChange = {
-                        viewModel.onFullnameChange(it)
-                    }
-                )
-                TextBox(
-                    label = "Company/Organization",
-                    value = viewModel.company,
-                    onValueChange = {
-                        viewModel.onCompanyChange(it)
-                    }
-                )
-                TextBox(
-                    label = "Position",
-                    value = viewModel.position,
-                    onValueChange = {
-                        viewModel.onPositionChange(it)
-                    }
-                )
-                BlueButton(
-                    text = "Save",
-                    enabled = viewModel.fullname.isNotEmpty(),
-                    onClick = { viewModel.onSaveClick(onSaveClick) }
-                )
+                    )
+                    TextBox(
+                        label = "Company/Organization",
+                        value = viewModel.company,
+                        onValueChange = {
+                            viewModel.onCompanyChange(it)
+                        }
+                    )
+                    TextBox(
+                        label = "Position",
+                        value = viewModel.position,
+                        onValueChange = {
+                            viewModel.onPositionChange(it)
+                        }
+                    )
+                    BlueButton(
+                        text = "Save",
+                        enabled = viewModel.fullname.isNotEmpty(),
+                        onClick = { viewModel.onSaveClick(onSaveClick) }
+                    )
+                }
             }
         }
     }

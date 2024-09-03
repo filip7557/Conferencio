@@ -21,11 +21,10 @@ import hr.ferit.filipcuric.conferencio.ui.theme.TertiaryColor
 @Composable
 fun BackButton(
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
 ) {
     Box(
-        modifier = modifier
-            .padding(top = 30.dp)
+        modifier = Modifier
+            .padding(top = 50.dp, start = 10.dp)
             .clip(CircleShape)
             .size(32.dp)
             .background(if(isSystemInDarkTheme()) DarkTertiaryColor.copy(alpha = 0.8f) else TertiaryColor.copy(alpha = 0.8f))
