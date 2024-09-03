@@ -89,11 +89,32 @@ fun ConferenceCard(
                     )
                 }
             }
-            Text(
-                text = "Hosted by: ${user.fullname}, ${user.position}${if (user.position != "" && user.company != "")" @ " else ""}${user.company}",
-                fontSize = 11.sp,
-                fontWeight = FontWeight.Light
-            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth(0.6f),
+                    text = "Hosted by: ${user.fullname}, ${user.position}${if (user.position != "" && user.company != "") " @ " else ""}${user.company}",
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Light
+                )
+                val datetime = Instant.ofEpochMilli(conference.endDateTime).atZone(ZoneId.systemDefault())
+                Row {
+                    Text(
+                        text = "End: ",
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                    Text(
+                        text = "${if (datetime.dayOfMonth < 10) '0' else ""}${datetime.dayOfMonth}/${if (datetime.monthValue < 10) '0' else ""}${datetime.monthValue}/${datetime.year}",
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Light
+                    )
+                }
+            }
         }
     }
 }
