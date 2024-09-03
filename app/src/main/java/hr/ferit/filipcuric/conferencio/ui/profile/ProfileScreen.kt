@@ -90,7 +90,7 @@ fun CompanyAndPosition(
     position: String,
 ) {
     Text(
-        text = "$position @ $company",
+        text = "$position ${if (company.isNotEmpty() && position.isNotEmpty()) "@" else ""} $company",
         fontSize = 18.sp,
         fontWeight = FontWeight.ExtraLight,
     )
