@@ -41,7 +41,6 @@ import hr.ferit.filipcuric.conferencio.data.repository.UserRepositoryImpl
 import hr.ferit.filipcuric.conferencio.model.User
 import hr.ferit.filipcuric.conferencio.navigation.ConferenceDestination
 import hr.ferit.filipcuric.conferencio.ui.component.ConferenceCard
-import hr.ferit.filipcuric.conferencio.ui.component.LoadingAnimation
 import hr.ferit.filipcuric.conferencio.ui.theme.Blue
 
 @Composable
@@ -53,7 +52,6 @@ fun HomeScreen(
     val owners = viewModel.attendingOwners.collectAsState()
 
     viewModel.attendingConferences.collectAsState().let { attendingConferences ->
-        LoadingAnimation()
         viewModel.organizedConferences.collectAsState().let { organizedConferences ->
             LazyColumn(
                 verticalArrangement = Arrangement.Top,
