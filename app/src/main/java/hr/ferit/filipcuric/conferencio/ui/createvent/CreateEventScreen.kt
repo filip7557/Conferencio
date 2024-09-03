@@ -266,15 +266,18 @@ fun CreateEventScreen(
                         }
                     ) {
                         TextBox(
+                            modifier = Modifier
+                                .menuAnchor(),
                             label = "Type",
                             value = viewModel.type,
                             onValueChange = {},
                             readOnly = true,
                             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = viewModel.expanded) },
-                            modifier = Modifier.menuAnchor()
                         )
 
                         ExposedDropdownMenu(
+                            modifier = Modifier
+                                .fillMaxWidth(0.5f),
                             expanded = viewModel.expanded,
                             onDismissRequest = { viewModel.expanded = false }
                         ) {

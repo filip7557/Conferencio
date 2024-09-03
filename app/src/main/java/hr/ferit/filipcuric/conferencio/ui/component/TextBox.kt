@@ -7,6 +7,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -34,6 +35,7 @@ fun TextBox(
     ),
     visualTransformation: VisualTransformation = VisualTransformation.None,
     readOnly: Boolean = false,
+    colors: TextFieldColors? = null,
     onValueChange: (String) -> Unit,
 ) {
     if(isSystemInDarkTheme()) {
@@ -48,7 +50,7 @@ fun TextBox(
             keyboardOptions = keyboardOptions,
             visualTransformation = visualTransformation,
             shape = RoundedCornerShape(8.dp),
-            colors = TextFieldDefaults.colors(
+            colors = colors ?: TextFieldDefaults.colors(
                 focusedIndicatorColor = Blue,
                 focusedLabelColor = Blue,
                 cursorColor = Blue,
@@ -71,11 +73,12 @@ fun TextBox(
             label = {
                 Text(text = label)
             },
-            singleLine = true,
+            singleLine = singleLine,
+            trailingIcon = trailingIcon,
             keyboardOptions = keyboardOptions,
             visualTransformation = visualTransformation,
             shape = RoundedCornerShape(8.dp),
-            colors = TextFieldDefaults.colors(
+            colors = colors ?: TextFieldDefaults.colors(
                 focusedIndicatorColor = Blue,
                 focusedLabelColor = Blue,
                 cursorColor = Blue,
@@ -86,7 +89,8 @@ fun TextBox(
             ),
             isError = isError,
             supportingText = supportingText,
-            modifier = Modifier
+            readOnly = readOnly,
+            modifier = modifier
                 .fillMaxWidth()
                 .padding(bottom = 15.dp)
         )
