@@ -121,6 +121,7 @@ fun HomeScreen(
                     )
                 }
             } else {
+                viewModel.getOwners()
                 items(
                     items = attendingConferences.value,
                     key = { conference -> conference.id!! }

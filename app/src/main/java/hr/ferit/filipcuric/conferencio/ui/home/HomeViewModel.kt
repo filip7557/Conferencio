@@ -66,18 +66,13 @@ class HomeViewModel(
             conferenceRepository.getAttendingConferences()
                 .map {
                     Log.d("HOME VM", "[ATTENDING] Got $it")
-                    val users = mutableListOf<User>()
                     it.filter { conference ->
                         if (isActiveSelected) {
                             conference.endDateTime > Instant.now().toEpochMilli()
                         } else {
                             conference.endDateTime < Instant.now().toEpochMilli()
                         }
-                    }.map { conference ->
-                        users.add(userRepository.getUserById(conference.ownerId) ?: User())
-                        attendingOwners.emit(users)
-                        it
-                    }.flatten()
+                    }
                 }
         }.stateIn(
             scope = viewModelScope,
@@ -112,6 +107,16 @@ class HomeViewModel(
     private fun getCurrentUser() {
         viewModelScope.launch(Dispatchers.IO) {
             currentUser = userRepository.getCurrentUser() ?: User()
+        }
+    }
+
+    fun getOwners() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val users = mutableListOf<User>()
+            for (conference in attendingConferences.value) {
+                users.add(userRepository.getUserById(conference.ownerId) ?: User())
+            }
+            attendingOwners.emit(users)
         }
     }
 }
