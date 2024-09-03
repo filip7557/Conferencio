@@ -41,6 +41,7 @@ import hr.ferit.filipcuric.conferencio.data.repository.UserRepositoryImpl
 import hr.ferit.filipcuric.conferencio.model.User
 import hr.ferit.filipcuric.conferencio.navigation.ConferenceDestination
 import hr.ferit.filipcuric.conferencio.ui.component.ConferenceCard
+import hr.ferit.filipcuric.conferencio.ui.component.LoadingAnimation
 import hr.ferit.filipcuric.conferencio.ui.theme.Blue
 
 @Composable
@@ -49,94 +50,110 @@ fun HomeScreen(
     onConferenceClick: (String) -> Unit,
 ) {
     val isActiveSelected = viewModel.activeSelected.collectAsState()
-    val attendingConferences = viewModel.attendingConferences.collectAsState()
-    val organizedConferences = viewModel.organizedConferences.collectAsState()
     val owners = viewModel.attendingOwners.collectAsState()
 
-    LazyColumn(
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .padding(horizontal = 10.dp, vertical = 10.dp)
-    ) {
-        item {
-            Title(
-                fullname = viewModel.currentUser.fullname,
-                imageUrl = viewModel.currentUser.imageUrl,
-            )
-            Subtitle()
-            ActivePastSwitcher(
-                isActiveSelected = isActiveSelected.value,
-                onActiveClick = {
-                    viewModel.onActiveClick()
-                },
-                onPastClick = {
-                    viewModel.onPastClick()
-                }
-            )
-            OrganizedHeader(
-                isToggled = viewModel.isOrganizedToggled,
-                onClick = {
-                    viewModel.toggleOrganized()
-                }
-            )
-        }
-        if (viewModel.isOrganizedToggled) {
-            if (organizedConferences.value.isEmpty()) {
+    viewModel.attendingConferences.collectAsState().let { attendingConferences ->
+        LoadingAnimation()
+        viewModel.organizedConferences.collectAsState().let { organizedConferences ->
+            LazyColumn(
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .padding(horizontal = 10.dp, vertical = 10.dp)
+            ) {
                 item {
-                    Text(
-                        text = "You haven't organized any conferences yet.",
-                        fontWeight = FontWeight.Light,
-                        modifier = Modifier
-                            .padding(top = 10.dp)
+                    Title(
+                        fullname = viewModel.currentUser.fullname,
+                        imageUrl = viewModel.currentUser.imageUrl,
+                    )
+                    Subtitle()
+                    ActivePastSwitcher(
+                        isActiveSelected = isActiveSelected.value,
+                        onActiveClick = {
+                            viewModel.onActiveClick()
+                        },
+                        onPastClick = {
+                            viewModel.onPastClick()
+                        }
+                    )
+                    OrganizedHeader(
+                        isToggled = viewModel.isOrganizedToggled,
+                        onClick = {
+                            viewModel.toggleOrganized()
+                        }
                     )
                 }
-            } else {
-                items(
-                    items = organizedConferences.value,
-                    key = { conference -> conference.id!! }
-                ) {
-                    ConferenceCard(
-                        conference = it,
-                        user = viewModel.currentUser,
-                        onClick = { onConferenceClick(ConferenceDestination.createNavigation(it.id!!)) }
-                    )
+                if (viewModel.isOrganizedToggled) {
+                    if (organizedConferences.value.isEmpty()) {
+                        item {
+                            Text(
+                                text = "You haven't organized any conferences yet.",
+                                fontWeight = FontWeight.Light,
+                                modifier = Modifier
+                                    .padding(top = 10.dp)
+                            )
+                        }
+                    } else {
+                        items(
+                            items = organizedConferences.value,
+                            key = { conference -> conference.id!! }
+                        ) {
+                            ConferenceCard(
+                                conference = it,
+                                user = viewModel.currentUser,
+                                onClick = {
+                                    onConferenceClick(
+                                        ConferenceDestination.createNavigation(
+                                            it.id!!
+                                        )
+                                    )
+                                }
+                            )
+                        }
+                    }
                 }
-            }
-        }
-        item {
-            AttendingHeader(
-                isToggled = viewModel.isAttendingToggled,
-                onClick = { viewModel.toggleAttending() }
-            )
-        }
-        if (viewModel.isAttendingToggled) {
-            if (attendingConferences.value.isEmpty()) {
                 item {
-                    Text(
-                        text = if (isActiveSelected.value) "You aren't attending any conferences." else "You haven't attended any conferences yet.",
-                        fontWeight = FontWeight.Light,
-                        modifier = Modifier
-                            .padding(top = 10.dp)
+                    AttendingHeader(
+                        isToggled = viewModel.isAttendingToggled,
+                        onClick = { viewModel.toggleAttending() }
                     )
                 }
-            } else {
-                viewModel.getOwners()
-                items(
-                    items = attendingConferences.value,
-                    key = { conference -> conference.id!! }
-                ) {
-                    Log.d("HOME SCREEN", "Drawing $it")
-                    ConferenceCard(
-                        conference = it,
-                        user = if (owners.value.size < attendingConferences.value.size) User() else owners.value[attendingConferences.value.indexOf(it)],
-                        onClick = { onConferenceClick(ConferenceDestination.createNavigation(it.id!!)) }
-                    )
+                if (viewModel.isAttendingToggled) {
+                    if (attendingConferences.value.isEmpty()) {
+                        item {
+                            Text(
+                                text = if (isActiveSelected.value) "You aren't attending any conferences." else "You haven't attended any conferences yet.",
+                                fontWeight = FontWeight.Light,
+                                modifier = Modifier
+                                    .padding(top = 10.dp)
+                            )
+                        }
+                    } else {
+                        viewModel.getOwners()
+                        items(
+                            items = attendingConferences.value,
+                            key = { conference -> conference.id!! }
+                        ) {
+                            Log.d("HOME SCREEN", "Drawing $it")
+                            ConferenceCard(
+                                conference = it,
+                                user = if (owners.value.size < attendingConferences.value.size) User() else owners.value[attendingConferences.value.indexOf(
+                                    it
+                                )],
+                                onClick = {
+                                    onConferenceClick(
+                                        ConferenceDestination.createNavigation(
+                                            it.id!!
+                                        )
+                                    )
+                                }
+                            )
+                        }
+                    }
                 }
             }
         }
     }
-
 }
 
 @Composable
