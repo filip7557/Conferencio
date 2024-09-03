@@ -28,11 +28,7 @@ class ProfileViewModel(
 
     fun getCurrentUser() {
         viewModelScope.launch(Dispatchers.IO) {
-            user = if(userRepository.getCurrentUser() != null) {
-                userRepository.getCurrentUser() ?: User()
-            } else {
-                User()
-            }
+            user = userRepository.getCurrentUser() ?: User()
         }
     }
 
