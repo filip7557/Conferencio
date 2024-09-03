@@ -30,8 +30,6 @@ import hr.ferit.filipcuric.conferencio.ui.theme.Blue
 fun ProfileScreen(
     viewModel: ProfileViewModel,
 ) {
-    val organized = viewModel.organized.collectAsState()
-    val attended = viewModel.attended.collectAsState()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -42,7 +40,55 @@ fun ProfileScreen(
         Picture(imageUrl = viewModel.user.imageUrl)
         Fullname(fullname = viewModel.user.fullname)
         CompanyAndPosition(company = viewModel.user.company, position = viewModel.user.position)
-        ConferencesInfo(organized = organized.value, attended = attended.value)
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 30.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                viewModel.organized.collectAsState().let {
+                    Text(
+                        text = it.value.toString(),
+                        fontSize = 32.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Text(
+                        text = "Organized",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Thin
+                    )
+                }
+            }
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(50))
+                    .size(height = 65.dp, width = 1.dp)
+                    .background(Color(94, 93, 93))
+            )
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                viewModel.attended.collectAsState().let {
+                    Text(
+                        text = it.value.toString(),
+                        fontSize = 32.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Text(
+                        text = "Attended",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Thin
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -94,55 +140,4 @@ fun CompanyAndPosition(
         fontSize = 18.sp,
         fontWeight = FontWeight.ExtraLight,
     )
-}
-
-@Composable
-fun ConferencesInfo(
-    organized: Int,
-    attended: Int,
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 30.dp),
-        horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Text(
-                text = organized.toString(),
-                fontSize = 32.sp,
-                fontWeight = FontWeight.SemiBold
-            )
-            Text(
-                text = "Organized",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Thin
-            )
-        }
-        Box(
-            modifier = Modifier
-                .clip(RoundedCornerShape(50))
-                .size(height = 65.dp, width = 1.dp)
-                .background(Color(94, 93, 93))
-        )
-        Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Text(
-                text = attended.toString(),
-                fontSize = 32.sp,
-                fontWeight = FontWeight.SemiBold
-            )
-            Text(
-                text = "Attended",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Thin
-            )
-        }
-    }
 }
