@@ -53,6 +53,9 @@ class EventViewModel(
         getCurrentUser()
         getMessages()
         getAttendanceCount()
+        viewModelScope.launch(Dispatchers.IO) {
+            isAttending = conferenceRepository.getAttendanceFromEventId(eventId)
+        }
         getFiles()
     }
 
