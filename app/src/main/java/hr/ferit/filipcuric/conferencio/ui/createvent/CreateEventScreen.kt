@@ -228,6 +228,7 @@ fun CreateEventScreen(
                             },
                             dismissButton = {
                                 Button(
+                                    modifier = Modifier.padding(end = 10.dp),
                                     onClick = {
                                         viewModel.showTimePicker = false
                                     },
