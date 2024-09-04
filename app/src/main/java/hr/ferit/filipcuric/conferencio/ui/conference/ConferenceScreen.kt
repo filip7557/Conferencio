@@ -5,6 +5,7 @@ import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
@@ -29,6 +30,8 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButtonDefaults
@@ -82,7 +85,10 @@ fun ConferenceScreen(
 ) {
     val conference = viewModel.conference.collectAsState()
     val duration = viewModel.duration.collectAsState()
-    val events = viewModel.events.collectAsState()
+    val events = viewModel.events.collectAsState().let {
+        viewModel.getAttendingEvents()
+        return@let it
+    }
     Log.d("EVENTS SCREEN", "Got events: ${events.value}")
     val messages = viewModel.messages.collectAsState()
     val authors = viewModel.messageAuthors.collectAsState()
@@ -219,43 +225,138 @@ fun ConferenceScreen(
             }
 
             ConferenceScreenState.EVENTS -> {
-                LazyColumn {
+                LazyColumn(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .padding(horizontal = 10.dp)
+                ) {
                     if (viewModel.isUserManager()) {
                         item {
                             BlueButton(
                                 modifier = Modifier
-                                    .padding(vertical = 20.dp),
+                                    .padding(top = 20.dp, bottom = 10.dp),
                                 text = "Add an event",
                                 onClick = { onAddEventClick(viewModel.conference.value.id!!) }
                             )
                         }
                     }
-                    if (events.value.isEmpty()) {
-                        item {
-                            Text(
-                                text = "There are no events planned in this conference.",
-                                fontWeight = FontWeight.Light,
-                                modifier = Modifier
-                                    .padding(top = 30.dp, bottom = 10.dp)
-                            )
-                        }
-                    } else {
-                        items(
-                            items = events.value,
-                            key = { event -> event.id!! }
+                    val hostedEvents = events.value.filter { p -> p.hostId == viewModel.user.id }
+                    val attendingEvents = viewModel.attendingEvents.distinctBy { p -> p.id }
+                    item {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 10.dp, top = 10.dp),
+                            horizontalArrangement = Arrangement.SpaceEvenly
                         ) {
-                            EventCard(
-                                event = it,
-                                onClick = { eventId ->
-                                    onEventClick(
-                                        EventDestination.createNavigation(
-                                            eventId,
-                                            "overview"
-                                        )
+                            for (it in EventFilter.entries) {
+                                if (it == EventFilter.HOSTED && hostedEvents.isEmpty())
+                                    continue
+                                Button(
+                                    modifier = Modifier
+                                        .width(110.dp),
+                                    onClick = {
+                                        viewModel.eventFilter = it
+                                    },
+                                    colors = ButtonDefaults.buttonColors(
+                                        contentColor = if (it == viewModel.eventFilter) if (isSystemInDarkTheme()) Color(27, 27, 31) else Color.White else Blue,
+                                        containerColor = if (it == viewModel.eventFilter) Blue else if (isSystemInDarkTheme()) Color(27, 27, 31) else Color.White
+                                    ),
+                                    border = BorderStroke(1.dp, Blue)
+                                ) {
+                                    Text(
+                                        text = it.name,
+                                        fontSize = 10.sp
                                     )
-                                },
-                                isOnEventScreen = false
-                            )
+                                }
+                            }
+                        }
+                    }
+                    when (viewModel.eventFilter) {
+
+                        EventFilter.ALL -> {
+                            if (events.value.isEmpty()) {
+                                item {
+                                    Text(
+                                        text = "There are no events planned in this conference.",
+                                        fontWeight = FontWeight.Light,
+                                        textAlign = TextAlign.Center,
+                                        modifier = Modifier
+                                            .padding(top = 20.dp, bottom = 10.dp)
+                                    )
+                                }
+                            } else {
+                                items(
+                                    items = events.value,
+                                    key = { event -> event.id!! }
+                                ) {
+                                    EventCard(
+                                        event = it,
+                                        onClick = { eventId ->
+                                            onEventClick(
+                                                EventDestination.createNavigation(
+                                                    eventId,
+                                                    "overview"
+                                                )
+                                            )
+                                        },
+                                        isOnEventScreen = false
+                                    )
+                                }
+                            }
+                        }
+
+                        EventFilter.ATTENDING -> {
+                            if (events.value.isEmpty()) {
+                                item {
+                                    Text(
+                                        text = "You are not attending any events in this conference.",
+                                        fontWeight = FontWeight.Light,
+                                        textAlign = TextAlign.Center,
+                                        modifier = Modifier
+                                            .padding(top = 20.dp, bottom = 10.dp)
+                                    )
+                                }
+                            } else {
+                                items(
+                                    items = attendingEvents,
+                                    key = { event -> event.id!! }
+                                ) {
+                                    EventCard(
+                                        event = it,
+                                        onClick = { eventId ->
+                                            onEventClick(
+                                                EventDestination.createNavigation(
+                                                    eventId,
+                                                    "overview"
+                                                )
+                                            )
+                                        },
+                                        isOnEventScreen = false
+                                    )
+                                }
+                            }
+                        }
+
+                        EventFilter.HOSTED ->
+                        {
+                            items(
+                                items = hostedEvents,
+                                key = { event -> event.id!! }
+                            ) {
+                                EventCard(
+                                    event = it,
+                                    onClick = { eventId ->
+                                        onEventClick(
+                                            EventDestination.createNavigation(
+                                                eventId,
+                                                "overview"
+                                            )
+                                        )
+                                    },
+                                    isOnEventScreen = false
+                                )
+                            }
                         }
                     }
                 }

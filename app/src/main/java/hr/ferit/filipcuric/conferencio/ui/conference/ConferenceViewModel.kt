@@ -64,6 +64,8 @@ class ConferenceViewModel(
     var loading by mutableStateOf(false)
         private set
 
+    var eventFilter by mutableStateOf(EventFilter.ALL)
+
     @OptIn(ExperimentalCoroutinesApi::class)
     val events: StateFlow<List<Event>> =
         conference.flatMapLatest {
@@ -74,6 +76,8 @@ class ConferenceViewModel(
         initialValue = listOf()
     )
 
+    val attendingEvents = mutableListOf<Event>()
+
     init {
         getCurrentUser()
         changeDuration()
@@ -82,6 +86,16 @@ class ConferenceViewModel(
         }
         getAttendanceCount()
         getPictures()
+    }
+
+    fun getAttendingEvents() {
+        viewModelScope.launch(Dispatchers.IO) {
+            for (event in events.value) {
+                val attendance = conferenceRepository.getAttendanceFromEventId(event.id!!)
+                if (attendance)
+                    attendingEvents.add(event)
+            }
+        }
     }
 
     private fun getPictures() {
@@ -174,4 +188,8 @@ class ConferenceViewModel(
         }
     }
 
+}
+
+enum class EventFilter {
+    ALL, HOSTED, ATTENDING
 }
