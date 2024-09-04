@@ -32,22 +32,18 @@ class ConferenceRepositoryImpl : ConferenceRepository {
 
     private var cachedPictures = listOf<Picture>()
 
-    override suspend fun getOrganizingConferences(): Flow<List<Conference>> {
+    override suspend fun getOrganizingConferences(): Flow<List<Conference>> = flow {
         val conferences = mutableListOf<Conference>()
-        db.collection("conferences").whereEqualTo("ownerId", auth.currentUser?.uid).get()
-            .addOnSuccessListener { documents ->
-                for (document in documents) {
-                    val conference = document.toObject(Conference::class.java)
-                    conference.id = document.id
-                    conferences.add(conference)
-                }
-            }.await()
-        return flowOf(conferences).shareIn(
-            scope = CoroutineScope(Dispatchers.IO),
-            started = SharingStarted.WhileSubscribed(1000L),
-            replay = 1
-        )
-    }
+        val documents = db.collection("conferences").whereEqualTo("ownerId", auth.currentUser?.uid).get().await()
+        for (document in documents) {
+            val conference = document.toObject(Conference::class.java)
+            conference.id = document.id
+            conferences.add(conference)
+            emit(conferences)
+        }
+    }.flowOn(Dispatchers.IO)
+
+
 
     override suspend fun uploadFile(fileUri: Uri, eventId: String, fileName: String) {
         Log.d("EVENT REPO", fileUri.toString())
@@ -80,30 +76,24 @@ class ConferenceRepositoryImpl : ConferenceRepository {
         db.collection("events").document(event.id!!).set(event).await()
     }
 
-    override suspend fun getAttendingConferences(): Flow<List<Conference>> {
+    override suspend fun getAttendingConferences(): Flow<List<Conference>> = flow {
         val conferences = mutableListOf<Conference>()
         val conferenceIds = mutableListOf<String>()
-        db.collection("attendances").whereEqualTo("event", false).whereEqualTo("userId", auth.currentUser?.uid).get()
-            .addOnSuccessListener { documents ->
-                for (document in documents) {
-                    val attendance = document.toObject(Attendance::class.java)
-                    conferenceIds.add(attendance.conferenceId)
-                }
-            }.await()
-        conferenceIds.forEach {
-            db.collection("conferences").document(it).get().addOnSuccessListener { document ->
-                val conference = document.toObject(Conference::class.java)
-                    conference!!.id = it
-                    if (conference.ownerId != auth.currentUser?.uid)
-                        conferences.add(conference)
-            }.await()
+        val documents = db.collection("attendances").whereEqualTo("event", false)
+            .whereEqualTo("userId", auth.currentUser?.uid).get().await()
+        for (document in documents) {
+            val attendance = document.toObject(Attendance::class.java)
+            conferenceIds.add(attendance.conferenceId)
         }
-        return flowOf(conferences).shareIn(
-            scope = CoroutineScope(Dispatchers.IO),
-            started = SharingStarted.WhileSubscribed(1000L),
-            replay = 1
-        )
-    }
+        conferenceIds.forEach {
+            val document = db.collection("conferences").document(it).get().await()
+            val conference = document.toObject(Conference::class.java)
+            conference!!.id = it
+            if (conference.ownerId != auth.currentUser?.uid)
+                conferences.add(conference)
+            emit(conferences)
+        }
+    }.flowOn(Dispatchers.IO)
 
     override fun getConferencesFromSearch(searchValue: String): Flow<List<Conference>> = flow<List<Conference>> {
         val conferences = mutableListOf<Conference>()
