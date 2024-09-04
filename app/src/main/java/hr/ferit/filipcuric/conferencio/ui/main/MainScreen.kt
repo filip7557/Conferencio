@@ -318,7 +318,11 @@ fun MainScreen() {
                             navController.popBackStack()
                         },
                         onSaveClick = {
-                            navController.navigate(NavigationItem.HomeDestination.route)
+                            navController.navigate(NavigationItem.HomeDestination.route) {
+                                popUpTo(NavigationItem.HomeDestination.route) {
+                                    inclusive = true
+                                }
+                            }
                         }
                     )
                 }
