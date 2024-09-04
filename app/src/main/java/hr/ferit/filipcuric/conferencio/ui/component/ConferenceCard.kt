@@ -16,6 +16,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -92,15 +93,26 @@ fun ConferenceCard(
             Row(
                 modifier = Modifier
                     .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
+                Row(
                     modifier = Modifier
-                        .fillMaxWidth(0.6f),
-                    text = "Hosted by: ${user.fullname}, ${user.position}${if (user.position != "" && user.company != "") " @ " else ""}${user.company}",
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Light
-                )
+                        .fillMaxWidth(0.6f)
+                ) {
+                    Text(
+                        text = "Hosted by: ",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Light
+                    )
+                    Text(
+                        modifier = Modifier
+                            .basicMarquee(),
+                        text = "${user.fullname}, ${user.position}${if (user.position != "" && user.company != "") " @ " else ""}${user.company}",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Light
+                    )
+                }
                 val datetime = Instant.ofEpochMilli(conference.endDateTime).atZone(ZoneId.systemDefault())
                 Row {
                     Text(
